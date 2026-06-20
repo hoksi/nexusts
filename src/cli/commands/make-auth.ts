@@ -76,17 +76,17 @@ imports: [AuthModule.forRoot({ /* ... */ })],
 `;
 
 const KNOWN_PROVIDERS: Record<string, { env: string; label: string }> = {
-	github:    { env: "GITHUB",    label: "GitHub" },
-	google:    { env: "GOOGLE",    label: "Google" },
-	discord:   { env: "DISCORD",   label: "Discord" },
+	github: { env: "GITHUB", label: "GitHub" },
+	google: { env: "GOOGLE", label: "Google" },
+	discord: { env: "DISCORD", label: "Discord" },
 	microsoft: { env: "MICROSOFT", label: "Microsoft" },
-	apple:     { env: "APPLE",     label: "Apple" },
-	facebook:  { env: "FACEBOOK",  label: "Facebook" },
-	gitlab:    { env: "GITLAB",    label: "GitLab" },
-	slack:     { env: "SLACK",     label: "Slack" },
-	twitter:   { env: "TWITTER",   label: "Twitter" },
-	spotify:   { env: "SPOTIFY",   label: "Spotify" },
-	linkedin:  { env: "LINKEDIN",  label: "LinkedIn" },
+	apple: { env: "APPLE", label: "Apple" },
+	facebook: { env: "FACEBOOK", label: "Facebook" },
+	gitlab: { env: "GITLAB", label: "GitLab" },
+	slack: { env: "SLACK", label: "Slack" },
+	twitter: { env: "TWITTER", label: "Twitter" },
+	spotify: { env: "SPOTIFY", label: "Spotify" },
+	linkedin: { env: "LINKEDIN", label: "LinkedIn" },
 };
 
 export const makeAuthCommand: Command = {
@@ -101,12 +101,21 @@ export const makeAuthCommand: Command = {
 		"nx make:auth --provider github,google --jwt --passkey --rp-id example.com",
 	],
 	flags: [
-		{ name: "provider", description: "Comma-separated OAuth providers (github, google, ...)" },
-		{ name: "jwt", description: "Enable the JWT plugin (token + JWKS endpoint)" },
+		{
+			name: "provider",
+			description: "Comma-separated OAuth providers (github, google, ...)",
+		},
+		{
+			name: "jwt",
+			description: "Enable the JWT plugin (token + JWKS endpoint)",
+		},
 		{ name: "passkey", description: "Enable the passkey (WebAuthn) plugin" },
 		{ name: "rp-id", description: "Passkey RP ID (defaults to 'localhost')" },
 		{ name: "rp-name", description: "Passkey RP display name" },
-		{ name: "origin", description: "Passkey origin (defaults to http://localhost:3000)" },
+		{
+			name: "origin",
+			description: "Passkey origin (defaults to http://localhost:3000)",
+		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
 		logger.heading("Scaffolding auth module");
@@ -115,8 +124,10 @@ export const makeAuthCommand: Command = {
 		const jwtEnabled = ctx.flags["jwt"] === true;
 		const passkeyEnabled = ctx.flags["passkey"] === true;
 		const rpId = (ctx.flags["rp-id"] as string | undefined) ?? "localhost";
-		const rpName = (ctx.flags["rp-name"] as string | undefined) ?? "NexusJS App";
-		const origin = (ctx.flags["origin"] as string | undefined) ?? "http://localhost:3000";
+		const rpName =
+			(ctx.flags["rp-name"] as string | undefined) ?? "NexusJS App";
+		const origin =
+			(ctx.flags["origin"] as string | undefined) ?? "http://localhost:3000";
 
 		const entries = providers.map((p) => {
 			const known = KNOWN_PROVIDERS[p.toLowerCase()];

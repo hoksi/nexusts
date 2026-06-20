@@ -85,7 +85,9 @@
     "bun": ">=1.1.0"
   },
   "dependencies": {
+    "bullmq": "^5.79.0",
     "hono": "^4.6.0",
+    "ioredis": "^5.11.1",
     "reflect-metadata": "^0.2.2",
     "rendu": "^0.1.0",
     "zod": "^3.23.8"
@@ -96,7 +98,9 @@
   },
   "peerDependencies": {
     "zod": "^3.23.8",
-    "better-auth": "^1.6.0"
+    "better-auth": "^1.6.0",
+    "bullmq": "^5.79.0",
+    "ioredis": "^5.11.1"
   },
   "peerDependenciesMeta": {
     "zod": {

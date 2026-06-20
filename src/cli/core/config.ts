@@ -23,6 +23,7 @@ export type DatabaseDriver =
 	| "postgres"
 	| "mysql"
 	| "none";
+export type QueueBackendKind = "bullmq" | "cloudflare" | "memory";
 
 /** Authentication surface. Mirrors `src/auth/types.ts` (kept inline so
  * the CLI doesn't depend on the auth module). */
@@ -37,12 +38,15 @@ export interface NxAuthConfig {
 		maxPasswordLength?: number;
 	};
 	/** Social providers keyed by name (github, google, discord, ...). */
-	socialProviders?: Record<string, {
-		clientId: string;
-		clientSecret: string;
-		scope?: string[];
-		redirectURI?: string;
-	}>;
+	socialProviders?: Record<
+		string,
+		{
+			clientId: string;
+			clientSecret: string;
+			scope?: string[];
+			redirectURI?: string;
+		}
+	>;
 	/** JWT plugin (token + JWKS endpoint). */
 	jwt?: {
 		enabled: boolean;
@@ -107,6 +111,25 @@ export interface NxConfig {
 
 	/** Authentication (better-auth) configuration. Optional. */
 	auth?: NxAuthConfig;
+
+	/** Queue (BullMQ / Cloudflare Queues) configuration. Optional. */
+	queue?: {
+		backend: QueueBackendKind;
+		bullmq?: {
+			connection: string | { host: string; port: number; password?: string };
+			prefix?: string;
+		};
+		cloudflare?: {
+			/** Name of the Queue binding on the Worker (e.g. 'MY_QUEUE'). */
+			bindingName: string;
+			queueName?: string;
+		};
+		defaults?: {
+			delaySeconds?: number;
+			attempts?: number;
+			backoff?: { type: "fixed" | "exponential"; delayMs: number };
+		};
+	};
 }
 
 export const DEFAULT_CONFIG: NxConfig = {
@@ -134,9 +157,15 @@ export const DEFAULT_CONFIG: NxConfig = {
 	},
 	moduleStyle: "nest",
 	auth: undefined,
+	queue: undefined,
 };
 
-const CONFIG_CANDIDATES = ["nx.config.ts", "nx.config.js", "nx.config.mjs", ".nxrc.json"];
+const CONFIG_CANDIDATES = [
+	"nx.config.ts",
+	"nx.config.js",
+	"nx.config.mjs",
+	".nxrc.json",
+];
 
 /**
  * Load the project's nx.config file, falling back to defaults.
@@ -146,7 +175,9 @@ const CONFIG_CANDIDATES = ["nx.config.ts", "nx.config.js", "nx.config.mjs", ".nx
  * message and use defaults so the CLI works in fresh projects where
  * `nexus` hasn't been installed yet.
  */
-export async function loadConfig(cwd: string = process.cwd()): Promise<NxConfig> {
+export async function loadConfig(
+	cwd: string = process.cwd(),
+): Promise<NxConfig> {
 	let config: Partial<NxConfig> = {};
 	let configSource = "<defaults>";
 
@@ -189,13 +220,28 @@ export async function loadConfig(cwd: string = process.cwd()): Promise<NxConfig>
 	const merged = mergeWithEnv(DEFAULT_CONFIG, config);
 
 	// Sanity-check enum values.
-	assertEnum("routing", merged.routing, ["nest", "adonis", "functional", "mixed"]);
+	assertEnum("routing", merged.routing, [
+		"nest",
+		"adonis",
+		"functional",
+		"mixed",
+	]);
 	assertEnum("view", merged.view, ["rendu", "edge", "inertia", "none"]);
 	assertEnum("orm", merged.orm, ["drizzle", "prisma", "kysely", "none"]);
 	assertEnum("database.driver", merged.database.driver, [
-		"bun-sqlite", "node-sqlite", "libsql", "postgres", "mysql", "none",
+		"bun-sqlite",
+		"node-sqlite",
+		"libsql",
+		"postgres",
+		"mysql",
+		"none",
 	]);
-	assertEnum("inertia.frontend", merged.inertia.frontend, ["react", "vue", "svelte", "solid"]);
+	assertEnum("inertia.frontend", merged.inertia.frontend, [
+		"react",
+		"vue",
+		"svelte",
+		"solid",
+	]);
 
 	if (process.env["NX_DEBUG"] === "1") {
 		console.log(`[nx] config source: ${configSource}`);
@@ -229,7 +275,8 @@ function mergeWithEnv(base: NxConfig, override: Partial<NxConfig>): NxConfig {
 	if (env["NX_INERTIA_FRONTEND"])
 		merged.inertia.frontend = env["NX_INERTIA_FRONTEND"] as InertiaFrontend;
 	if (env["NX_INERTIA_SSR"])
-		merged.inertia.ssr = env["NX_INERTIA_SSR"] !== "false" && env["NX_INERTIA_SSR"] !== "0";
+		merged.inertia.ssr =
+			env["NX_INERTIA_SSR"] !== "false" && env["NX_INERTIA_SSR"] !== "0";
 	if (env["NX_INERTIA_VERSION"])
 		merged.inertia.version = env["NX_INERTIA_VERSION"]!;
 

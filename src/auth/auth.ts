@@ -108,8 +108,12 @@ export function createAuth(config: AuthConfig = {}): BetterAuthInstance {
 			cookies: {
 				sessionToken: {
 					attributes: {
-						sameSite: (config.cookieSameSite ?? "lax") as "lax" | "strict" | "none",
-						secure: config.cookieSecure ?? process.env["NODE_ENV"] === "production",
+						sameSite: (config.cookieSameSite ?? "lax") as
+							| "lax"
+							| "strict"
+							| "none",
+						secure:
+							config.cookieSecure ?? process.env["NODE_ENV"] === "production",
 						...(config.cookieDomain ? { domain: config.cookieDomain } : {}),
 					},
 				},

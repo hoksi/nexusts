@@ -46,7 +46,9 @@ export interface CurrentUserOptions {
 /**
  * Inject the authenticated user (or `{ user, session }` if `session: true`).
  */
-export function CurrentUser(options: CurrentUserOptions = {}): ParameterDecorator {
+export function CurrentUser(
+	options: CurrentUserOptions = {},
+): ParameterDecorator {
 	return createParamDecorator(PARAM_TYPES.USER, options as never);
 }
 

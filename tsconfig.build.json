@@ -3,8 +3,12 @@
   "include": [
     "src/core/**/*.ts",
     "src/cli/**/*.ts",
+    "src/auth/**/*.ts",
+    "src/queue/**/*.ts",
     "src/core/**/*.d.ts",
-    "src/cli/**/*.d.ts"
+    "src/cli/**/*.d.ts",
+    "src/auth/**/*.d.ts",
+    "src/queue/**/*.d.ts"
   ],
   "compilerOptions": {
     "rootDir": "./src"

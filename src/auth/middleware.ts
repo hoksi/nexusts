@@ -52,9 +52,10 @@ export function authMiddleware(
 	} = options;
 
 	const ignored = toMatcher(ignoredPaths);
-	const protected_ = mode === "scoped"
-		? toMatcher(scope ?? protectedPaths ?? /^\/.+/)  // everything
-		: null;
+	const protected_ =
+		mode === "scoped"
+			? toMatcher(scope ?? protectedPaths ?? /^\/.+/) // everything
+			: null;
 
 	return async (c, next) => {
 		const path = c.req.path;

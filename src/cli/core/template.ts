@@ -22,7 +22,9 @@ export type Filter =
 	| "plural"
 	| "singular";
 
-export interface RenderObject { [key: string]: RenderValue }
+export interface RenderObject {
+	[key: string]: RenderValue;
+}
 export type RenderValue =
 	| string
 	| number
@@ -39,12 +41,15 @@ const SECTION_RE =
 
 export function render(template: string, context: RenderContext): string {
 	// 1. Expand sections (truthy / falsy).
-	let out = template.replace(SECTION_RE, (_, kind: "#" | "^", key: string, body: string) => {
-		const v = lookup(context, key);
-		const truthy = isTruthy(v);
-		if (kind === "#") return truthy ? body : "";
-		return truthy ? "" : body;
-	});
+	let out = template.replace(
+		SECTION_RE,
+		(_, kind: "#" | "^", key: string, body: string) => {
+			const v = lookup(context, key);
+			const truthy = isTruthy(v);
+			if (kind === "#") return truthy ? body : "";
+			return truthy ? "" : body;
+		},
+	);
 
 	// 2. Substitute variables (repeatedly, in case substitutions introduce
 	//    more variables — unusual but safe).
@@ -53,7 +58,10 @@ export function render(template: string, context: RenderContext): string {
 		prev = out;
 		out = out.replace(VAR_RE, (_, key: string, filter?: string) => {
 			const v = lookup(context, key);
-			return applyFilter(v === undefined || v === null ? "" : String(v), filter);
+			return applyFilter(
+				v === undefined || v === null ? "" : String(v),
+				filter,
+			);
 		});
 	} while (out !== prev);
 
@@ -130,11 +138,15 @@ export function toCamel(s: string): string {
 }
 
 export function toSnake(s: string): string {
-	return splitWords(s).map((w) => w.toLowerCase()).join("_");
+	return splitWords(s)
+		.map((w) => w.toLowerCase())
+		.join("_");
 }
 
 export function toKebab(s: string): string {
-	return splitWords(s).map((w) => w.toLowerCase()).join("-");
+	return splitWords(s)
+		.map((w) => w.toLowerCase())
+		.join("-");
 }
 
 // ---------------------------------------------------------------------------

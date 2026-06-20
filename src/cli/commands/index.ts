@@ -14,6 +14,7 @@ import makeMiddleware from "./make-middleware.js";
 import makeValidator from "./make-validator.js";
 import makeCrud from "./make-crud.js";
 import makeAuth from "./make-auth.js";
+import makeQueue from "./make-queue.js";
 import info from "./info.js";
 import routeList from "./route-list.js";
 import init from "./init.js";
@@ -33,6 +34,7 @@ export const commands: Command[] = [
 	makeMiddleware,
 	makeValidator,
 	makeAuth,
+	makeQueue,
 	routeList,
 	info,
 ];
