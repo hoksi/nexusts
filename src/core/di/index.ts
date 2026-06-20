@@ -1,0 +1,6 @@
+/**
+ * DI barrel exports.
+ */
+export * from "./tokens.js";
+export * from "./container.js";
+export * from "./scanner.js";
