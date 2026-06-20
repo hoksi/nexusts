@@ -52,7 +52,8 @@ export function OnQueueReady(): MethodDecorator {
  * Get the queue-ready hooks declared on a class.
  */
 export function getQueueReadyHooks(target: unknown): Array<string | symbol> {
-	const ctor = (target as { constructor?: object }).constructor ?? (target as object);
+	const ctor =
+		(target as { constructor?: object }).constructor ?? (target as object);
 	return (
 		(Reflect.getMetadata("nexus:queue:ready-hooks", ctor) as
 			| Array<string | symbol>

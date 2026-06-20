@@ -29,7 +29,7 @@ import type {
 	QueueEvent,
 	QueueEventListener,
 	JobContext,
-} from '../types.js';
+} from "../types.js";
 
 // ---------------------------------------------------------------------------
 // Cloudflare type stubs (mirrored from @cloudflare/workers-types).
@@ -37,9 +37,16 @@ import type {
 // ---------------------------------------------------------------------------
 
 interface CFQueue<Body = unknown> {
-	send(body: Body, options?: { contentType?: string; delaySeconds?: number }): Promise<unknown>;
+	send(
+		body: Body,
+		options?: { contentType?: string; delaySeconds?: number },
+	): Promise<unknown>;
 	sendBatch(
-		messages: Array<{ body: unknown; contentType?: string; delaySeconds?: number }>,
+		messages: Array<{
+			body: unknown;
+			contentType?: string;
+			delaySeconds?: number;
+		}>,
 		options?: { delaySeconds?: number },
 	): Promise<unknown>;
 }
@@ -99,7 +106,7 @@ export interface CloudflareBackendOptions {
 // ---------------------------------------------------------------------------
 
 export class CloudflareQueueBackend implements QueueBackend {
-	readonly name = 'cloudflare' as const;
+	readonly name = "cloudflare" as const;
 	#queue: CFQueue | null = null;
 	#resolveBinding: (env: Record<string, unknown>) => CFQueue;
 	#handlers = new Map<string, JobHandler>();
@@ -109,7 +116,7 @@ export class CloudflareQueueBackend implements QueueBackend {
 
 	constructor(options: CloudflareBackendOptions) {
 		this.#resolveBinding = options.resolveBinding;
-		this.#queueName = options.name ?? 'queue';
+		this.#queueName = options.name ?? "queue";
 	}
 
 	/** Bind to the Worker's `env` once it's available. */
@@ -121,20 +128,32 @@ export class CloudflareQueueBackend implements QueueBackend {
 	// Producer
 	// ===========================================================================
 
-	async add(name: string, data: unknown, options: AddOptions = {}): Promise<AddedJob> {
-		if (!this.#queue) throw new Error('[queue/cloudflare] bind() must be called before add()');
+	async add(
+		name: string,
+		data: unknown,
+		options: AddOptions = {},
+	): Promise<AddedJob> {
+		if (!this.#queue)
+			throw new Error("[queue/cloudflare] bind() must be called before add()");
 		const id = `cf-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 		await this.#queue.send(
 			{ name, data, jobId: id, options },
 			{ delaySeconds: options.delaySeconds },
 		);
-		this.#emit({ kind: 'job:added', jobId: id, name });
+		this.#emit({ kind: "job:added", jobId: id, name });
 		return { jobId: id, name };
 	}
 
-	async addBatch(jobs: Array<{ name: string; data: unknown; options?: AddOptions }>): Promise<AddedJob[]> {
-		if (!this.#queue) throw new Error('[queue/cloudflare] bind() must be called before addBatch()');
-		const ids = jobs.map(() => `cf-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`);
+	async addBatch(
+		jobs: Array<{ name: string; data: unknown; options?: AddOptions }>,
+	): Promise<AddedJob[]> {
+		if (!this.#queue)
+			throw new Error(
+				"[queue/cloudflare] bind() must be called before addBatch()",
+			);
+		const ids = jobs.map(
+			() => `cf-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+		);
 		await this.#queue.sendBatch(
 			jobs.map((j, i) => ({
 				body: { name: j.name, data: j.data, jobId: ids[i], options: j.options },
@@ -143,7 +162,7 @@ export class CloudflareQueueBackend implements QueueBackend {
 		);
 		for (let i = 0; i < jobs.length; i++) {
 			const j = jobs[i]!;
-			this.#emit({ kind: 'job:added', jobId: ids[i]!, name: j.name });
+			this.#emit({ kind: "job:added", jobId: ids[i]!, name: j.name });
 		}
 		return jobs.map((j, i) => ({ jobId: ids[i]!, name: j.name }));
 	}
@@ -159,7 +178,11 @@ export class CloudflareQueueBackend implements QueueBackend {
 	): Promise<WorkerHandle> {
 		this.#handlers.set(name, handler as JobHandler);
 		this.#workerOptions.set(name, options);
-		this.#emit({ kind: 'worker:started', name, concurrency: options.concurrency ?? 1 });
+		this.#emit({
+			kind: "worker:started",
+			name,
+			concurrency: options.concurrency ?? 1,
+		});
 		return new CloudflareWorkerHandle(name);
 	}
 
@@ -175,8 +198,13 @@ export class CloudflareQueueBackend implements QueueBackend {
 	consumerHandler(): (batch: CFMessageBatch<unknown>) => Promise<void> {
 		return async (batch: CFMessageBatch<unknown>) => {
 			for (const message of batch.messages) {
-				const body = (message.body ?? {}) as { name?: string; data?: unknown; jobId?: string; options?: AddOptions };
-				const jobName = body.name ?? '';
+				const body = (message.body ?? {}) as {
+					name?: string;
+					data?: unknown;
+					jobId?: string;
+					options?: AddOptions;
+				};
+				const jobName = body.name ?? "";
 				const handler = this.#handlers.get(jobName);
 				if (!handler) {
 					// No handler registered — fail so the message is retried.
@@ -189,29 +217,60 @@ export class CloudflareQueueBackend implements QueueBackend {
 					job: { name: jobName, data: body.data },
 					prefix: `[queue:${jobName}]`,
 				};
-				this.#emit({ kind: 'job:active', jobId: ctx.jobId, name: jobName, attempts: ctx.attempts });
+				this.#emit({
+					kind: "job:active",
+					jobId: ctx.jobId,
+					name: jobName,
+					attempts: ctx.attempts,
+				});
 				try {
 					const result = await handler(body.data, ctx);
-					if (result && typeof result === 'object' && 'status' in result) {
-						const r = result as { status: string; returnvalue?: unknown; error?: Error };
-						if (r.status === 'failed') {
-							this.#emit({ kind: 'job:failed', jobId: ctx.jobId, name: jobName, error: r.error ?? new Error('failed'), willRetry: true });
+					if (result && typeof result === "object" && "status" in result) {
+						const r = result as {
+							status: string;
+							returnvalue?: unknown;
+							error?: Error;
+						};
+						if (r.status === "failed") {
+							this.#emit({
+								kind: "job:failed",
+								jobId: ctx.jobId,
+								name: jobName,
+								error: r.error ?? new Error("failed"),
+								willRetry: true,
+							});
 							message.retry();
 							continue;
 						}
-						if (r.status === 'retry') {
+						if (r.status === "retry") {
 							const r2 = result as { delaySeconds?: number };
 							message.retry({ delaySeconds: r2.delaySeconds });
 							continue;
 						}
-						this.#emit({ kind: 'job:completed', jobId: ctx.jobId, name: jobName, returnvalue: r.returnvalue });
+						this.#emit({
+							kind: "job:completed",
+							jobId: ctx.jobId,
+							name: jobName,
+							returnvalue: r.returnvalue,
+						});
 					} else {
-						this.#emit({ kind: 'job:completed', jobId: ctx.jobId, name: jobName, returnvalue: result });
+						this.#emit({
+							kind: "job:completed",
+							jobId: ctx.jobId,
+							name: jobName,
+							returnvalue: result,
+						});
 					}
 				} catch (err) {
 					const error = err instanceof Error ? err : new Error(String(err));
 					const willRetry = (body.options?.attempts ?? 1) > message.attempts;
-					this.#emit({ kind: 'job:failed', jobId: ctx.jobId, name: jobName, error, willRetry });
+					this.#emit({
+						kind: "job:failed",
+						jobId: ctx.jobId,
+						name: jobName,
+						error,
+						willRetry,
+					});
 					if (willRetry) message.retry();
 					else message.ack();
 				}
@@ -230,7 +289,7 @@ export class CloudflareQueueBackend implements QueueBackend {
 
 	async stop(): Promise<void> {
 		for (const name of this.#handlers.keys()) {
-			this.#emit({ kind: 'worker:stopped', name });
+			this.#emit({ kind: "worker:stopped", name });
 		}
 		this.#handlers.clear();
 		this.#workerOptions.clear();

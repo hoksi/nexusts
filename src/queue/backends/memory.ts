@@ -16,7 +16,7 @@ import type {
 	QueueEvent,
 	QueueEventListener,
 	JobContext,
-} from '../types.js';
+} from "../types.js";
 
 interface PendingJob {
 	jobId: string;
@@ -33,7 +33,7 @@ class MemoryWorkerHandle implements WorkerHandle {
 	#context: { jobId: string; name: string };
 	constructor(name: string, handler: JobHandler) {
 		this.#handler = handler;
-		this.#context = { jobId: '', name };
+		this.#context = { jobId: "", name };
 	}
 	get name() {
 		return this.#context.name;
@@ -53,7 +53,7 @@ class MemoryWorkerHandle implements WorkerHandle {
 }
 
 export class MemoryQueueBackend implements QueueBackend {
-	readonly name = 'memory' as const;
+	readonly name = "memory" as const;
 	#queue: PendingJob[] = [];
 	#handlers = new Map<string, JobHandler>();
 	#workerOptions = new Map<string, WorkerOptions>();
@@ -65,7 +65,9 @@ export class MemoryQueueBackend implements QueueBackend {
 		// Tick every 100 ms to dispatch due jobs.
 		this.#tickHandle = setInterval(() => this.#tick(), 100);
 		// Allow Node to exit if only this timer is running.
-		if (typeof (this.#tickHandle as { unref?: () => void }).unref === 'function') {
+		if (
+			typeof (this.#tickHandle as { unref?: () => void }).unref === "function"
+		) {
 			(this.#tickHandle as { unref: () => void }).unref();
 		}
 	}
@@ -74,7 +76,11 @@ export class MemoryQueueBackend implements QueueBackend {
 	// Producer
 	// ===========================================================================
 
-	async add(name: string, data: unknown, options: AddOptions = {}): Promise<AddedJob> {
+	async add(
+		name: string,
+		data: unknown,
+		options: AddOptions = {},
+	): Promise<AddedJob> {
 		const jobId = `mem-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 		const delayMs = (options.delaySeconds ?? 0) * 1000;
 		this.#queue.push({
@@ -84,11 +90,13 @@ export class MemoryQueueBackend implements QueueBackend {
 			options,
 			resolveAt: Date.now() + delayMs,
 		});
-		this.#emit({ kind: 'job:added', jobId, name });
+		this.#emit({ kind: "job:added", jobId, name });
 		return { jobId, name };
 	}
 
-	async addBatch(jobs: Array<{ name: string; data: unknown; options?: AddOptions }>): Promise<AddedJob[]> {
+	async addBatch(
+		jobs: Array<{ name: string; data: unknown; options?: AddOptions }>,
+	): Promise<AddedJob[]> {
 		return Promise.all(jobs.map((j) => this.add(j.name, j.data, j.options)));
 	}
 
@@ -96,11 +104,19 @@ export class MemoryQueueBackend implements QueueBackend {
 	// Worker
 	// ===========================================================================
 
-	async process<T>(name: string, handler: JobHandler<T>, options: WorkerOptions = {}): Promise<WorkerHandle> {
+	async process<T>(
+		name: string,
+		handler: JobHandler<T>,
+		options: WorkerOptions = {},
+	): Promise<WorkerHandle> {
 		this.#handlers.set(name, handler as JobHandler);
 		this.#workerOptions.set(name, options);
 		const handle = new MemoryWorkerHandle(name, handler as JobHandler);
-		this.#emit({ kind: 'worker:started', name, concurrency: options.concurrency ?? 1 });
+		this.#emit({
+			kind: "worker:started",
+			name,
+			concurrency: options.concurrency ?? 1,
+		});
 		return handle;
 	}
 
@@ -116,7 +132,7 @@ export class MemoryQueueBackend implements QueueBackend {
 
 	async stop(): Promise<void> {
 		for (const name of this.#handlers.keys()) {
-			this.#emit({ kind: 'worker:stopped', name });
+			this.#emit({ kind: "worker:stopped", name });
 		}
 		if (this.#tickHandle) clearInterval(this.#tickHandle);
 		this.#tickHandle = null;
@@ -162,22 +178,31 @@ export class MemoryQueueBackend implements QueueBackend {
 			job: { name: job.name, data: job.data },
 			prefix: `[queue:${job.name}]`,
 		};
-		this.#emit({ kind: 'job:active', jobId: job.jobId, name: job.name, attempts: 1 });
+		this.#emit({
+			kind: "job:active",
+			jobId: job.jobId,
+			name: job.name,
+			attempts: 1,
+		});
 		try {
 			const result = await handler(job.data, ctx);
-			if (result && typeof result === 'object' && 'status' in result) {
-				const r = result as { status: string; returnvalue?: unknown; error?: Error };
-				if (r.status === 'failed') {
+			if (result && typeof result === "object" && "status" in result) {
+				const r = result as {
+					status: string;
+					returnvalue?: unknown;
+					error?: Error;
+				};
+				if (r.status === "failed") {
 					this.#emit({
-						kind: 'job:failed',
+						kind: "job:failed",
 						jobId: job.jobId,
 						name: job.name,
-						error: r.error ?? new Error('unknown'),
+						error: r.error ?? new Error("unknown"),
 						willRetry: false,
 					});
 				} else {
 					this.#emit({
-						kind: 'job:completed',
+						kind: "job:completed",
 						jobId: job.jobId,
 						name: job.name,
 						returnvalue: r.returnvalue,
@@ -185,7 +210,7 @@ export class MemoryQueueBackend implements QueueBackend {
 				}
 			} else {
 				this.#emit({
-					kind: 'job:completed',
+					kind: "job:completed",
 					jobId: job.jobId,
 					name: job.name,
 					returnvalue: result,
@@ -194,10 +219,17 @@ export class MemoryQueueBackend implements QueueBackend {
 		} catch (err) {
 			const error = err instanceof Error ? err : new Error(String(err));
 			const willRetry = (job.options.attempts ?? 1) > 1;
-			this.#emit({ kind: 'job:failed', jobId: job.jobId, name: job.name, error, willRetry });
+			this.#emit({
+				kind: "job:failed",
+				jobId: job.jobId,
+				name: job.name,
+				error,
+				willRetry,
+			});
 			if (willRetry) {
-				const delayMs = (job.options.backoff?.delayMs ?? 1000) *
-					(job.options.backoff?.type === 'exponential' ? 2 ** ctx.attempts : 1);
+				const delayMs =
+					(job.options.backoff?.delayMs ?? 1000) *
+					(job.options.backoff?.type === "exponential" ? 2 ** ctx.attempts : 1);
 				this.#queue.push({
 					...job,
 					resolveAt: Date.now() + delayMs,

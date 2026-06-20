@@ -14,7 +14,13 @@
 
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
-import { logger, nameVariants, render, writeFile, flagBool } from "../core/index.js";
+import {
+	logger,
+	nameVariants,
+	render,
+	writeFile,
+	flagBool,
+} from "../core/index.js";
 
 const WORKER_TEMPLATE = `
 import { Inject, Injectable } from 'nexus';
@@ -116,9 +122,18 @@ export const makeQueueCommand: Command = {
 		"nx make:queue notify --backend memory",
 	],
 	flags: [
-		{ name: "backend", description: "Override backend (bullmq|cloudflare|memory)" },
-		{ name: "no-job", description: "Skip the enqueue helper, only generate the worker" },
-		{ name: "no-worker", description: "Skip the worker class, only generate the enqueue helper" },
+		{
+			name: "backend",
+			description: "Override backend (bullmq|cloudflare|memory)",
+		},
+		{
+			name: "no-job",
+			description: "Skip the enqueue helper, only generate the worker",
+		},
+		{
+			name: "no-worker",
+			description: "Skip the worker class, only generate the enqueue helper",
+		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
 		const name = ctx.positional[0];
@@ -134,7 +149,9 @@ export const makeQueueCommand: Command = {
 			"memory";
 
 		if (!["bullmq", "cloudflare", "memory"].includes(backend)) {
-			logger.error(`Unknown backend: ${backend}. Allowed: bullmq, cloudflare, memory.`);
+			logger.error(
+				`Unknown backend: ${backend}. Allowed: bullmq, cloudflare, memory.`,
+			);
 			return 1;
 		}
 
@@ -187,7 +204,9 @@ export const makeQueueCommand: Command = {
 				.map((l) => "     " + l)
 				.join("\n"),
 		);
-		logger.info(`3. Replace the TODO in ${variants.pascal}Worker.handle() with your logic.`);
+		logger.info(
+			`3. Replace the TODO in ${variants.pascal}Worker.handle() with your logic.`,
+		);
 		logger.blank();
 
 		return 0;

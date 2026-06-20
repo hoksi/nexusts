@@ -28,9 +28,9 @@ export interface Job<T = unknown> {
  * attempt (BullMQ only — Cloudflare retries via `message.retry()`).
  */
 export type JobResult<T = unknown> =
-	| { status: 'completed'; returnvalue?: T }
-	| { status: 'failed'; error: Error; willRetry: boolean }
-	| { status: 'retry'; reason?: string; delaySeconds?: number };
+	| { status: "completed"; returnvalue?: T }
+	| { status: "failed"; error: Error; willRetry: boolean }
+	| { status: "retry"; reason?: string; delaySeconds?: number };
 
 /** A registered worker handler. */
 export type JobHandler<T = unknown> = (
@@ -77,7 +77,7 @@ export interface AddOptions {
 
 export interface BackoffConfig {
 	/** 'fixed' | 'exponential'. */
-	type: 'fixed' | 'exponential';
+	type: "fixed" | "exponential";
 	/** Base delay in milliseconds. */
 	delayMs: number;
 }
@@ -117,13 +117,15 @@ export interface WorkerOptions {
  */
 export interface QueueBackend {
 	/** Backend name for diagnostics. */
-	readonly name: 'bullmq' | 'cloudflare' | 'memory';
+	readonly name: "bullmq" | "cloudflare" | "memory";
 
 	/** Add a job to the queue. */
 	add(name: string, data: unknown, options?: AddOptions): Promise<AddedJob>;
 
 	/** Add many jobs at once. */
-	addBatch(jobs: Array<{ name: string; data: unknown; options?: AddOptions }>): Promise<AddedJob[]>;
+	addBatch(
+		jobs: Array<{ name: string; data: unknown; options?: AddOptions }>,
+	): Promise<AddedJob[]>;
 
 	/** Register a worker. Returns a handle that can be closed. */
 	process<T = unknown>(
@@ -160,7 +162,7 @@ export interface WorkerHandle {
 // Configuration
 // ---------------------------------------------------------------------------
 
-export type QueueBackendKind = 'bullmq' | 'cloudflare' | 'memory';
+export type QueueBackendKind = "bullmq" | "cloudflare" | "memory";
 
 export interface QueueConfig {
 	/**
@@ -209,11 +211,22 @@ export interface CloudflareQueueConfig {
 // ---------------------------------------------------------------------------
 
 export type QueueEvent =
-	| { kind: 'job:added'; jobId: string; name: string }
-	| { kind: 'job:active'; jobId: string; name: string; attempts: number }
-	| { kind: 'job:completed'; jobId: string; name: string; returnvalue?: unknown }
-	| { kind: 'job:failed'; jobId: string; name: string; error: Error; willRetry: boolean }
-	| { kind: 'worker:started'; name: string; concurrency: number }
-	| { kind: 'worker:stopped'; name: string };
+	| { kind: "job:added"; jobId: string; name: string }
+	| { kind: "job:active"; jobId: string; name: string; attempts: number }
+	| {
+			kind: "job:completed";
+			jobId: string;
+			name: string;
+			returnvalue?: unknown;
+	  }
+	| {
+			kind: "job:failed";
+			jobId: string;
+			name: string;
+			error: Error;
+			willRetry: boolean;
+	  }
+	| { kind: "worker:started"; name: string; concurrency: number }
+	| { kind: "worker:stopped"; name: string };
 
 export type QueueEventListener = (event: QueueEvent) => void | Promise<void>;

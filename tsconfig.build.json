@@ -5,10 +5,14 @@
     "src/cli/**/*.ts",
     "src/auth/**/*.ts",
     "src/queue/**/*.ts",
+    "src/schedule/**/*.ts",
+    "src/events/**/*.ts",
     "src/core/**/*.d.ts",
     "src/cli/**/*.d.ts",
     "src/auth/**/*.d.ts",
-    "src/queue/**/*.d.ts"
+    "src/queue/**/*.d.ts",
+    "src/schedule/**/*.d.ts",
+    "src/events/**/*.d.ts"
   ],
   "compilerOptions": {
     "rootDir": "./src"
