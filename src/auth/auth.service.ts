@@ -23,6 +23,7 @@ import type {
 	AuthConfig,
 } from "./types.js";
 import { createAuth, type NexusAuth } from "./auth.js";
+import type { SessionService } from "../session/index.js";
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,17 @@ export class AuthService {
 
 	/** The underlying better-auth instance. */
 	readonly instance: NexusAuth;
+
+	/**
+	 * Optional SessionService binding. When set, `getSession()` will
+	 * first check the SessionService's cookie before falling back to
+	 * better-auth. This enables shared session state between the two
+	 * modules (e.g. flash messages, guest cart).
+	 *
+	 * Set via `bindSession()` from a feature module's `onInit`, or via
+	 * DI when both modules are present.
+	 */
+	#sessionService: SessionService | null = null;
 
 	constructor(
 		@Inject("AUTH_CONFIG") private readonly config: AuthConfig,
@@ -41,19 +53,82 @@ export class AuthService {
 	}
 
 	// ===========================================================================
+	// Session integration
+	// ===========================================================================
+
+	/**
+	 * Bind a SessionService. When bound, `getSession()` consults the
+	 * SessionService first and falls back to better-auth. Returns `this`
+	 * for chaining.
+	 */
+	bindSession(sessionService: SessionService): this {
+		this.#sessionService = sessionService;
+		return this;
+	}
+
+	/**
+	 * Returns true when a SessionService has been bound.
+	 */
+	hasSessionBinding(): boolean {
+		return this.#sessionService !== null;
+	}
+
+	// ===========================================================================
 	// Session
 	// ===========================================================================
 
 	/**
 	 * Get the current session from a request. Returns `null` if not
-	 * authenticated. Wraps `auth.api.getSession` so callers don't need
-	 * to know about better-auth's API shape.
+	 * authenticated.
+	 *
+	 * When a SessionService is bound, we try it first (cookie-based,
+	 * stateless, edge-friendly); better-auth remains the source of
+	 * truth for `user` / `session` records. The cookie value carries
+	 * `userId` which lets you cross-reference both systems.
 	 */
 	async getSession(input: { headers: Headers }): Promise<AuthSession> {
+		// 1) Try SessionService (cookie-based) first.
+		if (this.#sessionService) {
+			const cookieName = this.#sessionService.cookieName;
+			if (cookieName) {
+				const cookieHeader = input.headers.get("cookie") ?? "";
+				const value = parseCookie(cookieHeader, cookieName);
+				if (value) {
+					const decoded = this.#sessionService.decodeCookie(value);
+					if (decoded?.userId) {
+						// Hydrate the user from better-auth (so the returned
+						// shape matches what controllers expect).
+						const fromBetterAuth = (await this.instance.api.getSession({
+							headers: input.headers,
+						})) as AuthSession | null;
+						if (fromBetterAuth?.user) {
+							return fromBetterAuth;
+						}
+					}
+				}
+			}
+		}
+
+		// 2) Fallback to better-auth.
 		const result = await this.instance.api.getSession({
 			headers: input.headers,
 		});
 		return result as AuthSession;
+	}
+
+	/**
+	 * Read the raw SessionService record from a request (no better-auth
+	 * lookup). Returns null when no SessionService is bound or no
+	 * session is found.
+	 */
+	async getRawSession(input: { headers: Headers }) {
+		if (!this.#sessionService) return null;
+		const cookieName = this.#sessionService.cookieName;
+		if (!cookieName) return null;
+		const cookieHeader = input.headers.get("cookie") ?? "";
+		const value = parseCookie(cookieHeader, cookieName);
+		if (!value) return null;
+		return this.#sessionService.decodeCookie(value);
 	}
 
 	// ===========================================================================
@@ -192,4 +267,22 @@ export class AuthService {
 		if (!session) return { user: null, session: null };
 		return { user: session.user, session: session.session };
 	}
+}
+
+/**
+ * Extract a single cookie value from a `Cookie` header string.
+ * Tiny helper to avoid pulling in a cookie-parsing dependency.
+ */
+function parseCookie(cookieHeader: string, name: string): string | null {
+	if (!cookieHeader) return null;
+	const parts = cookieHeader.split(";");
+	for (const part of parts) {
+		const eq = part.indexOf("=");
+		if (eq < 0) continue;
+		const k = part.slice(0, eq).trim();
+		if (k === name) {
+			return decodeURIComponent(part.slice(eq + 1).trim());
+		}
+	}
+	return null;
 }

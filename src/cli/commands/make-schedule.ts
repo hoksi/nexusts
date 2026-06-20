@@ -61,10 +61,7 @@ export const makeScheduleCommand: Command = {
 	summary: "Scaffold a scheduled task class",
 	description:
 		"Generates an @Injectable task class with example @Cron / @Interval / @Timeout handlers under src/schedule/tasks/.",
-	examples: [
-		"nx make:schedule HourlyCleanup",
-		"nx make:schedule DailyDigest",
-	],
+	examples: ["nx make:schedule HourlyCleanup", "nx make:schedule DailyDigest"],
 	async run(ctx: CommandContext): Promise<number> {
 		const name = ctx.positional[0];
 		if (!name) {
@@ -94,7 +91,9 @@ export const makeScheduleCommand: Command = {
 		logger.info("1. Add @Cron / @Interval / @Timeout handlers to the class.");
 		logger.info(`2. Import + register at boot:`);
 		logger.info(`     scanForSchedulers(task, schedule)`);
-		logger.info(`3. Don't forget to call \`schedule.start()\` to begin the tick.`);
+		logger.info(
+			`3. Don't forget to call \`schedule.start()\` to begin the tick.`,
+		);
 		logger.blank();
 
 		return 0;

@@ -402,6 +402,44 @@ instructions.
 
 ---
 
+## 14. Integration with `nexus/session`
+
+`AuthService.bindSession(service)` links a `SessionService` so
+non-better-auth state (flash messages, guest carts, OAuth flow
+state) can coexist with better-auth's DB-backed sessions.
+
+```ts
+import { SessionModule } from 'nexus/session';
+
+@Module({
+  imports: [
+    AuthModule.forRoot({ /* ... */ }),
+    SessionModule.forRoot({
+      backend: 'cookie',
+      cookie: { secret: process.env.SESSION_SECRET! },
+    }),
+  ],
+})
+class AppModule {}
+
+// src/app/main.ts
+const app = new Application(AppModule);
+const auth = app.container.resolve(AuthService);
+const sessions = app.container.resolve(SessionService);
+auth.bindSession(sessions);
+
+// Now AuthService.getSession() consults the session cookie first,
+// then falls back to better-auth.
+```
+
+Why? Better-auth handles **user identity** (DB-backed). The session
+package handles **transient state** (stateless cookies, edge-friendly).
+They share a cookie, so both can read the same request.
+
+See [`session.md`](./session.md) for the full session API.
+
+---
+
 ## 14. Known issues
 
 - **Vitest + better-auth zod conflict.** Better-auth pulls in

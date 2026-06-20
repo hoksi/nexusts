@@ -139,9 +139,25 @@ export class CronExpression {
 				const sortedDays = [...domField.values].sort((a, b) => a - b);
 				const nextDay = sortedDays.find((d) => d >= cur.getDate());
 				if (nextDay !== undefined) {
-					cur = new Date(cur.getFullYear(), cur.getMonth(), nextDay, 0, 0, 0, 0);
+					cur = new Date(
+						cur.getFullYear(),
+						cur.getMonth(),
+						nextDay,
+						0,
+						0,
+						0,
+						0,
+					);
 				} else {
-					cur = new Date(cur.getFullYear(), cur.getMonth() + 1, sortedDays[0]!, 0, 0, 0, 0);
+					cur = new Date(
+						cur.getFullYear(),
+						cur.getMonth() + 1,
+						sortedDays[0]!,
+						0,
+						0,
+						0,
+						0,
+					);
 				}
 				continue;
 			}

@@ -33,6 +33,7 @@ Architectural deep-dives for contributors and advanced users.
 | Auth module design | [`auth.md`](./design/auth.md) | [`auth.ko.md`](./design/auth.ko.md) |
 | Queue module design | [`queue.md`](./design/queue.md) | [`queue.ko.md`](./design/queue.ko.md) |
 | Schedule module design | [`schedule.md`](./design/schedule.md) | [`schedule.ko.md`](./design/schedule.ko.md) |
+| Session module design | [`session.md`](./design/session.md) | [`session.ko.md`](./design/session.ko.md) |
 
 ---
 
@@ -49,6 +50,11 @@ Step-by-step guides for building applications.
 | Validation | [`user-guide/validation.md`](./user-guide/validation.md) | [`user-guide/validation.ko.md`](./user-guide/validation.ko.md) |
 | View engines | [`user-guide/view-engines.md`](./user-guide/view-engines.md) | [`user-guide/view-engines.ko.md`](./user-guide/view-engines.ko.md) |
 | Inertia.js adapter | [`user-guide/inertia.md`](./user-guide/inertia.md) | [`user-guide/inertia.ko.md`](./user-guide/inertia.ko.md) |
+| **Authentication (better-auth)** | [`user-guide/auth.md`](./user-guide/auth.md) | [`user-guide/auth.ko.md`](./user-guide/auth.ko.md) |
+| **Queue (BullMQ / Cloudflare Queues)** | [`user-guide/queue.md`](./user-guide/queue.md) | [`user-guide/queue.ko.md`](./user-guide/queue.ko.md) |
+| **Schedule · `@Cron` decorator** | [`user-guide/schedule.md`](./user-guide/schedule.md) | [`user-guide/schedule.ko.md`](./user-guide/schedule.ko.md) |
+| **Event System** | [`user-guide/events.md`](./user-guide/events.md) | [`user-guide/events.ko.md`](./user-guide/events.ko.md) |
+| **Session (cookie / memory / Redis)** | [`user-guide/session.md`](./user-guide/session.md) | [`user-guide/session.ko.md`](./user-guide/session.ko.md) |
 | Runtime & deployment | [`user-guide/runtime-deployment.md`](./user-guide/runtime-deployment.md) | [`user-guide/runtime-deployment.ko.md`](./user-guide/runtime-deployment.ko.md) |
 | **CLI · `nx` command runner** | [`user-guide/cli.md`](./user-guide/cli.md) | [`user-guide/cli.ko.md`](./user-guide/cli.ko.md) |
 

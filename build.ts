@@ -38,6 +38,7 @@ const result = await Bun.build({
 		"./src/queue/index.ts",
 		"./src/schedule/index.ts",
 		"./src/events/index.ts",
+		"./src/session/index.ts",
 	],
 	outdir: "./dist",
 	target: "bun",
