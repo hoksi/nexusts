@@ -12,8 +12,8 @@
  * Quick start:
  *
  *   // src/app/app.module.ts
- *   import { Module } from 'nexus';
- *   import { ScheduleModule } from 'nexus/schedule';
+ *   import { Module } from 'nexusjs';
+ *   import { ScheduleModule } from 'nexusjs/schedule';
  *
  *   @Module({
  *     imports: [ScheduleModule.forRoot({ backend: 'memory' })],
@@ -21,7 +21,7 @@
  *   export class AppModule {}
  *
  *   // any service
- *   import { ScheduleService, Cron, Interval, scanForSchedulers } from 'nexus/schedule';
+ *   import { ScheduleService, Cron, Interval, scanForSchedulers } from 'nexusjs/schedule';
  *
  *   @Injectable()
  *   class CleanupWorker {

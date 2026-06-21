@@ -4,8 +4,8 @@
 
 > **v0.4 — observability & DX.** All 22 modules ship. Tier 1 and
 > Tier 2 gaps from the NestJS / AdonisJS gap analyses are now fully
-> closed. New in v0.4: `nexus/openapi`, `nexus/upload`, `nexus/sse`,
-> `nexus/tracing`, `nexus/metrics`, and request-scoped DI in the
+> closed. New in v0.4: `nexusjs/openapi`, `nexusjs/upload`, `nexusjs/sse`,
+> `nexusjs/tracing`, `nexusjs/metrics`, and request-scoped DI in the
 > core. See [CHANGELOG.md](./CHANGELOG.md) for the v0.4 release
 > notes.
 
@@ -20,33 +20,33 @@ fully closed.
 
 | Module | Purpose |
 | ------ | ------- |
-| `nexus` (core) | MVC + DI + validation + 3 routing styles + view engines + Inertia.js |
-| `nexus/cli` (`nx`) | Adonis ACE-style command runner — `new`, `init`, `make:*`, `migrate`, `info` |
-| `nexus/auth` | better-auth integration with `@CurrentUser` and `authMiddleware` |
-| `nexus/queue` | BullMQ + Cloudflare Queues + memory backends. `@OnQueueReady` decorator |
-| `nexus/schedule` | Custom cron parser. `@Cron` / `@Interval` / `@Timeout` decorators |
-| `nexus/events` | `NexusEventEmitter` with wildcards, priorities, guards. `@OnEvent` decorator |
-| `nexus/session` | Cookie (HMAC) + memory + **Drizzle** backends. Sliding expiry, rotation |
-| `nexus/health` | `/health/live` · `/health/ready` · `/health/startup`. Built-in indicators |
-| `nexus/config` | Zod-validated configuration. Layered loading from env, `.env`, `load()` |
-| `nexus/logger` | Pino-backed structured logging. Pretty-print in dev, JSON in prod |
-| `nexus/static` | Static file serving with ETag, Range, path-traversal protection |
-| `nexus/limiter` | Rate limiting. 3 strategies × memory / **Drizzle** storage |
-| `nexus/shield` | Security suite: CSRF + HSTS + CSP + X-Frame-Options + Referrer-Policy |
-| `nexus/cache` | Application cache. Memory (LRU) / **Drizzle** backends. Tag invalidation |
-| `nexus/drive` | File storage abstraction. Memory / Local / S3 / R2 drivers |
-| `nexus/mail` | Outbound email. Null / File / SMTP transports. MJML rendering |
-| `nexus/drizzle` | **Default ORM.** 5 dialects, `DrizzleModel`, `DrizzleRepository`, migrations, raw SQL (injection-safe) |
-| `nexus/openapi` | OpenAPI 3.1 spec generation + Scalar UI. Auto-derives from Zod validation schemas |
-| `nexus/upload` | Multipart file upload. `@Upload()` / `@UploadedFile()` decorators. Size, MIME, count validation |
-| `nexus/sse` | Server-Sent Events. `SseStream` with pending-write tracking. `sse(c, handler)` helper |
-| `nexus/tracing` | OpenTelemetry distributed tracing. Lazy SDK loading. `@Trace()` decorator. W3C + B3 propagation |
-| `nexus/metrics` | Prometheus / OpenMetrics. Counter / Gauge / Histogram / Summary. `@Counted()` / `@Timed()` decorators |
+| `nexusjs` (core) | MVC + DI + validation + 3 routing styles + view engines + Inertia.js |
+| `nexusjs/cli` (`nx`) | Adonis ACE-style command runner — `new`, `init`, `make:*`, `migrate`, `info` |
+| `nexusjs/auth` | better-auth integration with `@CurrentUser` and `authMiddleware` |
+| `nexusjs/queue` | BullMQ + Cloudflare Queues + memory backends. `@OnQueueReady` decorator |
+| `nexusjs/schedule` | Custom cron parser. `@Cron` / `@Interval` / `@Timeout` decorators |
+| `nexusjs/events` | `NexusEventEmitter` with wildcards, priorities, guards. `@OnEvent` decorator |
+| `nexusjs/session` | Cookie (HMAC) + memory + **Drizzle** backends. Sliding expiry, rotation |
+| `nexusjs/health` | `/health/live` · `/health/ready` · `/health/startup`. Built-in indicators |
+| `nexusjs/config` | Zod-validated configuration. Layered loading from env, `.env`, `load()` |
+| `nexusjs/logger` | Pino-backed structured logging. Pretty-print in dev, JSON in prod |
+| `nexusjs/static` | Static file serving with ETag, Range, path-traversal protection |
+| `nexusjs/limiter` | Rate limiting. 3 strategies × memory / **Drizzle** storage |
+| `nexusjs/shield` | Security suite: CSRF + HSTS + CSP + X-Frame-Options + Referrer-Policy |
+| `nexusjs/cache` | Application cache. Memory (LRU) / **Drizzle** backends. Tag invalidation |
+| `nexusjs/drive` | File storage abstraction. Memory / Local / S3 / R2 drivers |
+| `nexusjs/mail` | Outbound email. Null / File / SMTP transports. MJML rendering |
+| `nexusjs/drizzle` | **Default ORM.** 5 dialects, `DrizzleModel`, `DrizzleRepository`, migrations, raw SQL (injection-safe) |
+| `nexusjs/openapi` | OpenAPI 3.1 spec generation + Scalar UI. Auto-derives from Zod validation schemas |
+| `nexusjs/upload` | Multipart file upload. `@Upload()` / `@UploadedFile()` decorators. Size, MIME, count validation |
+| `nexusjs/sse` | Server-Sent Events. `SseStream` with pending-write tracking. `sse(c, handler)` helper |
+| `nexusjs/tracing` | OpenTelemetry distributed tracing. Lazy SDK loading. `@Trace()` decorator. W3C + B3 propagation |
+| `nexusjs/metrics` | Prometheus / OpenMetrics. Counter / Gauge / Histogram / Summary. `@Counted()` / `@Timed()` decorators |
 | **Request-scoped DI** *(core)* | `@Injectable({ scope: 'request' })` for per-request provider lifetime via `AsyncLocalStorage` |
-| `nexus/ws` | WebSockets on Bun (primary) and Node (via `ws`). `@WebSocketGateway()`, `@OnWebSocketMessage()`, rooms, broadcast |
-| `nexus/crypto` | AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF, encrypted data |
-| `nexus/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
-| `nexus/redis` | Runtime-aware Redis client (Bun / Node / Workers KV). Powers `redis` / `cloudflare-kv` session & cache backends |
+| `nexusjs/ws` | WebSockets on Bun (primary) and Node (via `ws`). `@WebSocketGateway()`, `@OnWebSocketMessage()`, rooms, broadcast |
+| `nexusjs/crypto` | AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF, encrypted data |
+| `nexusjs/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
+| `nexusjs/redis` | Runtime-aware Redis client (Bun / Node / Workers KV). Powers `redis` / `cloudflare-kv` session & cache backends |
 
 See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
 Drizzle integration guide, [docs/user-guide/tracing.md](./docs/user-guide/tracing.md)
@@ -94,7 +94,7 @@ bun add nexus/auth nexus/queue nexus/drizzle
 ```
 
 Every module is its own bundle entry point — install only what you
-use. The CLI (`nx`) is shipped as the `nx` bin and the `nexus/cli`
+use. The CLI (`nx`) is shipped as the `nx` bin and the `nexusjs/cli`
 import:
 
 ```bash
@@ -121,22 +121,22 @@ export const users = pgTable('users', {
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { DrizzleModule } from 'nexus/drizzle';
-import { ConfigModule } from 'nexus/config';
-import { LoggerModule } from 'nexus/logger';
-import { HealthModule } from 'nexus/health';
-import { LimiterModule } from 'nexus/limiter';
-import { SessionModule } from 'nexus/session';
-import { CacheModule } from 'nexus/cache';
-import { DriveModule } from 'nexus/drive';
-import { MailModule } from 'nexus/mail';
-import { ShieldModule } from 'nexus/shield';
-import { AuthModule } from 'nexus/auth';
-import { OpenAPIModule } from 'nexus/openapi';
-import { UploadModule } from 'nexus/upload';
-import { TracingModule } from 'nexus/tracing';
-import { MetricsModule } from 'nexus/metrics';
+import { Module } from 'nexusjs';
+import { DrizzleModule } from 'nexusjs/drizzle';
+import { ConfigModule } from 'nexusjs/config';
+import { LoggerModule } from 'nexusjs/logger';
+import { HealthModule } from 'nexusjs/health';
+import { LimiterModule } from 'nexusjs/limiter';
+import { SessionModule } from 'nexusjs/session';
+import { CacheModule } from 'nexusjs/cache';
+import { DriveModule } from 'nexusjs/drive';
+import { MailModule } from 'nexusjs/mail';
+import { ShieldModule } from 'nexusjs/shield';
+import { AuthModule } from 'nexusjs/auth';
+import { OpenAPIModule } from 'nexusjs/openapi';
+import { UploadModule } from 'nexusjs/upload';
+import { TracingModule } from 'nexusjs/tracing';
+import { MetricsModule } from 'nexusjs/metrics';
 import { UserModule } from './modules/user.module.js';
 import { configSchema } from './config/schema.js';
 
@@ -169,7 +169,7 @@ export class AppModule {}
 ```ts
 // src/app/main.ts
 import 'reflect-metadata';
-import { Application } from 'nexus';
+import { Application } from 'nexusjs';
 import { AppModule } from './app.module.js';
 
 const app = new Application(AppModule);
@@ -178,7 +178,7 @@ await app.listen(3000);
 
 ```ts
 // src/app/modules/user/user.module.ts
-import { Module } from 'nexus';
+import { Module } from 'nexusjs';
 import { UserController } from './user.controller.js';
 import { UserService } from './user.service.js';
 import { UserRepository } from './user.repository.js';
@@ -192,8 +192,8 @@ export class UserModule {}
 
 ```ts
 // src/app/modules/user/user.service.ts
-import { Inject, Injectable } from 'nexus';
-import { DrizzleService } from 'nexus/drizzle';
+import { Inject, Injectable } from 'nexusjs';
+import { DrizzleService } from 'nexusjs/drizzle';
 import { eq } from 'drizzle-orm';
 import { users } from '../../db/schema.js';
 
@@ -212,7 +212,7 @@ export class UserService {
 ```ts
 // src/app/modules/user/user.controller.ts
 import { z } from 'zod';
-import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Validate } from 'nexus';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Validate } from 'nexusjs';
 import { UserService } from './user.service.js';
 
 const CreateUserSchema = z.object({
@@ -547,7 +547,7 @@ The framework ships with a Rendu adapter (PHP-style templates, fast on
 every runtime) and an Edge adapter (mustache-style, AdonisJS-compatible).
 
 ```ts
-import { RenduAdapter } from 'nexus/view';
+import { RenduAdapter } from 'nexusjs/view';
 
 const rendu = new RenduAdapter();
 const html = await rendu.render(
@@ -562,7 +562,7 @@ const html = await rendu.render(
 To use a different engine, implement the `ViewAdapter` interface:
 
 ```ts
-import type { ViewAdapter } from 'nexus/view';
+import type { ViewAdapter } from 'nexusjs/view';
 
 class MyEngine implements ViewAdapter {
   readonly name = 'my-engine';
@@ -623,21 +623,21 @@ src/
 │   ├── commands/           # new, init, make:*, migrate, info
 │   ├── templates/          # mustache-lite scaffolds
 │   └── core/               # arg parser, prompts, fs helpers
-├── auth/                   # `nexus/auth` (better-auth wrapper)
-├── queue/                  # `nexus/queue` (BullMQ / Cloudflare / memory)
-├── schedule/               # `nexus/schedule` (custom cron parser)
-├── events/                 # `nexus/events` (typed emitter)
-├── session/                # `nexus/session` (cookie / memory / drizzle backends)
-├── health/                 # `nexus/health` (live/ready/startup + indicators)
-├── config/                 # `nexus/config` (Zod-validated env config)
-├── logger/                 # `nexus/logger` (Pino transports)
-├── static/                 # `nexus/static` (file serving)
-├── limiter/                # `nexus/limiter` (rate limiting)
-├── shield/                 # `nexus/shield` (CSRF + security headers)
-├── cache/                  # `nexus/cache` (LRU + drizzle)
-├── drive/                  # `nexus/drive` (storage abstraction)
-├── mail/                   # `nexus/mail` (SMTP / File / Null)
-└── drizzle/                # `nexus/drizzle` (default ORM)
+├── auth/                   # `nexusjs/auth` (better-auth wrapper)
+├── queue/                  # `nexusjs/queue` (BullMQ / Cloudflare / memory)
+├── schedule/               # `nexusjs/schedule` (custom cron parser)
+├── events/                 # `nexusjs/events` (typed emitter)
+├── session/                # `nexusjs/session` (cookie / memory / drizzle backends)
+├── health/                 # `nexusjs/health` (live/ready/startup + indicators)
+├── config/                 # `nexusjs/config` (Zod-validated env config)
+├── logger/                 # `nexusjs/logger` (Pino transports)
+├── static/                 # `nexusjs/static` (file serving)
+├── limiter/                # `nexusjs/limiter` (rate limiting)
+├── shield/                 # `nexusjs/shield` (CSRF + security headers)
+├── cache/                  # `nexusjs/cache` (LRU + drizzle)
+├── drive/                  # `nexusjs/drive` (storage abstraction)
+├── mail/                   # `nexusjs/mail` (SMTP / File / Null)
+└── drizzle/                # `nexusjs/drizzle` (default ORM)
     ├── drivers/            # postgres / mysql / sqlite / bun-sqlite / d1
     ├── repository/         # DrizzleRepository (Lucid-style)
     ├── decorators/         # @Table / @Column / @PrimaryKey
@@ -654,26 +654,26 @@ src/
 **v0.1** ✅ — MVC core, DI, validation, Rendu/Edge/Inertia adapters, CLI bootstrap.
 **v0.2** ✅ — auth, queue, schedule, events, session, full `nx` CLI.
 **v0.3** ✅ — production basics (health, config, logger, static),
-cross-cutting (limiter, shield, cache, drive, mail), and `nexus/drizzle`
+cross-cutting (limiter, shield, cache, drive, mail), and `nexusjs/drizzle`
 as the default ORM. Every Tier 1+2 gap from the NestJS / AdonisJS
 analyses is closed.
 
 **v0.5 (current)** ✅ — Realtime + crypto + i18n. Three new modules:
-- `nexus/ws` — unified WebSocket API (`@WebSocketGateway()` + `@OnWebSocketMessage()`). Works on Bun (primary, via `hono/bun`) and Node (via the `ws` package).
-- `nexus/crypto` — AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF tokens, encrypted data. Other modules (`session`, `shield`) use it internally for HMAC.
-- `nexus/i18n` — locale-aware translations + `Intl` formatters. Pluralization via `|`, locale detection middleware, JSON catalogs.
-- `nexus/redis` — runtime-aware Redis client. Bun uses built-in `Bun.redis`, Node uses `ioredis` peer, Cloudflare uses Workers KV. Powers the new `redis` / `cloudflare-kv` session & cache backends.
+- `nexusjs/ws` — unified WebSocket API (`@WebSocketGateway()` + `@OnWebSocketMessage()`). Works on Bun (primary, via `hono/bun`) and Node (via the `ws` package).
+- `nexusjs/crypto` — AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF tokens, encrypted data. Other modules (`session`, `shield`) use it internally for HMAC.
+- `nexusjs/i18n` — locale-aware translations + `Intl` formatters. Pluralization via `|`, locale detection middleware, JSON catalogs.
+- `nexusjs/redis` — runtime-aware Redis client. Bun uses built-in `Bun.redis`, Node uses `ioredis` peer, Cloudflare uses Workers KV. Powers the new `redis` / `cloudflare-kv` session & cache backends.
 
 **v0.4** ✅ — observability and developer experience.
 Every Tier 1 and Tier 2 gap from the NestJS / AdonisJS analyses
-is closed. New: `nexus/openapi`, `nexus/upload`, `nexus/sse`,
-`nexus/tracing`, `nexus/metrics`, and request-scoped DI in the
-core. The `nexus/session` `@CurrentSession` v0.1 alias is
+is closed. New: `nexusjs/openapi`, `nexusjs/upload`, `nexusjs/sse`,
+`nexusjs/tracing`, `nexusjs/metrics`, and request-scoped DI in the
+core. The `nexusjs/session` `@CurrentSession` v0.1 alias is
 removed — use `@Session` instead.
 
 **v1.0** — long-term API stability + DX polish.
 
-- `nexus/i18n` — multi-locale messages
+- `nexusjs/i18n` — multi-locale messages
 - AI agent module + MCP server
 - Performance benchmarks + cross-runtime parity tests
 - Long-term LTS support plan
@@ -699,8 +699,8 @@ is the classic **Post/Redirect/Get**:
 
 ```ts
 import { z } from 'zod';
-import { Body, Controller, Post } from 'nexus';
-import { Inertia } from 'nexus/view/inertia';
+import { Body, Controller, Post } from 'nexusjs';
+import { Inertia } from 'nexusjs/view/inertia';
 
 const UserSchema = z.object({
   name: z.string().min(2),
@@ -767,7 +767,7 @@ and Solid. Each lazy-imports its engine — install only what you
 use:
 
 ```ts
-import { createReactAdapter, ComponentRegistry } from 'nexus/view/inertia/ssr';
+import { createReactAdapter, ComponentRegistry } from 'nexusjs/view/inertia/ssr';
 
 const components = new ComponentRegistry()
   .register('Home', HomePage)
@@ -786,7 +786,7 @@ app.inertia.setSsrAdapter(createReactAdapter({ components }));
 ### Form middleware (CSRF)
 
 ```ts
-import { inertiaFormMiddleware } from 'nexus/view/inertia';
+import { inertiaFormMiddleware } from 'nexusjs/view/inertia';
 
 app.server.app.use('*', inertiaFormMiddleware({
   validateCsrf: true,

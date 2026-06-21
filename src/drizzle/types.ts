@@ -1,5 +1,5 @@
 /**
- * `nexus/drizzle` — Drizzle ORM integration. Default ORM for NexusJS.
+ * `nexusjs/drizzle` — Drizzle ORM integration. Default ORM for NexusJS.
  *
  *   @Module({
  *     imports: [

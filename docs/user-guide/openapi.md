@@ -3,7 +3,7 @@
 > 한국어 버전: [`openapi.ko.md`](./openapi.ko.md)
 > Added in **v0.4** (Tier 1 gap from NestJS / AdonisJS analyses).
 
-`nexus/openapi` is the **default OpenAPI generator** for NexusJS. It
+`nexusjs/openapi` is the **default OpenAPI generator** for NexusJS. It
 walks the framework's route table, reads `@ApiTags` /
 `@ApiOperation` / `@ApiResponse` / `@ApiBody` / `@ApiParam` /
 `@ApiQuery` / `@Validate` metadata, and produces a complete
@@ -25,8 +25,8 @@ bun add nexus/openapi
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { OpenAPIModule } from 'nexus/openapi';
+import { Module } from 'nexusjs';
+import { OpenAPIModule } from 'nexusjs/openapi';
 
 @Module({
   imports: [
@@ -68,8 +68,8 @@ Visit `http://localhost:3000/docs` for the Scalar UI.
 
 ```ts
 import { z } from 'zod';
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Validate } from 'nexus';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery } from 'nexus/openapi';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Validate } from 'nexusjs';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery } from 'nexusjs/openapi';
 
 const CreateUserSchema = z.object({
   email: z.string().email(),
@@ -216,7 +216,7 @@ with `@ApiParam` for a custom description or type.
 
 ## 6. Scalar UI
 
-`nexus/openapi` ships a Scalar HTML page that loads the JS
+`nexusjs/openapi` ships a Scalar HTML page that loads the JS
 client from `https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.0`.
 No assets are bundled. The default theme is Scalar's default; you
 can switch themes by editing `src/openapi/scalar.ts`.
@@ -232,8 +232,8 @@ CDN URL.
 
 | Framework | OpenAPI story | v0.4 |
 | --- | --- | --- |
-| NestJS | `@nestjs/swagger` (Zod support via `@anatine/zod-nestjs`) | ✅ closed — `nexus/openapi` |
-| AdonisJS | Community packages (`adonis-autodoc`) | ✅ closed — `nexus/openapi` |
+| NestJS | `@nestjs/swagger` (Zod support via `@anatine/zod-nestjs`) | ✅ closed — `nexusjs/openapi` |
+| AdonisJS | Community packages (`adonis-autodoc`) | ✅ closed — `nexusjs/openapi` |
 
 Per the v0.3 gap analyses (NestJS §3.1, AdonisJS §5.1), this was
 the **highest-leverage Tier 1 feature** remaining. It now ships.

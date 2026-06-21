@@ -5,7 +5,7 @@
  */
 
 export default `
-import { Injectable } from 'nexus';
+import { Injectable } from 'nexusjs';
 import type { Context, Next } from 'hono';
 
 /**

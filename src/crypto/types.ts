@@ -1,7 +1,7 @@
 /**
- * Public types for `nexus/crypto`.
+ * Public types for `nexusjs/crypto`.
  *
- * `nexus/crypto` provides:
+ * `nexusjs/crypto` provides:
  * - `EncryptionService` — AES-256-GCM symmetric encryption +
  *   HMAC sign/unsign (for stateless session cookies, CSRF tokens,
  *   signed URLs, etc.).

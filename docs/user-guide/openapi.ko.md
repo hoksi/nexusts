@@ -3,7 +3,7 @@
 > English version: [`openapi.md`](./openapi.md)
 > **v0.4**에서 추가됨 (NestJS / AdonisJS 분석의 Tier 1 격차).
 
-`nexus/openapi`는 NexusJS의 **기본 OpenAPI 생성기**다. 프레임워크의
+`nexusjs/openapi`는 NexusJS의 **기본 OpenAPI 생성기**다. 프레임워크의
 라우트 테이블을 워크하고, `@ApiTags` / `@ApiOperation` / `@ApiResponse` /
 `@ApiBody` / `@ApiParam` / `@ApiQuery` / `@Validate` 메타데이터를 읽어
 완전한 **OpenAPI 3.1** 문서를 생성한다. 번들된 Scalar UI가 `/docs`에서
@@ -24,8 +24,8 @@ bun add nexus/openapi
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { OpenAPIModule } from 'nexus/openapi';
+import { Module } from 'nexusjs';
+import { OpenAPIModule } from 'nexusjs/openapi';
 
 @Module({
   imports: [
@@ -66,8 +66,8 @@ await app.listen(3000);
 
 ```ts
 import { z } from 'zod';
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Validate } from 'nexus';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery } from 'nexus/openapi';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Validate } from 'nexusjs';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery } from 'nexusjs/openapi';
 
 const CreateUserSchema = z.object({
   email: z.string().email(),
@@ -211,7 +211,7 @@ Path parameter는 라우트 패턴에서 자동 도출된다
 
 ## 6. Scalar UI
 
-`nexus/openapi`는 `https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.0`에서
+`nexusjs/openapi`는 `https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.0`에서
 JS 클라이언트를 로드하는 Scalar HTML 페이지를 제공한다. 에셋이 번들되지
 않는다. 기본 테마는 Scalar의 default다; `src/openapi/scalar.ts`를 수정해
 테마를 변경할 수 있다.
@@ -226,8 +226,8 @@ JS 클라이언트를 로드하는 Scalar HTML 페이지를 제공한다. 에셋
 
 | 프레임워크 | OpenAPI | v0.4 |
 | --- | --- | --- |
-| NestJS | `@nestjs/swagger` (Zod 지원은 `@anatine/zod-nestjs` 통해) | ✅ 해소 — `nexus/openapi` |
-| AdonisJS | 커뮤니티 패키지 (`adonis-autodoc`) | ✅ 해소 — `nexus/openapi` |
+| NestJS | `@nestjs/swagger` (Zod 지원은 `@anatine/zod-nestjs` 통해) | ✅ 해소 — `nexusjs/openapi` |
+| AdonisJS | 커뮤니티 패키지 (`adonis-autodoc`) | ✅ 해소 — `nexusjs/openapi` |
 
 v0.3 격차 분석(NestJS §3.1, AdonisJS §5.1)에 따르면, 이것이 가장
 가성비 높은 잔여 Tier 1 기능이었다. 이제 출시되었다.

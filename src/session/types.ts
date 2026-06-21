@@ -1,9 +1,9 @@
 /**
- * Session types — the public contract for `nexus/session`.
+ * Session types — the public contract for `nexusjs/session`.
  *
  * Provides a uniform session-storage abstraction with multiple
  * backends (cookie, memory, Redis, DB) and an optional integration
- * with `nexus/auth` for richer auth flows.
+ * with `nexusjs/auth` for richer auth flows.
  *
  * Mirrors common session-management libraries (express-session,
  * iron-session, @auth/core's session model).
@@ -161,7 +161,7 @@ export interface CookieStorageOptions {
 }
 
 export interface RedisSessionStorageConfig {
-	/** A pre-built `RedisClient` (from `nexus/redis`). Required. */
+	/** A pre-built `RedisClient` (from `nexusjs/redis`). Required. */
 	client: import("../redis/types.js").RedisClient;
 	/** Key prefix. Default: "session:". */
 	keyPrefix?: string;
@@ -202,10 +202,10 @@ export interface SessionConfig {
 	};
 	/** Redis backend config (uses ). */
 	redis?: RedisSessionStorageConfig;
-	/** Cloudflare Workers KV backend config (uses `nexus/redis` cloudflare adapter). */
+	/** Cloudflare Workers KV backend config (uses `nexusjs/redis` cloudflare adapter). */
 	cloudflareKv?: RedisSessionStorageConfig;
 	/**
-	 * Database backend config (uses `nexus/drizzle`).
+	 * Database backend config (uses `nexusjs/drizzle`).
 	 *
 	 *   session: {
 	 *     backend: 'database',

@@ -2,8 +2,8 @@
 
 > 한국어 버전: [`cross-cutting-features.ko.md`](./cross-cutting-features.ko.md)
 
-The five modules shipped together in v0.3 — `nexus/limiter`,
-`nexus/shield`, `nexus/cache`, `nexus/drive`, `nexus/mail` — round out
+The five modules shipped together in v0.3 — `nexusjs/limiter`,
+`nexusjs/shield`, `nexusjs/cache`, `nexusjs/drive`, `nexusjs/mail` — round out
 the production stack. They are all independent bundles, all use the
 same `Module.forRoot({...})` DI pattern, and all are designed to work
 without forcing peer dependencies (Redis, AWS SDK, nodemailer, etc.)
@@ -11,7 +11,7 @@ on projects that don't need them.
 
 ---
 
-## 1. `nexus/limiter` — rate limiting
+## 1. `nexusjs/limiter` — rate limiting
 
 Three strategies: `fixed-window`, `sliding-window` (default),
 `token-bucket`. Pluggable storage backend (memory by default).
@@ -35,7 +35,7 @@ Three strategies: `fixed-window`, `sliding-window` (default),
 ### Per-route decorator
 
 ```ts
-import { RateLimit } from 'nexus/limiter';
+import { RateLimit } from 'nexusjs/limiter';
 
 @Controller('/auth')
 class AuthController {
@@ -48,7 +48,7 @@ class AuthController {
 ### Custom storage
 
 ```ts
-import { LimiterService } from 'nexus/limiter';
+import { LimiterService } from 'nexusjs/limiter';
 
 class RedisRateLimitStorage implements RateLimitStorage {
   async consume(key, points, limit, durationMs, strategy) {
@@ -82,13 +82,13 @@ On every limited request:
 
 ---
 
-## 2. `nexus/shield` — security middleware suite
+## 2. `nexusjs/shield` — security middleware suite
 
 AdonisJS-Shield-shaped. CSRF, security headers (HSTS, X-Frame-Options,
 X-Content-Type-Options, Referrer-Policy, CSP).
 
 ```ts
-import { ShieldModule } from 'nexus/shield';
+import { ShieldModule } from 'nexusjs/shield';
 
 @Module({
   imports: [
@@ -133,8 +133,8 @@ import { ShieldModule } from 'nexus/shield';
 ### Direct shield access in controllers
 
 ```ts
-import { Inject } from 'nexus';
-import { ShieldService } from 'nexus/shield';
+import { Inject } from 'nexusjs';
+import { ShieldService } from 'nexusjs/shield';
 
 class FormController {
   constructor(@Inject(ShieldService.TOKEN) private shield: ShieldService) {}
@@ -149,7 +149,7 @@ class FormController {
 
 ---
 
-## 3. `nexus/cache` — application cache
+## 3. `nexusjs/cache` — application cache
 
 In-memory LRU with TTL by default. Optional `RedisStore` for
 multi-pod deployments.
@@ -168,7 +168,7 @@ multi-pod deployments.
 ### Direct usage
 
 ```ts
-import { CacheService } from 'nexus/cache';
+import { CacheService } from 'nexusjs/cache';
 
 class UserService {
   constructor(@Inject(CacheService.TOKEN) private cache: CacheService) {}
@@ -186,7 +186,7 @@ class UserService {
 ### Decorators
 
 ```ts
-import { Cacheable, CacheInvalidate } from 'nexus/cache';
+import { Cacheable, CacheInvalidate } from 'nexusjs/cache';
 
 class UserService {
   @Cacheable('user', (id: string) => id, 60)
@@ -203,12 +203,12 @@ class UserService {
 ### Custom store
 
 For Redis / Workers KV, use the built-in `RedisCacheStore` from
-`nexus/redis`. It implements `CacheStore` and supports
+`nexusjs/redis`. It implements `CacheStore` and supports
 tag-based invalidation:
 
 ```ts
-import { CacheModule } from 'nexus/cache';
-import { RedisCacheStore, createRedisClient } from 'nexus/redis';
+import { CacheModule } from 'nexusjs/cache';
+import { RedisCacheStore, createRedisClient } from 'nexusjs/redis';
 
 CacheModule.forRoot({
   store: new RedisCacheStore(
@@ -221,8 +221,8 @@ CacheModule.forRoot({
 For Cloudflare Workers, pass a `CloudflareKVAdapter`:
 
 ```ts
-import { CacheModule } from 'nexus/cache';
-import { CloudflareKVAdapter } from 'nexus/redis';
+import { CacheModule } from 'nexusjs/cache';
+import { CloudflareKVAdapter } from 'nexusjs/redis';
 
 CacheModule.forRoot({
   store: new RedisCacheStore(
@@ -236,7 +236,7 @@ Custom stores (any non-Redis backend) implement the `CacheStore`
 interface:
 
 ```ts
-import { CacheService, CacheStore } from 'nexus/cache';
+import { CacheService, CacheStore } from 'nexusjs/cache';
 
 class MyStore implements CacheStore {
   readonly kind = 'my-store';
@@ -250,7 +250,7 @@ CacheModule.forRoot({ store: new MyStore() });
 
 ---
 
-## 4. `nexus/drive` — file storage abstraction
+## 4. `nexusjs/drive` — file storage abstraction
 
 `LocalDriver` (filesystem), `MemoryDriver` (in-process),
 `S3Driver` (AWS S3 / R2 / MinIO).
@@ -313,7 +313,7 @@ await drive.get('../etc/passwd'); // throws "Path traversal blocked"
 
 ---
 
-## 5. `nexus/mail` — outbound email
+## 5. `nexusjs/mail` — outbound email
 
 `SmtpTransport` (nodemailer), `FileTransport` (.eml files for dev),
 `NullTransport` (tests).

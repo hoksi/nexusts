@@ -1,5 +1,5 @@
 /**
- * Public entry point for `nexus/shield`.
+ * Public entry point for `nexusjs/shield`.
  */
 export * from "./types.js";
 export { CsrfGuard, HeadersGuard } from "./guards/index.js";

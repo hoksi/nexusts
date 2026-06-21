@@ -32,32 +32,32 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Middleware | ✅ Class-based, ordered | ✅ Hono middleware (typed) | `app.use('*', mw)` |
 | DI | ✅ IoC container, decorators | ✅ Class-based + `@Inject()` | Both Nest-style and Adonis-style |
 | Validation | ✅ Vine (Zod-inspired) | ✅ Zod | Nexus uses Zod directly via `@Validate` |
-| ORM | ✅ Lucid (built-in) | ✅ `nexus/drizzle` | Drizzle is the default ORM |
+| ORM | ✅ Lucid (built-in) | ✅ `nexusjs/drizzle` | Drizzle is the default ORM |
 | Migrations | ✅ Built-in | ✅ `nx db:migrate` (drizzle-kit wrapper) | Same DX |
 | Seeding | ✅ Built-in factories | ⚠️ DIY | No first-party; users write factories |
-| Auth | ✅ `@adonisjs/auth` | ✅ `nexus/auth` (better-auth) | better-auth = many strategies |
-| Sessions | ✅ `@adonisjs/session` | ✅ `nexus/session` | Cookie / Memory / Drizzle backends |
-| Encryption | ✅ `@adonisjs/encryption` | ✅ `nexus/crypto` (AES-256-GCM + HMAC + scrypt) | Same API style |
-| Hash | ✅ `@adonisjs/hash` | ✅ `nexus/crypto` (HashService) | Argon2 / scrypt |
-| Shield | ✅ `@adonisjs/shield` (CSRF, headers) | ✅ `nexus/shield` (CSRF / HSTS / CSP) | Same naming, same purpose |
-| Throttler | ✅ `@adonisjs/throttler` | ✅ `nexus/limiter` (fixed / sliding / token-bucket) | |
-| Logger | ✅ `@adonisjs/logger` | ✅ `nexus/logger` (Pino) | |
-| Mail | ✅ `@adonisjs/mail` | ✅ `nexus/mail` (SMTP / File / Null) | |
-| Drive (file storage) | ✅ `@adonisjs/drive` | ✅ `nexus/drive` (Local / S3 / R2 / memory) | |
-| Cache | ✅ `@adonisjs/cache` | ✅ `nexus/cache` (memory / Drizzle) | |
-| Events | ✅ `@adonisjs/events` | ✅ `nexus/events` | wildcards, priorities, guards |
-| Queue | ✅ `@adonisjs/queue` | ✅ `nexus/queue` (BullMQ / Cloudflare / memory) | |
-| Scheduler | ✅ `@adonisjs/scheduler` | ✅ `nexus/schedule` (in-tree cron parser) | No external dep |
-| Static | ✅ `@adonisjs/static` | ✅ `nexus/static` (ETag / Range / MIME) | |
-| Health | ✅ `@adonisjs/health` | ✅ `nexus/health` (built-in indicators) | |
-| SSE | ❌ DIY | ✅ `nexus/sse` | Nexus ships SSE out of the box |
-| WebSockets | ❌ DIY | ✅ `nexus/ws` | Runtime auto-detected (Bun / Node) |
-| Upload | ❌ DIY | ✅ `nexus/upload` | `@Upload()` / `@UploadedFile()` decorators |
-| i18n | ✅ `@adonisjs/i18n` | ✅ `nexus/i18n` | `Intl`-based, pluralization |
-| OpenAPI | ❌ DIY | ✅ `nexus/openapi` | Zod → OpenAPI 3.1 + Scalar UI |
-| Tracing | ❌ DIY | ✅ `nexus/tracing` | OpenTelemetry with lazy SDK |
-| Metrics | ❌ DIY | ✅ `nexus/metrics` | Prometheus / OpenMetrics |
-| Bodyparser | ✅ Built-in | ✅ Hono's `c.req.parseBody()` + `nexus/upload` | |
+| Auth | ✅ `@adonisjs/auth` | ✅ `nexusjs/auth` (better-auth) | better-auth = many strategies |
+| Sessions | ✅ `@adonisjs/session` | ✅ `nexusjs/session` | Cookie / Memory / Drizzle backends |
+| Encryption | ✅ `@adonisjs/encryption` | ✅ `nexusjs/crypto` (AES-256-GCM + HMAC + scrypt) | Same API style |
+| Hash | ✅ `@adonisjs/hash` | ✅ `nexusjs/crypto` (HashService) | Argon2 / scrypt |
+| Shield | ✅ `@adonisjs/shield` (CSRF, headers) | ✅ `nexusjs/shield` (CSRF / HSTS / CSP) | Same naming, same purpose |
+| Throttler | ✅ `@adonisjs/throttler` | ✅ `nexusjs/limiter` (fixed / sliding / token-bucket) | |
+| Logger | ✅ `@adonisjs/logger` | ✅ `nexusjs/logger` (Pino) | |
+| Mail | ✅ `@adonisjs/mail` | ✅ `nexusjs/mail` (SMTP / File / Null) | |
+| Drive (file storage) | ✅ `@adonisjs/drive` | ✅ `nexusjs/drive` (Local / S3 / R2 / memory) | |
+| Cache | ✅ `@adonisjs/cache` | ✅ `nexusjs/cache` (memory / Drizzle) | |
+| Events | ✅ `@adonisjs/events` | ✅ `nexusjs/events` | wildcards, priorities, guards |
+| Queue | ✅ `@adonisjs/queue` | ✅ `nexusjs/queue` (BullMQ / Cloudflare / memory) | |
+| Scheduler | ✅ `@adonisjs/scheduler` | ✅ `nexusjs/schedule` (in-tree cron parser) | No external dep |
+| Static | ✅ `@adonisjs/static` | ✅ `nexusjs/static` (ETag / Range / MIME) | |
+| Health | ✅ `@adonisjs/health` | ✅ `nexusjs/health` (built-in indicators) | |
+| SSE | ❌ DIY | ✅ `nexusjs/sse` | Nexus ships SSE out of the box |
+| WebSockets | ❌ DIY | ✅ `nexusjs/ws` | Runtime auto-detected (Bun / Node) |
+| Upload | ❌ DIY | ✅ `nexusjs/upload` | `@Upload()` / `@UploadedFile()` decorators |
+| i18n | ✅ `@adonisjs/i18n` | ✅ `nexusjs/i18n` | `Intl`-based, pluralization |
+| OpenAPI | ❌ DIY | ✅ `nexusjs/openapi` | Zod → OpenAPI 3.1 + Scalar UI |
+| Tracing | ❌ DIY | ✅ `nexusjs/tracing` | OpenTelemetry with lazy SDK |
+| Metrics | ❌ DIY | ✅ `nexusjs/metrics` | Prometheus / OpenMetrics |
+| Bodyparser | ✅ Built-in | ✅ Hono's `c.req.parseBody()` + `nexusjs/upload` | |
 | REPL | ✅ `node ace repl` | ❌ Not shipped | Lower priority for v0.5 |
 | Inspector | ✅ `@adonisjs/inspector` | ❌ Not shipped | Debugging-only |
 | Admin panel | ✅ `@adonisjs/admin` | ❌ Not shipped | Lower priority |
@@ -80,26 +80,26 @@ The v0.3, v0.4, and v0.5 milestones together closed every
 
 | Was missing in v0.2 | Shipped | Module |
 | ------------------- | ------- | ------ |
-| Health checks | v0.3 | `nexus/health` |
-| Rate limiting / throttling | v0.3 | `nexus/limiter` |
-| Security headers (CSRF / HSTS / CSP) | v0.3 | `nexus/shield` |
-| Configuration management | v0.3 | `nexus/config` |
-| Logging | v0.3 | `nexus/logger` |
-| Cache | v0.3 | `nexus/cache` |
-| Email | v0.3 | `nexus/mail` |
-| File storage (S3 / R2 / Local) | v0.3 | `nexus/drive` |
-| Database (default ORM) | v0.3 | `nexus/drizzle` |
+| Health checks | v0.3 | `nexusjs/health` |
+| Rate limiting / throttling | v0.3 | `nexusjs/limiter` |
+| Security headers (CSRF / HSTS / CSP) | v0.3 | `nexusjs/shield` |
+| Configuration management | v0.3 | `nexusjs/config` |
+| Logging | v0.3 | `nexusjs/logger` |
+| Cache | v0.3 | `nexusjs/cache` |
+| Email | v0.3 | `nexusjs/mail` |
+| File storage (S3 / R2 / Local) | v0.3 | `nexusjs/drive` |
+| Database (default ORM) | v0.3 | `nexusjs/drizzle` |
 | Database migrations + CLI | v0.3 | `nx db:migrate` |
-| Static file serving | v0.3 | `nexus/static` |
-| **OpenAPI generator** | v0.4 | `nexus/openapi` |
-| **File upload helper** | v0.4 | `nexus/upload` |
+| Static file serving | v0.3 | `nexusjs/static` |
+| **OpenAPI generator** | v0.4 | `nexusjs/openapi` |
+| **File upload helper** | v0.4 | `nexusjs/upload` |
 | **Request-scoped DI** | v0.4 | core DI + ALS + Hono middleware |
-| **Server-Sent Events** | v0.4 | `nexus/sse` |
-| **Distributed tracing** | v0.4 | `nexus/tracing` |
-| **Prometheus metrics** | v0.4 | `nexus/metrics` |
-| **WebSockets** | v0.5 | `nexus/ws` |
-| **Encryption + password hashing** | v0.5 | `nexus/crypto` |
-| **i18n** | v0.5 | `nexus/i18n` |
+| **Server-Sent Events** | v0.4 | `nexusjs/sse` |
+| **Distributed tracing** | v0.4 | `nexusjs/tracing` |
+| **Prometheus metrics** | v0.4 | `nexusjs/metrics` |
+| **WebSockets** | v0.5 | `nexusjs/ws` |
+| **Encryption + password hashing** | v0.5 | `nexusjs/crypto` |
+| **i18n** | v0.5 | `nexusjs/i18n` |
 
 Total: **20 AdonisJS-style batteries** shipped in v0.3 + v0.4 + v0.5
 (10 in v0.3 + 6 in v0.4 + 4 in v0.5).
@@ -119,7 +119,7 @@ trade-offs:
 | **Validation** | Vine (Zod-inspired) | Zod (de-facto standard) |
 | **Convention vs. composition** | Heavy convention (lucid → "User.find", routes → "users", etc.) | Light convention + composition (DI wins) |
 | **Bundle size** | Single ~1MB bundle | Per-module bundles (~5-50kb each) |
-| **Number of first-party packages** | 30+ `@adonisjs/*` packages | 25 first-party modules under `nexus/*` |
+| **Number of first-party packages** | 30+ `@adonisjs/*` packages | 25 first-party modules under `nexusjs/*` |
 | **Multi-runtime** | Node + Workers | Bun + Node + Workers |
 | **Build philosophy** | One large app | "Compose your own" — install only what you use |
 | **Default ORM style** | ActiveRecord (`User.find(id)`) | Drizzle's query builder + `DrizzleRepository` (Lucid-like) |
@@ -198,7 +198,7 @@ notebook / scratch file instead.
 | Feature | AdonisJS | NexusJS |
 | ------- | -------- | ------- |
 | Multi-pod via shared DB | ✅ | ✅ (Drizzle backends) |
-| Redis-backed queue | ✅ (BullMQ) | ✅ (`nexus/queue`) |
+| Redis-backed queue | ✅ (BullMQ) | ✅ (`nexusjs/queue`) |
 | Multi-region | ❌ DIY | ❌ DIY |
 | Session sticky | ⚠️ DIY | ✅ (cookie backend is stateless; falls back to DB or memory) |
 
@@ -214,17 +214,17 @@ deployments.
 Several AdonisJS batteries don't exist (or are DIY-only). NexusJS
 ships these out of the box:
 
-- **WebSockets** (`nexus/ws`) — AdonisJS users write a custom
+- **WebSockets** (`nexusjs/ws`) — AdonisJS users write a custom
   WebSocket layer.
-- **Server-Sent Events** (`nexus/sse`) — same.
-- **OpenAPI / Swagger** (`nexus/openapi`) — AdonisJS users
+- **Server-Sent Events** (`nexusjs/sse`) — same.
+- **OpenAPI / Swagger** (`nexusjs/openapi`) — AdonisJS users
   typically hand-write a spec or use `@nestjs/swagger`-style
   decorators.
-- **Distributed tracing** (`nexus/tracing`) — AdonisJS users
+- **Distributed tracing** (`nexusjs/tracing`) — AdonisJS users
   integrate OpenTelemetry manually.
-- **Prometheus metrics** (`nexus/metrics`) — AdonisJS users
+- **Prometheus metrics** (`nexusjs/metrics`) — AdonisJS users
   integrate `prom-client` manually.
-- **File upload** (`nexus/upload`) — AdonisJS users
+- **File upload** (`nexusjs/upload`) — AdonisJS users
   hand-roll multipart handling.
 - **Bun-native runtime** — AdonisJS is Node-only.
 
@@ -236,10 +236,10 @@ A team that needs any of these gets them for free with NexusJS.
 
 ### v0.6 — Async RPC & DX (the "polyglot" milestone) — planned
 
-1. **`nexus/graphql`** — code-first schema, `@Resolver()` / `@Query()` / `@Mutation()`
-2. **`nexus/grpc`** — server / client / streaming
-3. **`nexus/resilience`** — circuit breaker, retry, bulkhead
-4. **`nexus/feature-flag`** — canary / A/B testing
+1. **`nexusjs/graphql`** — code-first schema, `@Resolver()` / `@Query()` / `@Mutation()`
+2. **`nexusjs/grpc`** — server / client / streaming
+3. **`nexusjs/resilience`** — circuit breaker, retry, bulkhead
+4. **`nexusjs/feature-flag`** — canary / A/B testing
 5. **`nx repl`** — interactive REPL (lower priority; cite if
    requested)
 
@@ -270,11 +270,11 @@ gap**. A team migrating from AdonisJS to NexusJS v0.5 would find:
 - The migration from Lucid → Drizzle is mechanical (the
   `DrizzleRepository` mirrors Lucid's API).
 - The migration from Vine → Zod is mechanical.
-- The migration from `@adonisjs/auth` → `nexus/auth` is mostly
+- The migration from `@adonisjs/auth` → `nexusjs/auth` is mostly
   trivial (better-auth has a similar API).
-- The migration from `@adonisjs/session` → `nexus/session` is
+- The migration from `@adonisjs/session` → `nexusjs/session` is
   mostly trivial.
-- The migration from `@adonisjs/encryption` / `hash` → `nexus/crypto`
+- The migration from `@adonisjs/encryption` / `hash` → `nexusjs/crypto`
   is a one-line change.
 
 What's still missing for **full** AdonisJS coverage:
@@ -291,7 +291,7 @@ AdonisJS v6 vs NexusJS v0.5 differentiators:
 
 - **Bun-native** — NexusJS runs natively on Bun (faster startup,
   faster I/O, fewer dependencies). AdonisJS is Node-only.
-- **Per-module bundle entry points** — `nexus/ws` doesn't ship
+- **Per-module bundle entry points** — `nexusjs/ws` doesn't ship
   in your bundle unless you use it. AdonisJS ships everything
   in one bundle.
 - **OpenAPI / WebSockets / SSE / tracing / metrics batteries** —

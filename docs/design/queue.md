@@ -74,7 +74,7 @@ Backends are swappable; the user can change `backend: 'bullmq'` to
 
 ## 4. Module separation
 
-`nexus/queue` is a separate entry point:
+`nexusjs/queue` is a separate entry point:
 
 ```json
 "exports": {

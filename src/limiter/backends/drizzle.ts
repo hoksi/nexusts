@@ -1,8 +1,8 @@
 /**
  * `DrizzleRateLimitStorage` — rate-limit state in any Drizzle-backed DB.
  *
- *   import { DrizzleService } from 'nexus/drizzle';
- *   import { DrizzleRateLimitStorage } from 'nexus/limiter';
+ *   import { DrizzleService } from 'nexusjs/drizzle';
+ *   import { DrizzleRateLimitStorage } from 'nexusjs/limiter';
  *
  *   const db = new DrizzleService({ dialect: 'postgres', connection: { ... } });
  *   await db.open();

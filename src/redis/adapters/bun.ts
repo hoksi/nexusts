@@ -1,5 +1,5 @@
 /**
- * Bun runtime adapter for `nexus/redis`.
+ * Bun runtime adapter for `nexusjs/redis`.
  *
  * Uses the built-in `Bun.redis` client. No extra package needed.
  * The client is lazily opened on first use.

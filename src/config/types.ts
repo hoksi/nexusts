@@ -1,5 +1,5 @@
 /**
- * Config types — the contract for `nexus/config`.
+ * Config types — the contract for `nexusjs/config`.
  *
  * Configuration is loaded from environment variables (and optionally
  * `.env` files) and validated against a Zod schema at boot. Typed

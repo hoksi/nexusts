@@ -2,7 +2,7 @@
 
 > 한국어 버전: [`queue.ko.md`](./queue.ko.md)
 
-NexusJS ships a queue module under `nexus/queue` that wraps two
+NexusJS ships a queue module under `nexusjs/queue` that wraps two
 production-ready backends:
 
 - **BullMQ** — Redis-backed, for long-running Bun / Node servers.
@@ -12,7 +12,7 @@ production-ready backends:
 Both share a common `QueueBackend` interface, so application code
 talks to `QueueService` and never to a specific backend directly.
 
-The queue module is **separate from `nexus/core`** and is added as its
+The queue module is **separate from `nexusjs/core`** and is added as its
 own bundle entry point.
 
 ---
@@ -33,8 +33,8 @@ bun add nexus bullmq ioredis
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { QueueModule } from 'nexus/queue';
+import { Module } from 'nexusjs';
+import { QueueModule } from 'nexusjs/queue';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { QueueModule } from 'nexus/queue';
       backend: 'bullmq',
       bullmq: {
         connection: process.env.REDIS_URL ?? 'redis://localhost:6379',
-        prefix: 'nexus',
+        prefix: 'nexusjs',
       },
       defaults: { attempts: 3, backoff: { type: 'exponential', delayMs: 1000 } },
     }),
@@ -54,9 +54,9 @@ export class AppModule {}
 Enqueue from any controller or service:
 
 ```ts
-import { Inject } from 'nexus';
-import { QueueService } from 'nexus/queue';
-import { Controller, Post, Body } from 'nexus';
+import { Inject } from 'nexusjs';
+import { QueueService } from 'nexusjs/queue';
+import { Controller, Post, Body } from 'nexusjs';
 
 @Controller('/signup')
 class SignupController {
@@ -73,8 +73,8 @@ class SignupController {
 Register a worker:
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { QueueService, OnQueueReady } from 'nexus/queue';
+import { Inject, Injectable } from 'nexusjs';
+import { QueueService, OnQueueReady } from 'nexusjs/queue';
 
 @Injectable()
 class EmailWorker {
@@ -118,7 +118,7 @@ QueueModule.forRoot({
   bullmq: {
     connection: 'redis://localhost:6379',
     // or: { host: '...', port: 6379, password: '...' }
-    prefix: 'nexus',
+    prefix: 'nexusjs',
   },
   defaults: {
     attempts: 5,
@@ -164,8 +164,8 @@ max_retries = 3
 
 ```ts
 // src/worker.ts
-import { Application } from 'nexus';
-import { QueueService, QueueModule } from 'nexus/queue';
+import { Application } from 'nexusjs';
+import { QueueService, QueueModule } from 'nexusjs/queue';
 
 const AppModule = QueueModule.forRoot({
   backend: 'cloudflare',

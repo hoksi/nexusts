@@ -8,7 +8,7 @@
  *
  *   import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
  *   import { eq, desc } from 'drizzle-orm';
- *   import { DrizzleRepository, DrizzleService } from 'nexus/drizzle';
+ *   import { DrizzleRepository, DrizzleService } from 'nexusjs/drizzle';
  *
  *   const users = pgTable('users', {
  *     id: serial('id').primaryKey(),

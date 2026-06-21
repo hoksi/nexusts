@@ -229,13 +229,13 @@ users can swap internals without forking:
 
 | Sub-path | Purpose |
 | -------- | ------- |
-| `nexus/view` | View engines (default `RenduAdapter`) |
-| `nexus/view/inertia` | Inertia adapter + helpers |
-| `nexus/view/inertia/ssr` | React/Vue/Svelte/Solid SSR adapters |
-| `nexus/orm` | ORM adapters (Drizzle today) |
-| `nexus/runtime` | Runtime adapters |
+| `nexusjs/view` | View engines (default `RenduAdapter`) |
+| `nexusjs/view/inertia` | Inertia adapter + helpers |
+| `nexusjs/view/inertia/ssr` | React/Vue/Svelte/Solid SSR adapters |
+| `nexusjs/orm` | ORM adapters (Drizzle today) |
+| `nexusjs/runtime` | Runtime adapters |
 
-The public entry point (`nexus`) only re-exports the stable, agreed-on
+The public entry point (`nexusjs`) only re-exports the stable, agreed-on
 surface. Anything else is **advanced** and may change without a major
 version bump.
 
@@ -248,33 +248,33 @@ entry point — install only what you need.
 
 | Module | Bundle subpath | Replaces / supersedes |
 | ------ | -------------- | --------------------- |
-| `nexus` | `nexus` | core MVC + DI + validation + views |
-| `nexus/cli` | `nx` | Adonis ACE-style command runner |
-| `nexus/auth` | `nexus/auth` | session, JWT, OAuth, passkey (better-auth) |
-| `nexus/queue` | `nexus/queue` | BullMQ, Cloudflare Queues, memory |
-| `nexus/schedule` | `nexus/schedule` | `@Cron` / `@Interval` / `@Timeout` |
-| `nexus/events` | `nexus/events` | `@OnEvent` with wildcards, priorities, guards |
-| `nexus/session` | `nexus/session` | cookie (HMAC), memory, Drizzle |
-| `nexus/health` | `nexus/health` | liveness/readiness/startup, indicators |
-| `nexus/config` | `nexus/config` | Zod-validated env config |
-| `nexus/logger` | `nexus/logger` | Pino-backed structured logging |
-| `nexus/static` | `nexus/static` | static file serving with ETag, Range |
-| `nexus/limiter` | `nexus/limiter` | 3 strategies × memory/Drizzle storage |
-| `nexus/shield` | `nexus/shield` | CSRF, HSTS, CSP, security headers |
-| `nexus/cache` | `nexus/cache` | memory (LRU) / Drizzle, tag invalidation |
-| `nexus/drive` | `nexus/drive` | memory/Local/S3/R2 storage abstraction |
-| `nexus/mail` | `nexus/mail` | SMTP / File / Null, MJML |
-| `nexus/drizzle` | `nexus/drizzle` | **default ORM** (5 dialects) |
+| `nexusjs` | `nexusjs` | core MVC + DI + validation + views |
+| `nexusjs/cli` | `nx` | Adonis ACE-style command runner |
+| `nexusjs/auth` | `nexusjs/auth` | session, JWT, OAuth, passkey (better-auth) |
+| `nexusjs/queue` | `nexusjs/queue` | BullMQ, Cloudflare Queues, memory |
+| `nexusjs/schedule` | `nexusjs/schedule` | `@Cron` / `@Interval` / `@Timeout` |
+| `nexusjs/events` | `nexusjs/events` | `@OnEvent` with wildcards, priorities, guards |
+| `nexusjs/session` | `nexusjs/session` | cookie (HMAC), memory, Drizzle |
+| `nexusjs/health` | `nexusjs/health` | liveness/readiness/startup, indicators |
+| `nexusjs/config` | `nexusjs/config` | Zod-validated env config |
+| `nexusjs/logger` | `nexusjs/logger` | Pino-backed structured logging |
+| `nexusjs/static` | `nexusjs/static` | static file serving with ETag, Range |
+| `nexusjs/limiter` | `nexusjs/limiter` | 3 strategies × memory/Drizzle storage |
+| `nexusjs/shield` | `nexusjs/shield` | CSRF, HSTS, CSP, security headers |
+| `nexusjs/cache` | `nexusjs/cache` | memory (LRU) / Drizzle, tag invalidation |
+| `nexusjs/drive` | `nexusjs/drive` | memory/Local/S3/R2 storage abstraction |
+| `nexusjs/mail` | `nexusjs/mail` | SMTP / File / Null, MJML |
+| `nexusjs/drizzle` | `nexusjs/drizzle` | **default ORM** (5 dialects) |
 
 ### Drizzle as the data backbone
 
-`nexus/drizzle` is the default ORM and is wired into every
+`nexusjs/drizzle` is the default ORM and is wired into every
 DB-dependent module:
 
-- `nexus/session` → `DrizzleSessionStorage`
-- `nexus/health`  → `DrizzleHealthIndicator`
-- `nexus/limiter` → `DrizzleRateLimitStorage`
-- `nexus/cache`   → `DrizzleCacheStore`
+- `nexusjs/session` → `DrizzleSessionStorage`
+- `nexusjs/health`  → `DrizzleHealthIndicator`
+- `nexusjs/limiter` → `DrizzleRateLimitStorage`
+- `nexusjs/cache`   → `DrizzleCacheStore`
 
 A multi-pod deployment can share session, health, rate-limit, and
 cache state through any Drizzle-compatible database.
@@ -283,9 +283,9 @@ cache state through any Drizzle-compatible database.
 
 ## 10. What's planned for v0.4+
 
-- **Observability**: `nexus/tracing` (OpenTelemetry), `nexus/metrics`
+- **Observability**: `nexusjs/tracing` (OpenTelemetry), `nexusjs/metrics`
   (Prometheus).
-- **i18n**: `nexus/i18n` for multi-locale messages.
+- **i18n**: `nexusjs/i18n` for multi-locale messages.
 - **AI agent module** + MCP server integration.
 - **Stable public API** (semver guarantees).
 - **Removal of v0.1 deprecated aliases**.
@@ -300,4 +300,4 @@ cache state through any Drizzle-compatible database.
 | The router is **the single source of truth** for matching | Decorator-driven routes register through the same router. |
 | The DI graph is **constructed eagerly** at startup | Failures surface at boot, not at request time. |
 | Every async boundary is **await-able in a Worker** | No `setTimeout`-driven hot paths; no Node-only APIs. |
-| Public surface stays **small** | Anything experimental is behind a `nexus/<x>` sub-path. |
+| Public surface stays **small** | Anything experimental is behind a `nexusjs/<x>` sub-path. |

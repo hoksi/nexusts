@@ -306,13 +306,13 @@ function createSolidAdapter(opts: { components: ComponentRegistry }): SsrAdapter
 
 ---
 
-## `nexus/auth` (`better-auth`)
+## `nexusjs/auth` (`better-auth`)
 
 ```ts
 import {
   AuthModule, AuthService, AuthController,
   CurrentUser, authMiddleware,
-} from 'nexus/auth';
+} from 'nexusjs/auth';
 
 class AuthModule {
   static forRoot(config: AuthConfig): Type;
@@ -333,14 +333,14 @@ function authMiddleware(options?: { required?: boolean }): HonoMiddleware;
 
 ---
 
-## `nexus/queue`
+## `nexusjs/queue`
 
 ```ts
 import {
   QueueModule, QueueService,
   MemoryQueueBackend, BullMQBackend, CloudflareQueueBackend,
   OnQueueReady,
-} from 'nexus/queue';
+} from 'nexusjs/queue';
 
 class QueueModule { static forRoot(config: QueueConfig): Type; }
 class QueueService {
@@ -358,14 +358,14 @@ function OnQueueReady(name: string): MethodDecorator;
 
 ---
 
-## `nexus/schedule`
+## `nexusjs/schedule`
 
 ```ts
 import {
   ScheduleModule, ScheduleService,
   Cron, Interval, Timeout,
   durationToMs, // '1s' | '1m' | '1h' | '1d' | number -> ms
-} from 'nexus/schedule';
+} from 'nexusjs/schedule';
 
 class ScheduleModule { static forRoot(config?: ScheduleConfig): Type; }
 class ScheduleService {
@@ -383,13 +383,13 @@ function Timeout(ms: number): MethodDecorator;
 
 ---
 
-## `nexus/events`
+## `nexusjs/events`
 
 ```ts
 import {
   EventsModule, EventsService,
   NexusEventEmitter, OnEvent,
-} from 'nexus/events';
+} from 'nexusjs/events';
 
 class EventsModule { static forRoot(): Type; }
 class EventsService extends NexusEventEmitter {
@@ -404,7 +404,7 @@ function OnEvent(pattern: string, opts?: { priority?: number; guard?: (payload: 
 
 ---
 
-## `nexus/session`
+## `nexusjs/session`
 
 ```ts
 import {
@@ -413,7 +413,7 @@ import {
   RedisSessionStorage, CloudflareKVSessionStorage,
   type RedisSessionStorageConfig,
   Session,
-} from 'nexus/session';
+} from 'nexusjs/session';
 
 class SessionModule { static forRoot(config: SessionConfig): Type; }
 class SessionService {
@@ -433,14 +433,14 @@ function Session(options?: { required?: boolean }): ParameterDecorator;
 
 ---
 
-## `nexus/health`
+## `nexusjs/health`
 
 ```ts
 import {
   HealthModule, HealthCheckService, HealthController,
   MemoryHealthIndicator, DiskHealthIndicator, HttpHealthIndicator,
   DrizzleHealthIndicator, CustomPingIndicator,
-} from 'nexus/health';
+} from 'nexusjs/health';
 
 class HealthModule { static forRoot(config?: HealthConfig): Type; }
 class HealthCheckService {
@@ -454,10 +454,10 @@ class HealthCheckService {
 
 ---
 
-## `nexus/config`
+## `nexusjs/config`
 
 ```ts
-import { ConfigModule, ConfigService } from 'nexus/config';
+import { ConfigModule, ConfigService } from 'nexusjs/config';
 
 class ConfigModule { static forRoot(config: ConfigConfig): Type; }
 class ConfigService<S extends ZodSchema> {
@@ -472,10 +472,10 @@ class ConfigService<S extends ZodSchema> {
 
 ---
 
-## `nexus/logger`
+## `nexusjs/logger`
 
 ```ts
-import { LoggerModule, Logger, NullTransport, PrettyTransport, PinoTransport } from 'nexus/logger';
+import { LoggerModule, Logger, NullTransport, PrettyTransport, PinoTransport } from 'nexusjs/logger';
 
 class LoggerModule { static forRoot(options?: LoggerOptions): Type; }
 class Logger {
@@ -494,10 +494,10 @@ class Logger {
 
 ---
 
-## `nexus/static`
+## `nexusjs/static`
 
 ```ts
-import { StaticModule, StaticService, ServeStaticOptions } from 'nexus/static';
+import { StaticModule, StaticService, ServeStaticOptions } from 'nexusjs/static';
 
 class StaticModule { static forRoot(config: ServeStaticOptions): Type; }
 class StaticService {
@@ -508,14 +508,14 @@ class StaticService {
 
 ---
 
-## `nexus/limiter`
+## `nexusjs/limiter`
 
 ```ts
 import {
   LimiterModule, LimiterService, LimiterMiddleware,
   MemoryRateLimitStorage, DrizzleRateLimitStorage,
   RateLimit, durationToMs,
-} from 'nexus/limiter';
+} from 'nexusjs/limiter';
 
 class LimiterModule { static forRoot(config?: LimiterConfig): Type; }
 class LimiterService {
@@ -530,10 +530,10 @@ function RateLimit(rule: RateLimitRule): MethodDecorator;
 
 ---
 
-## `nexus/shield`
+## `nexusjs/shield`
 
 ```ts
-import { ShieldModule, ShieldService, CsrfGuard, HeadersGuard } from 'nexus/shield';
+import { ShieldModule, ShieldService, CsrfGuard, HeadersGuard } from 'nexusjs/shield';
 
 class ShieldModule { static forRoot(config?: ShieldConfig): Type; }
 class ShieldService {
@@ -545,14 +545,14 @@ class ShieldService {
 
 ---
 
-## `nexus/cache`
+## `nexusjs/cache`
 
 ```ts
 import {
   CacheModule, CacheService,
   MemoryStore, DrizzleCacheStore,
   Cacheable, CacheInvalidate,
-} from 'nexus/cache';
+} from 'nexusjs/cache';
 
 class CacheModule { static forRoot(config?: CacheConfig): Type; }
 class CacheService {
@@ -573,13 +573,13 @@ function CacheInvalidate(prefix: string, keyFn: (...args: any[]) => string): Met
 
 ---
 
-## `nexus/drive`
+## `nexusjs/drive`
 
 ```ts
 import {
   DriveModule, DriveService,
   MemoryDriver, LocalDriver, S3Driver,
-} from 'nexus/drive';
+} from 'nexusjs/drive';
 
 class DriveModule { static forRoot(config?: DriveConfig): Type; }
 class DriveService {
@@ -599,13 +599,13 @@ class DriveService {
 
 ---
 
-## `nexus/mail`
+## `nexusjs/mail`
 
 ```ts
 import {
   MailModule, MailService,
   NullTransport, FileTransport, SmtpTransport,
-} from 'nexus/mail';
+} from 'nexusjs/mail';
 
 class MailModule { static forRoot(config?: MailConfig): Type; }
 class MailService {
@@ -618,7 +618,7 @@ class MailService {
 
 ---
 
-## `nexus/drizzle` (default ORM)
+## `nexusjs/drizzle` (default ORM)
 
 ```ts
 import {
@@ -627,7 +627,7 @@ import {
   Table, Column, PrimaryKey,
   resolveDriver, postgresDriver, mysqlDriver, sqliteDriver, bunSqliteDriver, d1Driver,
   RawQuery,
-} from 'nexus/drizzle';
+} from 'nexusjs/drizzle';
 
 class DrizzleModule { static forRoot(config: DrizzleConfig): Type; }
 class DrizzleService {
@@ -689,11 +689,11 @@ See [user-guide/drizzle.md](./user-guide/drizzle.md) for the full guide.
 
 ---
 
-## `nexus/openapi` (v0.4)
+## `nexusjs/openapi` (v0.4)
 
 ```ts
-import { OpenAPIService, OpenAPIModule } from "nexus/openapi";
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiProperty, ApiSchema } from "nexus/openapi";
+import { OpenAPIService, OpenAPIModule } from "nexusjs/openapi";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiProperty, ApiSchema } from "nexusjs/openapi";
 
 @Module({
   imports: [OpenAPIModule.forRoot({ title: "My App", version: "1.0.0", path: "/docs" })],
@@ -718,10 +718,10 @@ See [user-guide/openapi.md](./user-guide/openapi.md).
 
 ---
 
-## `nexus/upload` (v0.4)
+## `nexusjs/upload` (v0.4)
 
 ```ts
-import { UploadService, UploadModule, Upload, UploadedFile, UploadedFiles } from "nexus/upload";
+import { UploadService, UploadModule, Upload, UploadedFile, UploadedFiles } from "nexusjs/upload";
 
 @Module({
   imports: [UploadModule.forRoot({ maxFileSize: 10 * 1024 * 1024, allowedMimeTypes: ["image/*"] })],
@@ -742,10 +742,10 @@ See [user-guide/upload.md](./user-guide/upload.md).
 
 ---
 
-## `nexus/sse` (v0.4)
+## `nexusjs/sse` (v0.4)
 
 ```ts
-import { sse, SseStream, getLastEventId } from "nexus/sse";
+import { sse, SseStream, getLastEventId } from "nexusjs/sse";
 
 @Controller("/events")
 class EventController {
@@ -766,10 +766,10 @@ See [user-guide/sse.md](./user-guide/sse.md).
 
 ---
 
-## `nexus/tracing` (v0.4)
+## `nexusjs/tracing` (v0.4)
 
 ```ts
-import { TracingService, TracingModule, Trace, withSpan } from "nexus/tracing";
+import { TracingService, TracingModule, Trace, withSpan } from "nexusjs/tracing";
 
 @Module({
   imports: [TracingModule.forRoot({
@@ -802,10 +802,10 @@ See [user-guide/tracing.md](./user-guide/tracing.md).
 
 ---
 
-## `nexus/metrics` (v0.4)
+## `nexusjs/metrics` (v0.4)
 
 ```ts
-import { MetricsService, MetricsModule, Counted, Timed } from "nexus/metrics";
+import { MetricsService, MetricsModule, Counted, Timed } from "nexusjs/metrics";
 
 @Module({
   imports: [MetricsModule.forRoot({ path: "/metrics", enableDefaultMetrics: true })],
@@ -839,10 +839,10 @@ See [user-guide/metrics.md](./user-guide/metrics.md).
 
 ---
 
-## `nexus/redis` (v0.5)
+## `nexusjs/redis` (v0.5)
 
 ```ts
-import { createRedisClient, RedisModule, REDIS_CLIENT_TOKEN } from "nexus/redis";
+import { createRedisClient, RedisModule, REDIS_CLIENT_TOKEN } from "nexusjs/redis";
 
 // Auto-detect runtime adapter
 const redis = createRedisClient({ url: "redis://localhost:6379" });
@@ -863,10 +863,10 @@ See [user-guide/redis.md](./user-guide/redis.md).
 
 ---
 
-## `nexus/i18n` (v0.5)
+## `nexusjs/i18n` (v0.5)
 
 ```ts
-import { I18nModule, I18nService, I18N_SERVICE_TOKEN, i18nMiddleware, CurrentLocale } from "nexus/i18n";
+import { I18nModule, I18nService, I18N_SERVICE_TOKEN, i18nMiddleware, CurrentLocale } from "nexusjs/i18n";
 
 @Module({
   imports: [I18nModule.forRoot({
@@ -900,10 +900,10 @@ See [user-guide/i18n.md](./user-guide/i18n.md).
 
 ---
 
-## `nexus/crypto` (v0.5)
+## `nexusjs/crypto` (v0.5)
 
 ```ts
-import { CryptoModule, EncryptionService, HashService } from "nexus/crypto";
+import { CryptoModule, EncryptionService, HashService } from "nexusjs/crypto";
 
 @Module({ imports: [CryptoModule.forRoot({ key: process.env.APP_KEY! })] })
 class AppModule {}
@@ -932,10 +932,10 @@ See [user-guide/crypto.md](./user-guide/crypto.md).
 
 ---
 
-## `nexus/ws` (v0.5)
+## `nexusjs/ws` (v0.5)
 
 ```ts
-import { WebSocketModule, WebSocketService, WebSocketGateway, OnWebSocketOpen, OnWebSocketMessage, OnWebSocketClose, WEBSOCKET_SERVICE_TOKEN, BunWsAdapter, NodeWsAdapter } from "nexus/ws";
+import { WebSocketModule, WebSocketService, WebSocketGateway, OnWebSocketOpen, OnWebSocketMessage, OnWebSocketClose, WEBSOCKET_SERVICE_TOKEN, BunWsAdapter, NodeWsAdapter } from "nexusjs/ws";
 
 @Injectable()
 @WebSocketGateway("/ws")
@@ -974,7 +974,7 @@ See [user-guide/ws.md](./user-guide/ws.md).
 ## Request-scoped DI (v0.4)
 
 ```ts
-import { Inject, Injectable, REQUEST, getRequest, getRequestScope } from "nexus";
+import { Inject, Injectable, REQUEST, getRequest, getRequestScope } from "nexusjs";
 
 @Injectable({ scope: "request" })
 class RequestContext {
@@ -1007,17 +1007,17 @@ See [user-guide/request-scope.md](./user-guide/request-scope.md).
 
 ---
 
-## `nexus/cli` (`nx`)
+## `nexusjs/cli` (`nx`)
 
 ```ts
-import { commands, findCommand } from "nexus/cli";
+import { commands, findCommand } from "nexusjs/cli";
 
 // 18 commands (v0.3, unchanged in v0.4):
   // (unchanged in v0.4)
 
 
 ```ts
-import { commands, findCommand } from 'nexus/cli';
+import { commands, findCommand } from 'nexusjs/cli';
 
 // 20 commands (v0.4 + v0.5):
 //   new, init, make:crud, make:controller, make:service, make:module,
@@ -1095,7 +1095,7 @@ class CloudflareRuntime{ fetch: (req: Request, env?: any, ctx?: any) => Promise<
 
 ## ORM (Drizzle)
 
-The full Drizzle integration lives in `nexus/drizzle`. See the
+The full Drizzle integration lives in `nexusjs/drizzle`. See the
 [user guide](./user-guide/drizzle.md) and the [Drizzle section
 above](#nexusdrizzle-default-orm).
 
@@ -1104,7 +1104,7 @@ import {
   DrizzleModule, DrizzleService,
   DrizzleRepository, DrizzleModel,
   Table, Column, PrimaryKey,
-} from 'nexus/drizzle';
+} from 'nexusjs/drizzle';
 
 class DrizzleModule { static forRoot(config: DrizzleConfig): Type; }
 // ... see full API above

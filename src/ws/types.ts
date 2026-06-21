@@ -1,7 +1,7 @@
 /**
- * Public types for `nexus/ws`.
+ * Public types for `nexusjs/ws`.
  *
- * `nexus/ws` is a thin abstraction over Hono's runtime-specific
+ * `nexusjs/ws` is a thin abstraction over Hono's runtime-specific
  * WebSocket support. The same `@WebSocketGateway` / `@OnWebSocketMessage`
  * pattern works on Bun (via `hono/adapter/bun/websocket`) and Node
  * (via the `ws` package).

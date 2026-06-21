@@ -1,5 +1,5 @@
 /**
- * `nexus/openapi` — OpenAPI 3.1 + Scalar UI.
+ * `nexusjs/openapi` — OpenAPI 3.1 + Scalar UI.
  *
  *   @Module({
  *     imports: [

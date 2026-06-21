@@ -2,14 +2,14 @@
 
 > English version: [`production-basics.md`](./production-basics.md)
 
-v0.3에서 출시되는 네 모듈 — `nexus/health`, `nexus/config`,
-`nexus/logger`, `nexus/static` — 모든 NestJS / AdonisJS 백엔드가
+v0.3에서 출시되는 네 모듈 — `nexusjs/health`, `nexusjs/config`,
+`nexusjs/logger`, `nexusjs/static` — 모든 NestJS / AdonisJS 백엔드가
 당연하다고 여기는 **production basics**이다. 같은 패키지 경계
 (번들의 별도 진입점)와 같은 DI 패턴(`Module.forRoot({...})`)을 공유한다.
 
 ---
 
-## 1. `nexus/health` — 헬스 체크
+## 1. `nexusjs/health` — 헬스 체크
 
 Kubernetes, 로드밸런서, 운영 대시보드를 위한 liveness / readiness /
 startup 엔드포인트. 균일한 `HealthIndicator` 인터페이스 기반.
@@ -18,8 +18,8 @@ startup 엔드포인트. 균일한 `HealthIndicator` 인터페이스 기반.
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { HealthModule } from 'nexus/health';
+import { Module } from 'nexusjs';
+import { HealthModule } from 'nexusjs/health';
 
 @Module({
   imports: [
@@ -68,9 +68,9 @@ export class AppModule {}
 ### 커스텀 indicator
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { HealthCheckService, HealthIndicator } from 'nexus/health';
-import type { HealthIndicatorResult } from 'nexus/health';
+import { Inject, Injectable } from 'nexusjs';
+import { HealthCheckService, HealthIndicator } from 'nexusjs/health';
+import type { HealthIndicatorResult } from 'nexusjs/health';
 
 @Injectable()
 export class DatabaseHealthIndicator implements HealthIndicator {
@@ -89,7 +89,7 @@ svc.register(new DatabaseHealthIndicator(db));
 
 ---
 
-## 2. `nexus/config` — Zod 검증이 포함된 configuration
+## 2. `nexusjs/config` — Zod 검증이 포함된 configuration
 
 env 변수와 `.env` 파일에서 로드되고 Zod 스키마로 검증되는 타입 안전
 설정. 검증 실패 시 throw (또는 `process.exit(1)`) — 잘못 구성된 배포가
@@ -107,8 +107,8 @@ export const configSchema = z.object({
 });
 
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { ConfigModule } from 'nexus/config';
+import { Module } from 'nexusjs';
+import { ConfigModule } from 'nexusjs/config';
 import { configSchema } from './config/schema.js';
 
 @Module({
@@ -126,8 +126,8 @@ export class AppModule {}
 ### 서비스에서 사용
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { ConfigService } from 'nexus/config';
+import { Inject, Injectable } from 'nexusjs';
+import { ConfigService } from 'nexusjs/config';
 import { configSchema } from '../config/schema.js';
 
 @Injectable()
@@ -164,7 +164,7 @@ Zod 스키마 검증
 
 ---
 
-## 3. `nexus/logger` — Pino 통합 구조화 로깅
+## 3. `nexusjs/logger` — Pino 통합 구조화 로깅
 
 Pino 통합 내장. dev에서는 pretty-print, prod에서는 JSON.
 `AsyncLocalStorage`로 요청 스코프 — 요청 내의 모든 로그는 자동으로
@@ -173,8 +173,8 @@ Pino 통합 내장. dev에서는 pretty-print, prod에서는 JSON.
 ### 빠른 시작
 
 ```ts
-import { Module } from 'nexus';
-import { LoggerModule } from 'nexus/logger';
+import { Module } from 'nexusjs';
+import { LoggerModule } from 'nexusjs/logger';
 
 @Module({
   imports: [
@@ -191,8 +191,8 @@ export class AppModule {}
 ### 서비스에서 사용
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { Logger } from 'nexus/logger';
+import { Inject, Injectable } from 'nexusjs';
+import { Logger } from 'nexusjs/logger';
 
 @Injectable()
 class UserService {
@@ -213,7 +213,7 @@ class UserService {
 ### 요청 스코프 컨텍스트
 
 ```ts
-import { logger } from 'nexus/logger';
+import { logger } from 'nexusjs/logger';
 
 async function handle(request: Request) {
   await logger.with({ requestId: crypto.randomUUID() }, async () => {
@@ -243,7 +243,7 @@ class OrderService {
 
 ---
 
-## 4. `nexus/static` — 정적 파일 서빙
+## 4. `nexusjs/static` — 정적 파일 서빙
 
 적절한 `Content-Type`, ETag, `Cache-Control`, range request 지원으로
 디렉토리에서 파일을 서빙. 경로 조작 방지.
@@ -251,8 +251,8 @@ class OrderService {
 ### 빠른 시작
 
 ```ts
-import { Module } from 'nexus';
-import { StaticModule } from 'nexus/static';
+import { Module } from 'nexusjs';
+import { StaticModule } from 'nexusjs/static';
 import { resolve } from 'node:path';
 
 @Module({
@@ -273,8 +273,8 @@ export class AppModule {}
 SPA 폴백(매칭되지 않는 라우트에 `index.html` 서빙)을 위해 미들웨어를 직접 마운트:
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { StaticService } from 'nexus/static';
+import { Inject, Injectable } from 'nexusjs';
+import { StaticService } from 'nexusjs/static';
 import { Hono } from 'hono';
 
 @Injectable()
@@ -305,16 +305,16 @@ class WebServer {
 일반적인 v0.3 앱 모듈:
 
 ```ts
-import { Module } from 'nexus';
-import { HealthModule } from 'nexus/health';
-import { ConfigModule } from 'nexus/config';
-import { LoggerModule } from 'nexus/logger';
-import { StaticModule } from 'nexus/static';
-import { AuthModule } from 'nexus/auth';
-import { SessionModule } from 'nexus/session';
-import { QueueModule } from 'nexus/queue';
-import { ScheduleModule } from 'nexus/schedule';
-import { EventsModule } from 'nexus/events';
+import { Module } from 'nexusjs';
+import { HealthModule } from 'nexusjs/health';
+import { ConfigModule } from 'nexusjs/config';
+import { LoggerModule } from 'nexusjs/logger';
+import { StaticModule } from 'nexusjs/static';
+import { AuthModule } from 'nexusjs/auth';
+import { SessionModule } from 'nexusjs/session';
+import { QueueModule } from 'nexusjs/queue';
+import { ScheduleModule } from 'nexusjs/schedule';
+import { EventsModule } from 'nexusjs/events';
 import { configSchema } from './config/schema.js';
 
 @Module({

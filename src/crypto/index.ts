@@ -1,5 +1,5 @@
 /**
- * `nexus/crypto` — encryption + password hashing.
+ * `nexusjs/crypto` — encryption + password hashing.
  *
  * Public API:
  * - `EncryptionService` — AES-256-GCM + HMAC sign/unsign.
@@ -16,8 +16,8 @@
  *
  * Quick start:
  *
- *   import { Module } from "nexus";
- *   import { CryptoModule, EncryptionService, HashService } from "nexus/crypto";
+ *   import { Module } from "nexusjs";
+ *   import { CryptoModule, EncryptionService, HashService } from "nexusjs/crypto";
  *
  *   @Module({
  *     imports: [CryptoModule.forRoot({ key: process.env.APP_KEY! })],

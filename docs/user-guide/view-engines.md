@@ -21,7 +21,7 @@ Rendu compiles templates to render functions, so it's fast on every
 runtime and works in Cloudflare Workers without filesystem access.
 
 ```ts
-import { RenduAdapter } from 'nexus/view';
+import { RenduAdapter } from 'nexusjs/view';
 
 const rendu = new RenduAdapter();
 const html = await rendu.render(
@@ -64,7 +64,7 @@ Edge is AdonisJS's official template engine — `{{ ... }}` for output,
 `{{{ ... }}}` for raw output, and `@if` / `@each` directives.
 
 ```ts
-import { EdgeAdapter } from 'nexus/view';
+import { EdgeAdapter } from 'nexusjs/view';
 
 const edge = new EdgeAdapter();
 const html = await edge.render(
@@ -102,7 +102,7 @@ index(@Inject(Inertia.TOKEN) inertia: Inertia) {
 Implement the `ViewAdapter` interface and install it:
 
 ```ts
-import type { ViewAdapter } from 'nexus/view';
+import type { ViewAdapter } from 'nexusjs/view';
 
 class MyEngine implements ViewAdapter {
   readonly name = 'my-engine';

@@ -177,7 +177,7 @@ const CONFIG_CANDIDATES = [
  *
  * Missing / unloadable config files are not fatal — we log a debug
  * message and use defaults so the CLI works in fresh projects where
- * `nexus` hasn't been installed yet.
+ * `nexusjs` hasn't been installed yet.
  */
 export async function loadConfig(
 	cwd: string = process.cwd(),
@@ -195,7 +195,7 @@ export async function loadConfig(
 				config = JSON.parse(raw) as Partial<NxConfig>;
 			} else {
 				// Dynamic import — works under Bun and Node (tsx).
-				// Some nx.config.ts files import from `nexus/cli` for
+				// Some nx.config.ts files import from `nexusjs/cli` for
 				// type-safety. When nexus isn't installed yet (e.g. in
 				// a fresh project after `nx new`), swallow the import
 				// failure and fall back to defaults.

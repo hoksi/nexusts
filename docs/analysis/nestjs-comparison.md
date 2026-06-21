@@ -26,23 +26,23 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 |----------|--------|--------------|-------|
 | HTTP / routing | ✅ GraphQL, WebSockets, gRPC, SSE, Fastify | ⚠️ Hono + SSE + WS, no GraphQL/gRPC | REST + functional + Nest/Adonis styles |
 | DI | ✅ Request-scoped, circular auto-resolve | ✅ Singleton + transient + request | Request scope via `AsyncLocalStorage`; `@Injectable({ scope: 'request' })` |
-| Config | ✅ @nestjs/config, .env validation | ✅ `nexus/config` | Zod-validated, layered loading |
-| Security | ✅ helmet, throttler, CSRF, CORS | ✅ `nexus/shield` + `nexus/limiter` | CSRF / HSTS / CSP / rate limit. CORS via Hono middleware |
-| Database | ✅ TypeORM, Prisma, Mongoose, Sequelize | ✅ `nexus/drizzle` (5 dialects) | Drizzle is the default ORM |
-| Cache | ✅ cache-manager (in-memory / Redis) | ✅ `nexus/cache` (memory / Drizzle) | Tag-based invalidation; Redis via custom store |
-| Logging | ✅ Built-in Logger (Winston / Pino adapters) | ✅ `nexus/logger` (Pino) | Pretty in dev, JSON in prod, request-scoped via ALS |
-| Realtime | ✅ WebSocket, SSE, gRPC streaming | ✅ WebSocket + SSE | `nexus/ws` (Bun + Node) + `nexus/sse` |
-| Microservices | ✅ TCP, Redis, NATS, Kafka, MQTT | ⚠️ `nexus/queue` (BullMQ / Cloudflare) | Job queue only; no service-mesh transports |
-| API docs | ✅ @nestjs/swagger | ✅ `nexus/openapi` | OpenAPI 3.1 from Zod + Scalar UI |
-| Health checks | ✅ @nestjs/terminus | ✅ `nexus/health` | Built-in indicators (memory/disk/http/db) |
-| Email | ✅ @nestjs/mailer | ✅ `nexus/mail` (SMTP / File / Null) | MJML via optional peer |
-| File upload | ✅ multer integration | ✅ `nexus/upload` | `@Upload` / `@UploadedFile` decorators, size + MIME validation |
-| File storage | ❌ DIY | ✅ `nexus/drive` (memory / Local / S3 / R2) | Nexus has a first-party `nexus/drive`; Nest doesn't |
-| i18n | ✅ nestjs-i18n | ✅ `nexus/i18n` | `Intl`-based, pluralization, JSON catalogs |
-| Tracing | ✅ OpenTelemetry integration | ✅ `nexus/tracing` | Lazy OTel SDK, W3C + B3 propagation |
-| Metrics | ✅ Prometheus integration | ✅ `nexus/metrics` | Counter / Gauge / Histogram / Summary |
-| Auth | ✅ @nestjs/passport + many strategies | ✅ `nexus/auth` (better-auth) | better-auth supports many strategies |
-| Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `nexus/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
+| Config | ✅ @nestjs/config, .env validation | ✅ `nexusjs/config` | Zod-validated, layered loading |
+| Security | ✅ helmet, throttler, CSRF, CORS | ✅ `nexusjs/shield` + `nexusjs/limiter` | CSRF / HSTS / CSP / rate limit. CORS via Hono middleware |
+| Database | ✅ TypeORM, Prisma, Mongoose, Sequelize | ✅ `nexusjs/drizzle` (5 dialects) | Drizzle is the default ORM |
+| Cache | ✅ cache-manager (in-memory / Redis) | ✅ `nexusjs/cache` (memory / Drizzle) | Tag-based invalidation; Redis via custom store |
+| Logging | ✅ Built-in Logger (Winston / Pino adapters) | ✅ `nexusjs/logger` (Pino) | Pretty in dev, JSON in prod, request-scoped via ALS |
+| Realtime | ✅ WebSocket, SSE, gRPC streaming | ✅ WebSocket + SSE | `nexusjs/ws` (Bun + Node) + `nexusjs/sse` |
+| Microservices | ✅ TCP, Redis, NATS, Kafka, MQTT | ⚠️ `nexusjs/queue` (BullMQ / Cloudflare) | Job queue only; no service-mesh transports |
+| API docs | ✅ @nestjs/swagger | ✅ `nexusjs/openapi` | OpenAPI 3.1 from Zod + Scalar UI |
+| Health checks | ✅ @nestjs/terminus | ✅ `nexusjs/health` | Built-in indicators (memory/disk/http/db) |
+| Email | ✅ @nestjs/mailer | ✅ `nexusjs/mail` (SMTP / File / Null) | MJML via optional peer |
+| File upload | ✅ multer integration | ✅ `nexusjs/upload` | `@Upload` / `@UploadedFile` decorators, size + MIME validation |
+| File storage | ❌ DIY | ✅ `nexusjs/drive` (memory / Local / S3 / R2) | Nexus has a first-party `nexusjs/drive`; Nest doesn't |
+| i18n | ✅ nestjs-i18n | ✅ `nexusjs/i18n` | `Intl`-based, pluralization, JSON catalogs |
+| Tracing | ✅ OpenTelemetry integration | ✅ `nexusjs/tracing` | Lazy OTel SDK, W3C + B3 propagation |
+| Metrics | ✅ Prometheus integration | ✅ `nexusjs/metrics` | Counter / Gauge / Histogram / Summary |
+| Auth | ✅ @nestjs/passport + many strategies | ✅ `nexusjs/auth` (better-auth) | better-auth supports many strategies |
+| Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `nexusjs/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
 | Feature flags | ⚠️ DIY (no first-party) | ⚠️ DIY | Both lack first-party |
 | Resilience (circuit breaker, retry) | ⚠️ nestjs-recq | ⚠️ DIY | Both lack first-party |
 | GraphQL | ✅ @nestjs/graphql | ❌ None | Planned v0.6 |
@@ -61,27 +61,27 @@ documents what shipped and where.
 
 | Was missing in v0.2 | Shipped | Module |
 | ------------------- | ------- | ------ |
-| Health checks (`@nestjs/terminus` equivalent) | v0.3 | `nexus/health` |
-| Rate limiting / throttling | v0.3 | `nexus/limiter` |
-| Security headers (helmet equivalent) | v0.3 | `nexus/shield` (CSRF + HSTS + CSP) |
-| Configuration management (`@nestjs/config` equivalent) | v0.3 | `nexus/config` |
-| Logging (Pino / Winston integration) | v0.3 | `nexus/logger` |
-| Cache (`cache-manager` equivalent) | v0.3 | `nexus/cache` |
-| Email integration (`@nestjs/mailer` equivalent) | v0.3 | `nexus/mail` |
-| File storage abstraction | v0.3 | `nexus/drive` (memory / Local / S3 / R2) |
-| Database integration | v0.3 | `nexus/drizzle` (default ORM) |
+| Health checks (`@nestjs/terminus` equivalent) | v0.3 | `nexusjs/health` |
+| Rate limiting / throttling | v0.3 | `nexusjs/limiter` |
+| Security headers (helmet equivalent) | v0.3 | `nexusjs/shield` (CSRF + HSTS + CSP) |
+| Configuration management (`@nestjs/config` equivalent) | v0.3 | `nexusjs/config` |
+| Logging (Pino / Winston integration) | v0.3 | `nexusjs/logger` |
+| Cache (`cache-manager` equivalent) | v0.3 | `nexusjs/cache` |
+| Email integration (`@nestjs/mailer` equivalent) | v0.3 | `nexusjs/mail` |
+| File storage abstraction | v0.3 | `nexusjs/drive` (memory / Local / S3 / R2) |
+| Database integration | v0.3 | `nexusjs/drizzle` (default ORM) |
 | Database migrations | v0.3 | `nx db:migrate` + `nx db:migrate --generate` |
-| Static file serving | v0.3 | `nexus/static` |
-| Default ORM (Drizzle-style) | v0.3 | `nexus/drizzle` |
-| **OpenAPI / Swagger** | v0.4 | `nexus/openapi` |
-| **File upload helper** | v0.4 | `nexus/upload` |
+| Static file serving | v0.3 | `nexusjs/static` |
+| Default ORM (Drizzle-style) | v0.3 | `nexusjs/drizzle` |
+| **OpenAPI / Swagger** | v0.4 | `nexusjs/openapi` |
+| **File upload helper** | v0.4 | `nexusjs/upload` |
 | **Request-scoped DI** | v0.4 | core DI + ALS + Hono middleware |
-| **Server-Sent Events** | v0.4 | `nexus/sse` |
-| **Distributed tracing** | v0.4 | `nexus/tracing` |
-| **Prometheus metrics** | v0.4 | `nexus/metrics` |
-| **WebSockets** | v0.5 | `nexus/ws` (Bun primary, Node via `ws`) |
-| **Encryption + password hashing** | v0.5 | `nexus/crypto` (AES-256-GCM + HMAC + scrypt) |
-| **i18n** | v0.5 | `nexus/i18n` (Intl-based, pluralization) |
+| **Server-Sent Events** | v0.4 | `nexusjs/sse` |
+| **Distributed tracing** | v0.4 | `nexusjs/tracing` |
+| **Prometheus metrics** | v0.4 | `nexusjs/metrics` |
+| **WebSockets** | v0.5 | `nexusjs/ws` (Bun primary, Node via `ws`) |
+| **Encryption + password hashing** | v0.5 | `nexusjs/crypto` (AES-256-GCM + HMAC + scrypt) |
+| **i18n** | v0.5 | `nexusjs/i18n` (Intl-based, pluralization) |
 
 Total: **21 Tier 1+2 gaps closed** since v0.2 (12 in v0.3 + 6 in v0.4 + 3 in v0.5).
 
@@ -97,7 +97,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 4.1 WebSockets (`@nestjs/websockets` equivalent)
 
-- **Status**: ✅ closed in v0.5 by `nexus/ws`.
+- **Status**: ✅ closed in v0.5 by `nexusjs/ws`.
 - **What ships**: `@WebSocketGateway(path)` + `@OnWebSocketMessage()`
   decorators. `WebSocketService` for connection tracking, rooms,
   broadcast. `BunWsAdapter` (uses `hono/bun`) and `NodeWsAdapter`
@@ -106,7 +106,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 4.2 Server-Sent Events (SSE)
 
-- **Status**: ✅ closed in v0.4 by `nexus/sse` (Hono's
+- **Status**: ✅ closed in v0.4 by `nexusjs/sse` (Hono's
   `streamSSE` wrapped behind a type-safe `SseStream` with
   auto-serialization, idempotent `close()`, and `Last-Event-ID`
   reconnection support). See
@@ -126,7 +126,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 - **Use cases**: service-to-service high-perf RPC.
 - **Status**: ❌ not yet shipped. Planned v0.6+.
-- **Proposed module**: `nexus/grpc`
+- **Proposed module**: `nexusjs/grpc`
 - **Features**:
   - `@GrpcMethod('UserService', 'findById')` decorator
   - Streaming (server, client, bidi)
@@ -139,7 +139,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 - **Use cases**: BFF patterns, mobile clients, schema-first dev.
 - **Status**: ❌ not yet shipped. Planned v0.6+.
-- **Proposed module**: `nexus/graphql`
+- **Proposed module**: `nexusjs/graphql`
 - **Features**:
   - `@Resolver()`, `@Query()`, `@Mutation()` decorators
   - Code-first schema generation
@@ -153,7 +153,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 5.1 i18n (`nestjs-i18n` equivalent)
 
-- **Status**: ✅ closed in v0.5 by `nexus/i18n`. `Intl`-based
+- **Status**: ✅ closed in v0.5 by `nexusjs/i18n`. `Intl`-based
   pluralization with `|` separator, locale detection middleware
   (query → cookie → Accept-Language → default), JSON catalogs,
   `formatDate` / `formatNumber` / `formatCurrency` /
@@ -163,7 +163,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 - **Use cases**: canary deploys, A/B tests, gradual rollouts.
 - **Status**: ❌ not yet shipped.
-- **Proposed module**: `nexus/feature-flag`
+- **Proposed module**: `nexusjs/feature-flag`
 - **Features**:
   - `@FeatureFlag('new-dashboard')` decorator
   - Backends: in-memory / LaunchDarkly / Unleash
@@ -171,14 +171,14 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 5.3 Tracing (OpenTelemetry)
 
-- **Status**: ✅ closed in v0.4 by `nexus/tracing`. Lazy
+- **Status**: ✅ closed in v0.4 by `nexusjs/tracing`. Lazy
   `@opentelemetry/sdk-node` load, W3C + B3 propagation, Hono
   auto-instrumentation middleware, `@Trace()` decorator.
   See [`../../user-guide/tracing.md`](../../user-guide/tracing.md).
 
 ### 5.4 Metrics (Prometheus)
 
-- **Status**: ✅ closed in v0.4 by `nexus/metrics`.
+- **Status**: ✅ closed in v0.4 by `nexusjs/metrics`.
   Counter / Gauge / Histogram / Summary, `@Counted` / `@Timed`
   decorators, `/metrics` endpoint with content negotiation
   (Prometheus 0.0.4 / OpenMetrics 1.0.0). Default Node.js process
@@ -186,18 +186,18 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 5.5 Encryption + password hashing
 
-- **Status**: ✅ closed in v0.5 by `nexus/crypto`. AES-256-GCM
+- **Status**: ✅ closed in v0.5 by `nexusjs/crypto`. AES-256-GCM
   authenticated encryption, HMAC-SHA256 sign/unsign, scrypt
   password hashing (default, built-in to Node), optional
   `@node-rs/argon2` peer. `EncryptionService` is also used
-  internally by `nexus/session` and `nexus/shield` for HMAC.
+  internally by `nexusjs/session` and `nexusjs/shield` for HMAC.
   See [`../../user-guide/crypto.md`](../../user-guide/crypto.md).
 
 ### 5.6 Resilience: circuit breakers + retry
 
 - **Use cases**: external API resilience.
 - **Status**: ❌ not yet shipped.
-- **Proposed module**: `nexus/resilience`
+- **Proposed module**: `nexusjs/resilience`
 - **Features**:
   - `@Retry({ attempts: 3, backoff: 'exponential' })` decorator
   - `@CircuitBreaker({ threshold: 0.5 })` decorator
@@ -213,7 +213,7 @@ None. v0.3 closed every original Tier 1 gap.
 ### 5.8 Feature flags (advanced)
 
 - **Status**: ❌ not yet shipped.
-- **Proposed module**: `nexus/feature-flag`
+- **Proposed module**: `nexusjs/feature-flag`
 - **Features**:
   - `@FeatureFlag('new-dashboard')` decorator
   - Backends: in-memory / LaunchDarkly / Unleash
@@ -227,9 +227,9 @@ None. v0.3 closed every original Tier 1 gap.
 |------|--------|--------|--------|
 | CORS abstraction | Low | Medium | Open (Hono's `cors()` works; a thin wrapper would give consistent config) |
 | Multi-runtime parity tests | Low | High | Open (Bun / Node / Workers) |
-| `nexus/cache` Redis store | Low | High | Open (one more backend implementing the `CacheStore` interface) |
-| Multipart body parser wrapper | Low | Medium | ✅ shipped as `nexus/upload` (v0.4) |
-| `helmet()` middleware | Very low | High | Open (some pieces ship in `nexus/shield`) |
+| `nexusjs/cache` Redis store | Low | High | Open (one more backend implementing the `CacheStore` interface) |
+| Multipart body parser wrapper | Low | Medium | ✅ shipped as `nexusjs/upload` (v0.4) |
+| `helmet()` middleware | Very low | High | Open (some pieces ship in `nexusjs/shield`) |
 
 The biggest **single** leverage remaining is **GraphQL** — it
 unlocks BFF / mobile-first patterns that are now table-stakes for
@@ -241,10 +241,10 @@ consumer apps.
 
 ### v0.6 — Async RPC & DX (the "polyglot" milestone) — planned
 
-1. **`nexus/graphql`** — code-first schema, `@Resolver()` / `@Query()` / `@Mutation()`
-2. **`nexus/grpc`** — server / client / streaming
-3. **`nexus/resilience`** — circuit breaker, retry, bulkhead
-4. **`nexus/feature-flag`** — canary / A/B testing
+1. **`nexusjs/graphql`** — code-first schema, `@Resolver()` / `@Query()` / `@Mutation()`
+2. **`nexusjs/grpc`** — server / client / streaming
+3. **`nexusjs/resilience`** — circuit breaker, retry, bulkhead
+4. **`nexusjs/feature-flag`** — canary / A/B testing
 
 These four complete the "missing infrastructure" list. After v0.6,
 NexusJS will have feature parity with NestJS for ~95% of backend

@@ -1,5 +1,5 @@
 /**
- * Queue types — the public contract for `nexus/queue`.
+ * Queue types — the public contract for `nexusjs/queue`.
  *
  * The queue module provides an abstraction over two backends:
  *   - BullMQ     (Redis-backed, for Bun / Node / long-running servers)
@@ -190,7 +190,7 @@ export interface QueueConfig {
 export interface BullMQConfig {
 	/** Redis connection URL (e.g. redis://localhost:6379). */
 	connection: string | { host: string; port: number; password?: string };
-	/** Prefix for all queue keys. Default: 'nexus'. */
+	/** Prefix for all queue keys. Default: 'nexusjs'. */
 	prefix?: string;
 	/** Default job options. */
 	defaultJobOptions?: AddOptions;

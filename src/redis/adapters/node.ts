@@ -1,5 +1,5 @@
 /**
- * Node.js runtime adapter for `nexus/redis`.
+ * Node.js runtime adapter for `nexusjs/redis`.
  *
  * Uses the `ioredis` package. The package is an **optional**
  * peer dependency of `nexusjs` — install it only when targeting

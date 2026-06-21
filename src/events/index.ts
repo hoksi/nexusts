@@ -10,14 +10,14 @@
  * Quick start:
  *
  *   // src/app/app.module.ts
- *   import { Module } from 'nexus';
- *   import { EventsModule } from 'nexus/events';
+ *   import { Module } from 'nexusjs';
+ *   import { EventsModule } from 'nexusjs/events';
  *
  *   @Module({ imports: [EventsModule.forRoot()] })
  *   export class AppModule {}
  *
  *   // any service
- *   import { EventService, OnEvent, scanForListeners } from 'nexus/events';
+ *   import { EventService, OnEvent, scanForListeners } from 'nexusjs/events';
  *
  *   @Injectable()
  *   class EmailListeners {

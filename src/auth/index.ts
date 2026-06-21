@@ -8,21 +8,21 @@
  * Quick start:
  *
  *   // src/auth/auth.ts
- *   import { createAuth } from 'nexus/auth';
+ *   import { createAuth } from 'nexusjs/auth';
  *   export const auth = createAuth({
  *     emailAndPassword: { enabled: true },
  *     socialProviders: { github: { clientId: '...', clientSecret: '...' } },
  *   });
  *
  *   // src/app/app.module.ts
- *   import { Module } from 'nexus';
- *   import { AuthModule } from 'nexus/auth';
+ *   import { Module } from 'nexusjs';
+ *   import { AuthModule } from 'nexusjs/auth';
  *
  *   @Module({ imports: [AuthModule.forRoot({ ... })] })
  *   export class AppModule {}
  *
  *   // any controller
- *   import { CurrentUser } from 'nexus/auth';
+ *   import { CurrentUser } from 'nexusjs/auth';
  *
  *   @Controller('/profile')
  *   class ProfileController {

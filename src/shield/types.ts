@@ -1,5 +1,5 @@
 /**
- * `nexus/shield` — security middleware suite.
+ * `nexusjs/shield` — security middleware suite.
  *
  * Inspired by AdonisJS Shield. Provides:
  *   - CSRF protection (synchronizer token pattern)

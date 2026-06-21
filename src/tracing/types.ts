@@ -1,7 +1,7 @@
 /**
- * Public types for `nexus/tracing`.
+ * Public types for `nexusjs/tracing`.
  *
- * `nexus/tracing` is a thin, ergonomic wrapper around the
+ * `nexusjs/tracing` is a thin, ergonomic wrapper around the
  * OpenTelemetry API (and, when configured, the SDK). It is
  * intentionally minimal — no global side effects on import.
  *
@@ -19,7 +19,7 @@ import type { SpanContext as OtelSpanContext } from "@opentelemetry/api";
 export type TracingExporter = "otlp-http" | "otlp-grpc" | "console" | "memory";
 
 export interface TracingConfig {
-	/** Service name reported in spans. Defaults to `process.env.OTEL_SERVICE_NAME ?? "nexus"`. */
+	/** Service name reported in spans. Defaults to `process.env.OTEL_SERVICE_NAME ?? "nexusjs"`. */
 	serviceName?: string;
 	/** Service version (sent as `service.version` resource attribute). */
 	serviceVersion?: string;
@@ -33,7 +33,7 @@ export interface TracingConfig {
 	sampleRatio?: number;
 	/** Whether to install the Hono HTTP server middleware. Default: `true`. */
 	enableHttpInstrumentation?: boolean;
-	/** Whether to capture DB spans via `nexus/drizzle` (if installed). Default: `true`. */
+	/** Whether to capture DB spans via `nexusjs/drizzle` (if installed). Default: `true`. */
 	enableDbInstrumentation?: boolean;
 	/** Extra static resource attributes (service.namespace, deployment.id, ...). */
 	resourceAttributes?: Record<string, string>;

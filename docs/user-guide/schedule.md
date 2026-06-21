@@ -2,7 +2,7 @@
 
 > 한국어 버전: [`schedule.ko.md`](./schedule.ko.md)
 
-NexusJS ships a schedule module under `nexus/schedule` that mirrors
+NexusJS ships a schedule module under `nexusjs/schedule` that mirrors
 `@nestjs/schedule`:
 
 - `@Cron(expression)` decorator — runs a method on a cron schedule.
@@ -13,7 +13,7 @@ NexusJS ships a schedule module under `nexus/schedule` that mirrors
 - **Two backends** — in-process (Bun / Node) and Cloudflare Cron
   Triggers.
 
-The schedule module is **separate from `nexus/core`** and ships as
+The schedule module is **separate from `nexusjs/core`** and ships as
 its own bundle entry point.
 
 ---
@@ -22,8 +22,8 @@ its own bundle entry point.
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { ScheduleModule } from 'nexus/schedule';
+import { Module } from 'nexusjs';
+import { ScheduleModule } from 'nexusjs/schedule';
 
 @Module({
   imports: [ScheduleModule.forRoot({ backend: 'memory' })],
@@ -33,8 +33,8 @@ export class AppModule {}
 
 ```ts
 // src/schedule/tasks/cleanup.task.ts
-import { Inject, Injectable } from 'nexus';
-import { Cron, Interval, ScheduleService } from 'nexus/schedule';
+import { Inject, Injectable } from 'nexusjs';
+import { Cron, Interval, ScheduleService } from 'nexusjs/schedule';
 
 @Injectable()
 export class CleanupTask {
@@ -54,8 +54,8 @@ export class CleanupTask {
 
 ```ts
 // src/app/main.ts
-import { Application } from 'nexus';
-import { ScheduleService, scanForSchedulers } from 'nexus/schedule';
+import { Application } from 'nexusjs';
+import { ScheduleService, scanForSchedulers } from 'nexusjs/schedule';
 import { AppModule } from './app.module.js';
 import { CleanupTask } from './schedule/tasks/cleanup.task.js';
 

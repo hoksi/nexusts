@@ -1,10 +1,10 @@
 /**
- * Public API for `nexus/health`.
+ * Public API for `nexusjs/health`.
  *
  * Quick start:
  *   // src/app/app.module.ts
- *   import { Module } from 'nexus';
- *   import { HealthModule } from 'nexus/health';
+ *   import { Module } from 'nexusjs';
+ *   import { HealthModule } from 'nexusjs/health';
  *
  *   @Module({
  *     imports: [

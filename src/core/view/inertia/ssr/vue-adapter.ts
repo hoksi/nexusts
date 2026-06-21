@@ -9,7 +9,7 @@
  *
  * ```ts
  * import { createSSRApp, h } from 'vue';
- * import { createVueAdapter } from 'nexus/view/inertia/ssr';
+ * import { createVueAdapter } from 'nexusjs/view/inertia/ssr';
  * import { HomePage } from './pages/Home.vue';
  *
  * app.inertia.setSsrAdapter(createVueAdapter({

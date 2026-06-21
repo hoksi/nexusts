@@ -2,7 +2,7 @@
 
 > English version: [`events.md`](./events.md)
 
-NexusJS는 `nexus/events` 모듈 아래 `@nestjs/event-emitter`와 AdonisJS의 emitter를 본떠 만든 이벤트 시스템을 제공한다.
+NexusJS는 `nexusjs/events` 모듈 아래 `@nestjs/event-emitter`와 AdonisJS의 emitter를 본떠 만든 이벤트 시스템을 제공한다.
 
 - `events.emit(name, payload)` — 디스패치
 - `@OnEvent(pattern)` — 구독
@@ -12,7 +12,7 @@ NexusJS는 `nexus/events` 모듈 아래 `@nestjs/event-emitter`와 AdonisJS의 e
 - **일회용 리스너** — 첫 매칭 후 자동 제거
 - **에러 수집** — 한 리스너 실패가 나머지를 중단시키지 않음
 
-events 모듈은 **`nexus/core`와 분리**되어 있으며 자체 번들 진입점으로 제공된다.
+events 모듈은 **`nexusjs/core`와 분리**되어 있으며 자체 번들 진입점으로 제공된다.
 
 ---
 
@@ -20,8 +20,8 @@ events 모듈은 **`nexus/core`와 분리**되어 있으며 자체 번들 진입
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { EventsModule } from 'nexus/events';
+import { Module } from 'nexusjs';
+import { EventsModule } from 'nexusjs/events';
 
 @Module({
   imports: [EventsModule.forRoot()],
@@ -31,8 +31,8 @@ export class AppModule {}
 
 ```ts
 // src/events/listeners/email.listeners.ts
-import { Inject, Injectable } from 'nexus';
-import { EventService, OnEvent } from 'nexus/events';
+import { Inject, Injectable } from 'nexusjs';
+import { EventService, OnEvent } from 'nexusjs/events';
 
 @Injectable()
 export class EmailListeners {
@@ -52,8 +52,8 @@ export class EmailListeners {
 
 ```ts
 // src/app/main.ts
-import { Application } from 'nexus';
-import { EventService, scanForListeners } from 'nexus/events';
+import { Application } from 'nexusjs';
+import { EventService, scanForListeners } from 'nexusjs/events';
 import { AppModule } from './app.module.js';
 import { EmailListeners } from './events/listeners/email.listeners.js';
 

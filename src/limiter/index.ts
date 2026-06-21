@@ -1,5 +1,5 @@
 /**
- * Public entry point for `nexus/limiter`.
+ * Public entry point for `nexusjs/limiter`.
  */
 export * from "./types.js";
 export { MemoryRateLimitStorage } from "./backends/index.js";

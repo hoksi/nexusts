@@ -55,7 +55,7 @@ export class OpenAPIModule {
 	 * calls this once, after the framework's router is built, passing
 	 * the route list.
 	 *
-	 *   import { mountOpenAPI } from 'nexus/openapi';
+	 *   import { mountOpenAPI } from 'nexusjs/openapi';
 	 *   const openapi = new OpenAPIService(config);
 	 *   openapi.setRoutes(routes);
 	 *   mountOpenAPI(app, openapi, config);

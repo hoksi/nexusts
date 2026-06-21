@@ -20,7 +20,7 @@
  * 3. The `TracingService` becomes the active global service that
  *    `@Trace()` decorators read from.
  *
- * When `forRoot()` is **not** called, `nexus/tracing` is a no-op:
+ * When `forRoot()` is **not** called, `nexusjs/tracing` is a no-op:
  *   - `TracingService` instances use OTel's default no-op tracer.
  *   - `@Trace()` returns the original method unchanged.
  *   - No SDK packages are loaded.
@@ -60,7 +60,7 @@ export class TracingServiceWithLifecycle extends TracingService {
 export class TracingModule {
 	static forRoot(config: TracingConfig = {}) {
 		const fullConfig: Required<TracingConfig> = {
-			serviceName: config.serviceName ?? process.env.OTEL_SERVICE_NAME ?? "nexus",
+			serviceName: config.serviceName ?? process.env.OTEL_SERVICE_NAME ?? "nexusjs",
 			serviceVersion: config.serviceVersion ?? "0.0.0",
 			environment: config.environment ?? process.env.NODE_ENV ?? "development",
 			exporter: config.exporter ?? "otlp-http",
@@ -90,7 +90,7 @@ export class TracingModule {
 		Object.defineProperty(ConfiguredTracingModule, "name", { value: "ConfiguredTracingModule" });
 
 		// Return both the module class and a helper for installing the
-		// Hono middleware (for users who want to use `nexus/tracing` with
+		// Hono middleware (for users who want to use `nexusjs/tracing` with
 		// a custom Hono app, not the framework's HTTP server).
 		const mod = ConfiguredTracingModule as unknown as Function & {
 			middleware: () => MiddlewareHandler;

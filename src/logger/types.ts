@@ -1,5 +1,5 @@
 /**
- * Logger types — the contract for `nexus/logger`.
+ * Logger types — the contract for `nexusjs/logger`.
  *
  * Mirrors `@adonisjs/logger` + NestJS's built-in Logger. One logger
  * class, two transports:

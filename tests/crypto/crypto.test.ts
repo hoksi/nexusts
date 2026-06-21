@@ -1,5 +1,5 @@
 /**
- * Tests for `nexus/crypto`.
+ * Tests for `nexusjs/crypto`.
  *
  * Coverage:
  * 1. EncryptionService: round-trip, expiry, purpose, integrity, isEncrypted

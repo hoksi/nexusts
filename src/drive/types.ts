@@ -1,5 +1,5 @@
 /**
- * `nexus/drive` — file storage abstraction.
+ * `nexusjs/drive` — file storage abstraction.
  *
  *   const drive = new DriveService({ driver: new LocalDriver({ root: '/var/data' }) });
  *   await drive.put('avatars/42.png', bytes, { contentType: 'image/png' });

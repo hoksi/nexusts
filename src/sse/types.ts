@@ -1,5 +1,5 @@
 /**
- * `nexus/sse` — Server-Sent Events.
+ * `nexusjs/sse` — Server-Sent Events.
  *
  *   @Get('/events')
  *   events() {

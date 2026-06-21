@@ -69,7 +69,7 @@
 
 ## 4. 모듈 분리
 
-`nexus/queue`는 별도 진입점이다.
+`nexusjs/queue`는 별도 진입점이다.
 
 ```json
 "exports": {

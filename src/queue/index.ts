@@ -9,8 +9,8 @@
  * Quick start:
  *
  *   // src/app/app.module.ts
- *   import { Module } from 'nexus';
- *   import { QueueModule } from 'nexus/queue';
+ *   import { Module } from 'nexusjs';
+ *   import { QueueModule } from 'nexusjs/queue';
  *
  *   @Module({
  *     imports: [
@@ -23,7 +23,7 @@
  *   export class AppModule {}
  *
  *   // any controller or service
- *   import { QueueService } from 'nexus/queue';
+ *   import { QueueService } from 'nexusjs/queue';
  *
  *   class SignupController {
  *     constructor(@Inject(QueueService.TOKEN) private queue: QueueService) {}

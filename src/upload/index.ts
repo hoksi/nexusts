@@ -1,5 +1,5 @@
 /**
- * Public entry point for `nexus/upload`.
+ * Public entry point for `nexusjs/upload`.
  */
 export * from "./types.js";
 export { UploadService } from "./upload.service.js";

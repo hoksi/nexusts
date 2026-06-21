@@ -2,7 +2,7 @@
 
 > 한국어 버전: [`session.ko.md`](./session.ko.md)
 
-NexusJS ships a session module under `nexus/session` that provides a
+NexusJS ships a session module under `nexusjs/session` that provides a
 uniform `SessionStorage` interface with multiple backends:
 
 - **cookie** — HMAC-signed, stateless, edge-friendly. The entire
@@ -10,9 +10,9 @@ uniform `SessionStorage` interface with multiple backends:
 - **memory** — in-process, for tests and single-instance dev.
 - **redis** — planned for v0.2 (interface defined).
 
-The session module is **separate from `nexus/core`**, **separate
-from `nexus/auth`** (better-auth manages its own sessions), but
-**integrates with `nexus/auth`** via `AuthService.bindSession()`.
+The session module is **separate from `nexusjs/core`**, **separate
+from `nexusjs/auth`** (better-auth manages its own sessions), but
+**integrates with `nexusjs/auth`** via `AuthService.bindSession()`.
 
 ---
 
@@ -20,8 +20,8 @@ from `nexus/auth`** (better-auth manages its own sessions), but
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { SessionModule } from 'nexus/session';
+import { Module } from 'nexusjs';
+import { SessionModule } from 'nexusjs/session';
 
 @Module({
   imports: [
@@ -36,8 +36,8 @@ export class AppModule {}
 
 ```ts
 // src/controllers/cart.controller.ts
-import { Controller, Post, Body } from 'nexus';
-import { SessionService, Session } from 'nexus/session';
+import { Controller, Post, Body } from 'nexusjs';
+import { SessionService, Session } from 'nexusjs/session';
 
 @Controller('/cart')
 export class CartController {
@@ -116,13 +116,13 @@ deployments. GC runs on `setInterval`.
 
 ### Redis (v0.5)
 
-Multi-pod session storage via `nexus/redis`. The `client` is a
-`RedisClient` from `nexus/redis` — same package that powers the
-`nexus/cache` Redis store and the Cloudflare KV backend.
+Multi-pod session storage via `nexusjs/redis`. The `client` is a
+`RedisClient` from `nexusjs/redis` — same package that powers the
+`nexusjs/cache` Redis store and the Cloudflare KV backend.
 
 ```ts
-import { SessionModule } from 'nexus/session';
-import { createRedisClient } from 'nexus/redis';
+import { SessionModule } from 'nexusjs/session';
+import { createRedisClient } from 'nexusjs/redis';
 
 SessionModule.forRoot({
   backend: 'redis',
@@ -141,8 +141,8 @@ the framework re-uses the same storage class with a different
 underlying client.
 
 ```ts
-import { SessionModule } from 'nexus/session';
-import { CloudflareKVAdapter } from 'nexus/redis';
+import { SessionModule } from 'nexusjs/session';
+import { CloudflareKVAdapter } from 'nexusjs/redis';
 
 export default {
   async fetch(req: Request, env: Env) {
@@ -195,7 +195,7 @@ You can encode/decode session cookies without instantiating the
 service (useful in middleware):
 
 ```ts
-import { SessionService } from 'nexus/session';
+import { SessionService } from 'nexusjs/session';
 
 const cookie = SessionService.encodeCookie(record, secret);
 const record = SessionService.decodeCookie(cookieValue, secret);
@@ -285,7 +285,7 @@ destroys the old one. The old id becomes invalid.
 
 ---
 
-## 8. Integration with `nexus/auth`
+## 8. Integration with `nexusjs/auth`
 
 `AuthService.bindSession(service)` links a `SessionService` to the
 auth flow. After binding, `AuthService.getSession()` consults the

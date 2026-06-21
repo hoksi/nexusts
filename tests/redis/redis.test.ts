@@ -1,5 +1,5 @@
 /**
- * Tests for `nexus/redis`.
+ * Tests for `nexusjs/redis`.
  *
  * Coverage:
  * 1. createRedisClient dispatches to the right adapter

@@ -1,5 +1,5 @@
 /**
- * `nexus/metrics` — Prometheus-compatible metrics collection.
+ * `nexusjs/metrics` — Prometheus-compatible metrics collection.
  *
  * Public API:
  * - `MetricsService`        — main DI-friendly service

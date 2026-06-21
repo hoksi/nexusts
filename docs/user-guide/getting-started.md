@@ -39,7 +39,7 @@ bun add nexus/queue              # if you need background jobs
 > `reflect-metadata` is a peer dependency and must be imported once at
 > the application entry point. `zod` and `hono` are bundled by NexusJS
 > but installing them explicitly is recommended so type resolution works.
-> `drizzle-orm` is a required peer dep of `nexus/drizzle` — install
+> `drizzle-orm` is a required peer dep of `nexusjs/drizzle` — install
 > the driver package (`pg`, `postgres`, `mysql2`, or `better-sqlite3`)
 > for the dialect you use.
 
@@ -97,7 +97,7 @@ my-app/
 
 ```ts
 import 'reflect-metadata';
-import { Application } from 'nexus';
+import { Application } from 'nexusjs';
 import { AppModule } from './app.module.js';
 
 const app = new Application(AppModule);
@@ -147,10 +147,10 @@ export default {
 ### `src/app/app.module.ts`
 
 ```ts
-import { Module } from 'nexus';
-import { DrizzleModule } from 'nexus/drizzle';
-import { LoggerModule } from 'nexus/logger';
-import { HealthModule } from 'nexus/health';
+import { Module } from 'nexusjs';
+import { DrizzleModule } from 'nexusjs/drizzle';
+import { LoggerModule } from 'nexusjs/logger';
+import { HealthModule } from 'nexusjs/health';
 import { HomeController } from './controllers/home.controller.js';
 
 @Module({
@@ -170,8 +170,8 @@ export class AppModule {}
 ### `src/app/controllers/home.controller.ts`
 
 ```ts
-import { Controller, Get, Inject } from 'nexus';
-import { DrizzleService } from 'nexus/drizzle';
+import { Controller, Get, Inject } from 'nexusjs';
+import { DrizzleService } from 'nexusjs/drizzle';
 import { users } from '../db/schema.js';
 
 @Controller('/')
@@ -229,11 +229,11 @@ Bun's `--hot` flag restarts the process on file change.
 - **[Drizzle ORM (default)](./drizzle.md)** — the default ORM, with
   Lucid-equivalent ergonomics, migrations, and SQL-injection-safe
   raw queries.
-- **[Production basics](./production-basics.md)** — `nexus/health`,
-  `nexus/config`, `nexus/logger`, `nexus/static`.
+- **[Production basics](./production-basics.md)** — `nexusjs/health`,
+  `nexusjs/config`, `nexusjs/logger`, `nexusjs/static`.
 - **[Cross-cutting features](./cross-cutting-features.md)** —
-  `nexus/limiter`, `nexus/shield`, `nexus/cache`, `nexus/drive`,
-  `nexus/mail`.
+  `nexusjs/limiter`, `nexusjs/shield`, `nexusjs/cache`, `nexusjs/drive`,
+  `nexusjs/mail`.
 - **[CLI `nx` command runner](./cli.md)** — scaffold models,
   migrations, controllers, run migrations.
 

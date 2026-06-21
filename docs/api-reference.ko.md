@@ -384,11 +384,11 @@ class DrizzleAdapter {
 
 ---
 
-## `nexus/openapi` (v0.4)
+## `nexusjs/openapi` (v0.4)
 
 ```ts
-import { OpenAPIService, OpenAPIModule } from "nexus/openapi";
-import { ApiTags, ApiOperation, ApiResponse } from "nexus/openapi";
+import { OpenAPIService, OpenAPIModule } from "nexusjs/openapi";
+import { ApiTags, ApiOperation, ApiResponse } from "nexusjs/openapi";
 
 @Module({
   imports: [OpenAPIModule.forRoot({ title: "My App", version: "1.0.0", path: "/docs" })],
@@ -409,10 +409,10 @@ class UserController {
 
 ---
 
-## `nexus/upload` (v0.4)
+## `nexusjs/upload` (v0.4)
 
 ```ts
-import { UploadModule, Upload, UploadedFile } from "nexus/upload";
+import { UploadModule, Upload, UploadedFile } from "nexusjs/upload";
 
 @Module({
   imports: [UploadModule.forRoot({ maxFileSize: 10 * 1024 * 1024 })],
@@ -431,10 +431,10 @@ class UserController {
 
 ---
 
-## `nexus/sse` (v0.4)
+## `nexusjs/sse` (v0.4)
 
 ```ts
-import { sse } from "nexus/sse";
+import { sse } from "nexusjs/sse";
 
 @Controller("/events")
 class EventController {
@@ -452,10 +452,10 @@ class EventController {
 
 ---
 
-## `nexus/tracing` (v0.4)
+## `nexusjs/tracing` (v0.4)
 
 ```ts
-import { TracingModule, Trace, withSpan } from "nexus/tracing";
+import { TracingModule, Trace, withSpan } from "nexusjs/tracing";
 
 @Module({
   imports: [TracingModule.forRoot({
@@ -481,10 +481,10 @@ await withSpan("nightly.cleanup", async (span) => {
 
 ---
 
-## `nexus/metrics` (v0.4)
+## `nexusjs/metrics` (v0.4)
 
 ```ts
-import { MetricsModule, Counted, Timed } from "nexus/metrics";
+import { MetricsModule, Counted, Timed } from "nexusjs/metrics";
 
 @Module({
   imports: [MetricsModule.forRoot({ path: "/metrics", enableDefaultMetrics: true })],
@@ -505,7 +505,7 @@ class UserService {
 ## Request-scoped DI (v0.4)
 
 ```ts
-import { Inject, Injectable, REQUEST, getRequest } from "nexus";
+import { Inject, Injectable, REQUEST, getRequest } from "nexusjs";
 
 @Injectable({ scope: "request" })
 class RequestContext {

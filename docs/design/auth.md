@@ -6,7 +6,7 @@
 
 Provide session, JWT, OAuth, and passkey authentication out of the box
 **without** rolling our own crypto, password hashing, OAuth dance, or
-WebAuthn ceremony. The `nexus/auth` module wraps
+WebAuthn ceremony. The `nexusjs/auth` module wraps
 [`better-auth`](https://www.better-auth.com/) — a TypeScript-native
 auth library with first-class Hono integration — and adapts it to
 NexusJS's DI / decorator model.
@@ -83,7 +83,7 @@ The auth module sits **between** user code and better-auth. It:
 
 ## 4. Module separation
 
-`nexus/auth` is a **separate entry point** in `package.json`:
+`nexusjs/auth` is a **separate entry point** in `package.json`:
 
 ```json
 "exports": {
@@ -227,7 +227,7 @@ For a SPA on a different origin:
 
 ```ts
 import { cors } from 'hono/cors';
-import { authMiddleware } from 'nexus/auth';
+import { authMiddleware } from 'nexusjs/auth';
 
 // 1. CORS first
 app.use('/api/auth/*', cors({
@@ -259,7 +259,7 @@ write `app.on(['POST', 'GET'], ...)` boilerplate.
 `c.var.user` and `c.var.session` are typed via `AuthVariables`:
 
 ```ts
-import type { AuthVariables } from 'nexus/auth';
+import type { AuthVariables } from 'nexusjs/auth';
 const app = new Hono<{ Variables: AuthVariables }>();
 ```
 

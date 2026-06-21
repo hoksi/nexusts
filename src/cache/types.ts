@@ -1,5 +1,5 @@
 /**
- * `nexus/cache` — application-level caching.
+ * `nexusjs/cache` — application-level caching.
  *
  * Two backends ship out of the box:
  *   - `MemoryStore`  — single-process LRU with TTL eviction
@@ -68,7 +68,7 @@ export interface CacheConfig {
 	store?: CacheStore;
 	/** Default TTL in seconds when none is provided. Default: 60. */
 	defaultTtl?: number;
-	/** Prefix prepended to all keys. Default: 'nexus'. */
+	/** Prefix prepended to all keys. Default: 'nexusjs'. */
 	prefix?: string;
 }
 

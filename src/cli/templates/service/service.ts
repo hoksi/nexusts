@@ -9,7 +9,7 @@
  */
 
 export default `
-import { Inject, Injectable{{#hasRepo}}, {{ repository }}{{/hasRepo}} } from 'nexus';
+import { Inject, Injectable{{#hasRepo}}, {{ repository }}{{/hasRepo}} } from 'nexusjs';
 
 @Injectable()
 export class {{ name }}Service {

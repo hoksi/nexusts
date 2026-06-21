@@ -12,7 +12,7 @@
  *   - scoped    → require user only for paths matching a regex
  *
  * Usage:
- *   import { authMiddleware } from 'nexus/auth';
+ *   import { authMiddleware } from 'nexusjs/auth';
  *   app.use('*', authMiddleware(auth, { mode: 'optional' }));
  *   app.use('/api/*', authMiddleware(auth, { mode: 'required' }));
  */

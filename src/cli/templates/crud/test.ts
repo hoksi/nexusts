@@ -8,7 +8,7 @@
 
 export default `
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Application } from 'nexus';
+import { Application } from 'nexusjs';
 import { {{ name }}Module } from '../{{ kebab }}.module.js';
 
 describe('{{ controller }}', () => {

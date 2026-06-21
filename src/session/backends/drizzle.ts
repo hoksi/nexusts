@@ -1,8 +1,8 @@
 /**
  * `DrizzleSessionStorage` — session storage backed by any Drizzle database.
  *
- *   import { DrizzleService } from 'nexus/drizzle';
- *   import { SessionService } from 'nexus/session';
+ *   import { DrizzleService } from 'nexusjs/drizzle';
+ *   import { SessionService } from 'nexusjs/session';
  *
  *   const db = new DrizzleService({ dialect: 'postgres', connection: {... } });
  *   await db.open();

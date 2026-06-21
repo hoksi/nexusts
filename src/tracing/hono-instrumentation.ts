@@ -1,5 +1,5 @@
 /**
- * Hono auto-instrumentation for `nexus/tracing`.
+ * Hono auto-instrumentation for `nexusjs/tracing`.
  *
  * Returns a Hono middleware that:
  * 1. Extracts the incoming trace context (W3C `traceparent`).

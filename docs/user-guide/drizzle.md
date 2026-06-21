@@ -2,7 +2,7 @@
 
 > 한국어 버전: [`drizzle.ko.md`](./drizzle.ko.md)
 
-`nexus/drizzle` is the **default ORM** for NexusJS. It wraps Drizzle
+`nexusjs/drizzle` is the **default ORM** for NexusJS. It wraps Drizzle
 ORM with a DI-friendly service, a Lucid-style repository pattern, an
 entity-model base class, declarative decorators, automatic migrations,
 and a SQL-injection-safe raw-query API.
@@ -71,8 +71,8 @@ export const users = pgTable('users', {
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { DrizzleModule } from 'nexus/drizzle';
+import { Module } from 'nexusjs';
+import { DrizzleModule } from 'nexusjs/drizzle';
 import { users } from './db/schema';
 
 @Module({
@@ -90,8 +90,8 @@ export class AppModule {}
 ### Use
 
 ```ts
-import { Inject } from 'nexus';
-import { DrizzleService } from 'nexus/drizzle';
+import { Inject } from 'nexusjs';
+import { DrizzleService } from 'nexusjs/drizzle';
 import { eq } from 'drizzle-orm';
 import { users } from './db/schema';
 
@@ -122,7 +122,7 @@ repository. It exposes a small, typed surface on top of Drizzle's
 query builder.
 
 ```ts
-import { DrizzleRepository, DrizzleService } from 'nexus/drizzle';
+import { DrizzleRepository, DrizzleService } from 'nexusjs/drizzle';
 
 @Injectable()
 class UserRepository extends DrizzleRepository<typeof users> {
@@ -161,7 +161,7 @@ transaction handle. Rolls back automatically if the callback throws.
 repository for default queries and reflection.
 
 ```ts
-import { DrizzleModel, Table, Column, PrimaryKey } from 'nexus/drizzle';
+import { DrizzleModel, Table, Column, PrimaryKey } from 'nexusjs/drizzle';
 
 @Table('users')
 class User extends DrizzleModel {
@@ -319,10 +319,10 @@ You can write portable code without thinking about it.
 
 ## 9. Integration with other nexus/* modules
 
-`nexus/drizzle` is the data backbone for the rest of the framework.
+`nexusjs/drizzle` is the data backbone for the rest of the framework.
 Three modules ship a Drizzle backend out of the box.
 
-### `nexus/session` — DrizzleSessionStorage
+### `nexusjs/session` — DrizzleSessionStorage
 
 ```ts
 @Module({
@@ -352,10 +352,10 @@ The `DrizzleSessionStorage` backend reads / writes session records
 through the Drizzle service. The schema column names are configurable
 via `database.tableName` + the `columns` map.
 
-### `nexus/health` — DrizzleHealthIndicator
+### `nexusjs/health` — DrizzleHealthIndicator
 
 ```ts
-import { DrizzleHealthIndicator } from 'nexus/health';
+import { DrizzleHealthIndicator } from 'nexusjs/health';
 
 const db = ...; // DrizzleService
 new DrizzleHealthIndicator('database', db, { timeoutMs: 3000 });
@@ -364,10 +364,10 @@ new DrizzleHealthIndicator('database', db, { timeoutMs: 3000 });
 Runs `SELECT 1` (or a custom probe) against the database, returns
 `'up'` / `'down'` with `latencyMs` in the data field.
 
-### `nexus/cache` — DrizzleCacheStore
+### `nexusjs/cache` — DrizzleCacheStore
 
 ```ts
-import { DrizzleCacheStore } from 'nexus/cache';
+import { DrizzleCacheStore } from 'nexusjs/cache';
 
 CacheModule.forRoot({
   store: new DrizzleCacheStore(drizzleService, {
@@ -401,10 +401,10 @@ shared across pods.
 
 The store also implements `gc()` for sweeping expired entries.
 
-### `nexus/limiter` — DrizzleRateLimitStorage
+### `nexusjs/limiter` — DrizzleRateLimitStorage
 
 ```ts
-import { DrizzleRateLimitStorage } from 'nexus/limiter';
+import { DrizzleRateLimitStorage } from 'nexusjs/limiter';
 
 LimiterModule.forRoot({
   storage: new DrizzleRateLimitStorage(drizzleService),

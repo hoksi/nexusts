@@ -16,7 +16,7 @@ first-class gRPC integration with reflection-based proto loading
 and a typed client API, plus the build pipeline produces a
 publishable `dist/` layout that matches `package.json` `exports`.
 
-### Added · `nexus/grpc`
+### Added · `nexusjs/grpc`
 
 gRPC server + typed client integration on top of `@grpc/grpc-js`
 
@@ -68,14 +68,14 @@ gRPC server + typed client integration on top of `@grpc/grpc-js`
 
 ### Verification (v0.6)
 
-+ `nexus/grpc`: 10 / 10 tests pass.
++ `nexusjs/grpc`: 10 / 10 tests pass.
 + Full suite: 634 / 639 tests pass (5 pre-existing
   `tests/validation` failures from v0.5, unrelated to v0.6).
 + `bun run build` produces a clean 26-module `dist/` with
   `package.json` `exports` field that resolves correctly
   end-to-end (`bun add ../nexusjs/dist` → `bunx nx` works).
 + `bunx tsc --noEmit` clean across `src/`.
-+ `nexus/grpc` entry point is 54th runtime file in `dist/`.
++ `nexusjs/grpc` entry point is 54th runtime file in `dist/`.
 
 ### Notes
 
@@ -94,7 +94,7 @@ a unified WebSocket API that works on Bun (primary) and Node.js
 password-hashing module. The framework now ships 24 modules
 (was 22 in v0.4).
 
-### Added · `nexus/redis`
+### Added · `nexusjs/redis`
 
 A runtime-aware Redis-compatible key/value client. Powers the new
 `redis` and `cloudflare-kv` session / cache backends. Three
@@ -110,7 +110,7 @@ Auto-detected from the runtime. Same `RedisClient` API across
 all four adapters, so any module that needs a key/value store
 can use the same client shape.
 
-### Added · `nexus/session` — Redis & Cloudflare KV backends
+### Added · `nexusjs/session` — Redis & Cloudflare KV backends
 
 `SessionModule.forRoot({ backend: "redis", redis: { client, keyPrefix } })`
 uses the new `RedisSessionStorage` (works on Bun, Node, or any
@@ -119,7 +119,7 @@ Workers, pass a `CloudflareKVAdapter` and use
 `backend: "cloudflare-kv"`. Per-user session indexes are
 maintained automatically; `gc()` cleans up orphans.
 
-### Added · `nexus/cache` — Redis cache store
+### Added · `nexusjs/cache` — Redis cache store
 
 `RedisCacheStore` is a `CacheStore` that wraps a `RedisClient`.
 Tag-based invalidation is supported via a per-tag index that
@@ -132,12 +132,12 @@ The vast majority of v0.4 code is compatible with v0.5 unchanged.
 No breaking changes in this release EXCEPT the cookie session
 backend and the CSRF guard now use HKDF-derived HMAC keys:
 existing signed cookies will be invalidated. Users will be
-signed out after the upgrade. New `nexus/ws` and `nexus/crypto`
+signed out after the upgrade. New `nexusjs/ws` and `nexusjs/crypto`
 modules are opt-in — install them only when you need them.
 
 ---
 
-### Added · `nexus/i18n`
+### Added · `nexusjs/i18n`
 
 Internationalization / localization for the Bun-native stack.
 Modeled on `@adonisjs/i18n`. Zero external dependencies — uses
@@ -166,9 +166,9 @@ Node's built-in `Intl` API.
 + **`@CurrentLocale()`** — controller parameter decorator that
   injects the active locale string.
 
-### Added · `nexus/ws`
+### Added · `nexusjs/ws`
 
-`nexus/ws` gives a single, ergonomic API for Hono's
+`nexusjs/ws` gives a single, ergonomic API for Hono's
 runtime-specific WebSocket support.
 
 + **`@WebSocketGateway(path)`** — class decorator. Marks a class
@@ -221,7 +221,7 @@ class AppModule {}
 ### Added · Auth patterns
 
 WebSocket auth via sub-protocol token, session cookie (existing
-`nexus/session` middleware), or first-message handshake. See
+`nexusjs/session` middleware), or first-message handshake. See
 `docs/user-guide/ws.md` for the full guide.
 
 ### Changed
@@ -255,7 +255,7 @@ WebSocket auth via sub-protocol token, session cookie (existing
 
 ### Dependencies
 
-+ **Optional peer dep** `nexus/ws`:
++ **Optional peer dep** `nexusjs/ws`:
   + `ws` (^8.18.0) — only on Node runtime. Bun apps don't need it.
 
 ### Documentation
@@ -266,7 +266,7 @@ WebSocket auth via sub-protocol token, session cookie (existing
   Workers integration recipe, configuration reference.
 + Updated:
   + `docs/README.md` — module table now lists 23 entries.
-  + `docs/api-reference.md` — new `nexus/ws` section.
+  + `docs/api-reference.md` — new `nexusjs/ws` section.
   + `README.md` — module count 22 → 23; roadmap updated.
 
 ### Verification (v0.5)
@@ -277,7 +277,7 @@ WebSocket auth via sub-protocol token, session cookie (existing
 + `tsc --noEmit` clean.
 + 23 bundle entry points; 46 runtime files emitted to `dist/`.
 
-### Added · `nexus/crypto`
+### Added · `nexusjs/crypto`
 
 Encryption + password hashing, modeled on `@adonisjs/encryption`
 and `@adonisjs/hash`.
@@ -302,7 +302,7 @@ and `@adonisjs/hash`.
 + **`CryptoModule.forRoot({ key, hash })`** — wires both into the
   DI container.
 
-### Changed · `nexus/session` and `nexus/shield` migrated
+### Changed · `nexusjs/session` and `nexusjs/shield` migrated
 
 + `CookieSessionStorage` (the cookie session backend) now uses
   `EncryptionService.signRaw/verifyRaw` for the cookie signature
@@ -316,7 +316,7 @@ and `@adonisjs/hash`.
   derived HMAC key differs from the previous direct-HMAC approach.
   Users will need to re-authenticate after upgrading.
 
-### Added · `nexus/redis`
+### Added · `nexusjs/redis`
 
 A runtime-aware Redis-compatible key/value client. Powers the new
 `redis` and `cloudflare-kv` session / cache backends. Three
@@ -332,7 +332,7 @@ Auto-detected from the runtime. Same `RedisClient` API across
 all four adapters, so any module that needs a key/value store
 can use the same client shape.
 
-### Added · `nexus/session` — Redis & Cloudflare KV backends
+### Added · `nexusjs/session` — Redis & Cloudflare KV backends
 
 `SessionModule.forRoot({ backend: "redis", redis: { client, keyPrefix } })`
 uses the new `RedisSessionStorage` (works on Bun, Node, or any
@@ -341,7 +341,7 @@ Workers, pass a `CloudflareKVAdapter` and use
 `backend: "cloudflare-kv"`. Per-user session indexes are
 maintained automatically; `gc()` cleans up orphans.
 
-### Added · `nexus/cache` — Redis cache store
+### Added · `nexusjs/cache` — Redis cache store
 
 `RedisCacheStore` is a `CacheStore` that wraps a `RedisClient`.
 Tag-based invalidation is supported via a per-tag index that
@@ -354,12 +354,12 @@ The vast majority of v0.4 code is compatible with v0.5 unchanged.
 No breaking changes in this release EXCEPT the cookie session
 backend and the CSRF guard now use HKDF-derived HMAC keys:
 existing signed cookies will be invalidated. Users will be
-signed out after the upgrade. New `nexus/ws` and `nexus/crypto`
+signed out after the upgrade. New `nexusjs/ws` and `nexusjs/crypto`
 modules are opt-in — install them only when you need them.
 
 ---
 
-### Added · `nexus/i18n`
+### Added · `nexusjs/i18n`
 
 Internationalization / localization for the Bun-native stack.
 Modeled on `@adonisjs/i18n`. Zero external dependencies — uses
@@ -388,7 +388,7 @@ Node's built-in `Intl` API.
 + **`@CurrentLocale()`** — controller parameter decorator that
   injects the active locale string.
 
-### Added · `nexus/ws`
+### Added · `nexusjs/ws`
 
 v0.4 is the **observability and developer experience** milestone.
 Every "Tier 1" *and* "Tier 2" gap from the NestJS / AdonisJS
@@ -401,16 +401,16 @@ The framework gained **6 new modules** in v0.4:
 
 | Module | Tier | Purpose |
 | ------ | ---- | ------- |
-| `nexus/openapi` | 1 | OpenAPI 3.1 spec generation + Scalar UI. Auto-derives from `@Validate({body,query,params,headers})` Zod schemas. |
-| `nexus/upload` | 1 | Multipart file-upload helper. `UploadService` parses `multipart/form-data`, validates size / MIME / count. `@Upload()` / `@UploadedFile()` / `@UploadedFiles()` decorators. |
-| `nexus/sse` | 2 | Server-Sent Events. `SseStream` wraps Hono's `SSEStreamingApi` with pending-write tracking. `sse(c, handler)` helper. `onClose()` for cleanup. |
-| `nexus/tracing` | 2 | OpenTelemetry distributed tracing. `TracingService`, `TracingModule.forRoot()` (lazy OTel SDK), `@Trace()` decorator, W3C + B3 propagation, Hono auto-instrumentation. |
-| `nexus/metrics` | 2 | Prometheus / OpenMetrics. `Counter` / `Gauge` / `Histogram` / `Summary`, labels, `/metrics` endpoint with content negotiation. `@Counted()` / `@Timed()` decorators. |
+| `nexusjs/openapi` | 1 | OpenAPI 3.1 spec generation + Scalar UI. Auto-derives from `@Validate({body,query,params,headers})` Zod schemas. |
+| `nexusjs/upload` | 1 | Multipart file-upload helper. `UploadService` parses `multipart/form-data`, validates size / MIME / count. `@Upload()` / `@UploadedFile()` / `@UploadedFiles()` decorators. |
+| `nexusjs/sse` | 2 | Server-Sent Events. `SseStream` wraps Hono's `SSEStreamingApi` with pending-write tracking. `sse(c, handler)` helper. `onClose()` for cleanup. |
+| `nexusjs/tracing` | 2 | OpenTelemetry distributed tracing. `TracingService`, `TracingModule.forRoot()` (lazy OTel SDK), `@Trace()` decorator, W3C + B3 propagation, Hono auto-instrumentation. |
+| `nexusjs/metrics` | 2 | Prometheus / OpenMetrics. `Counter` / `Gauge` / `Histogram` / `Summary`, labels, `/metrics` endpoint with content negotiation. `@Counted()` / `@Timed()` decorators. |
 | (core) **Request-scoped DI** | 2 | `@Injectable({ scope: 'request' })` provider option. Hono middleware activates a per-request scope via `AsyncLocalStorage`. `getRequest()` / `getRequestScope()` / `getRequestState()` helpers. `REQUEST` and `REQUEST_SCOPE` tokens. |
 
 ### Added · Tracing
 
-`nexus/tracing` is a thin, ergonomic wrapper around the OpenTelemetry
+`nexusjs/tracing` is a thin, ergonomic wrapper around the OpenTelemetry
 API. Designed for Bun-native apps:
 
 + **Lazy SDK loading.** `@opentelemetry/api` is the only required
@@ -431,7 +431,7 @@ API. Designed for Bun-native apps:
 
 ### Added · Metrics
 
-`nexus/metrics` is a Prometheus-compatible metrics collection library
+`nexusjs/metrics` is a Prometheus-compatible metrics collection library
 with **zero external dependencies** (~5kb gzipped).
 
 + **Four metric types** — `Counter`, `Gauge`, `Histogram`, `Summary`.
@@ -471,7 +471,7 @@ scope via `AsyncLocalStorage`. Service code can read the active
 request from anywhere in the call tree:
 
 ```ts
-import { getRequest, getRequestState, REQUEST, Inject, Injectable } from "nexus";
+import { getRequest, getRequestState, REQUEST, Inject, Injectable } from "nexusjs";
 
 @Injectable({ scope: "request" })
 class RequestContext {
@@ -489,7 +489,7 @@ function audit() {
 
 ### Added · OpenAPI
 
-`nexus/openapi` generates an OpenAPI 3.1 spec and serves it via the
+`nexusjs/openapi` generates an OpenAPI 3.1 spec and serves it via the
 modern Scalar UI.
 
 + **Auto-derivation from `@Validate({body,query,params,headers})`**
@@ -505,7 +505,7 @@ modern Scalar UI.
 
 ### Added · Upload
 
-`nexus/upload` is a thin, ergonomic multipart upload helper built on
+`nexusjs/upload` is a thin, ergonomic multipart upload helper built on
 top of Hono's `c.req.parseBody()`. Accepts both Bun's `Blob` and
 Node's `File` types transparently.
 
@@ -516,12 +516,12 @@ Node's `File` types transparently.
   (5 default), `allowedMimeTypes` (with wildcards like `image/*`).
 + **Errors** — `FILE_TOO_LARGE`, `MIME_NOT_ALLOWED`,
   `MISSING_FIELD`, `TOO_MANY_FILES` (all return 400).
-+ **Optional `nexus/drive` integration** — `driveToken` + `drivePrefix`
++ **Optional `nexusjs/drive` integration** — `driveToken` + `drivePrefix`
   pipe uploads straight to a `DriveService` bucket.
 
 ### Added · SSE
 
-`nexus/sse` provides a `SseStream` wrapper around Hono's
+`nexusjs/sse` provides a `SseStream` wrapper around Hono's
 `SSEStreamingApi` with guaranteed delivery semantics.
 
 + **`sse(c, handler)` helper** — Hono context is the first arg.
@@ -539,8 +539,8 @@ Node's `File` types transparently.
 is **removed in v0.4**; only the v0.2 names are exported now.
 
 ```diff
-- import { CurrentSession } from "nexus/session";
-+ import { Session } from "nexus/session";
+- import { CurrentSession } from "nexusjs/session";
++ import { Session } from "nexusjs/session";
 
 - add(@CurrentSession() session) { ... }
 + add(@Session() session) { ... }
@@ -555,13 +555,13 @@ is **removed in v0.4**; only the v0.2 names are exported now.
 
 ### Dependencies
 
-+ **Optional peer dep** `nexus/tracing`:
++ **Optional peer dep** `nexusjs/tracing`:
   + `@opentelemetry/api` (always needed, ~7kb)
   + `@opentelemetry/sdk-node`, `@opentelemetry/exporter-trace-otlp-http`,
     `@opentelemetry/resources`, `@opentelemetry/semantic-conventions`
     (only when `TracingModule.forRoot()` is called)
-+ **No new required deps.** `nexus/metrics` has zero runtime deps.
-  `nexus/upload` / `nexus/openapi` / `nexus/sse` use only
++ **No new required deps.** `nexusjs/metrics` has zero runtime deps.
+  `nexusjs/upload` / `nexusjs/openapi` / `nexusjs/sse` use only
   already-present `hono` and `zod`.
 
 ### Documentation
@@ -602,13 +602,13 @@ The only breaking change:
 
 ```ts
 // v0.3
-import { CurrentSession } from "nexus/session";
+import { CurrentSession } from "nexusjs/session";
 class C {
   add(@CurrentSession() session) { ... }
 }
 
 // v0.4
-import { Session } from "nexus/session";
+import { Session } from "nexusjs/session";
 class C {
   add(@Session() session) { ... }
 }
@@ -631,29 +631,29 @@ module is its own bundle entry point — install only what you use.
 
 | Module | Bundle entry | Purpose |
 | ------ | ------------ | ------- |
-| `nexus/health` | `nexus/health` | Liveness / readiness / startup endpoints. Built-in indicators: memory, disk, HTTP, Drizzle DB probe. |
-| `nexus/config` | `nexus/config` | Zod-validated configuration. Layered loading (process.env → `.env` → `load()` → schema). |
-| `nexus/logger` | `nexus/logger` | Pino-backed structured logging. Pretty-print in dev, JSON in prod. Request-scoped via AsyncLocalStorage. |
-| `nexus/static` | `nexus/static` | Static file serving with ETag, Range, path-traversal protection, MIME inference. |
-| `nexus/limiter` | `nexus/limiter` | Rate limiting. 3 strategies (fixed / sliding / token-bucket) × 2 backends (memory / drizzle). |
-| `nexus/shield` | `nexus/shield` | Security suite: CSRF (HMAC) + HSTS + CSP + X-Frame-Options + Referrer-Policy. |
-| `nexus/cache` | `nexus/cache` | Application cache. Memory (LRU + TTL) and Drizzle backends. Real tag-based invalidation. |
-| `nexus/drive` | `nexus/drive` | File storage abstraction. Memory / Local / S3 / R2 drivers. Signed URLs. |
-| `nexus/mail` | `nexus/mail` | Outbound email. Null / File / SMTP transports. MJML rendering. |
-| `nexus/drizzle` | `nexus/drizzle` | **Default ORM.** Drizzle ORM integration. 5 dialects (postgres / mysql / sqlite / bun-sqlite / d1). Lucid-equivalent API. |
+| `nexusjs/health` | `nexusjs/health` | Liveness / readiness / startup endpoints. Built-in indicators: memory, disk, HTTP, Drizzle DB probe. |
+| `nexusjs/config` | `nexusjs/config` | Zod-validated configuration. Layered loading (process.env → `.env` → `load()` → schema). |
+| `nexusjs/logger` | `nexusjs/logger` | Pino-backed structured logging. Pretty-print in dev, JSON in prod. Request-scoped via AsyncLocalStorage. |
+| `nexusjs/static` | `nexusjs/static` | Static file serving with ETag, Range, path-traversal protection, MIME inference. |
+| `nexusjs/limiter` | `nexusjs/limiter` | Rate limiting. 3 strategies (fixed / sliding / token-bucket) × 2 backends (memory / drizzle). |
+| `nexusjs/shield` | `nexusjs/shield` | Security suite: CSRF (HMAC) + HSTS + CSP + X-Frame-Options + Referrer-Policy. |
+| `nexusjs/cache` | `nexusjs/cache` | Application cache. Memory (LRU + TTL) and Drizzle backends. Real tag-based invalidation. |
+| `nexusjs/drive` | `nexusjs/drive` | File storage abstraction. Memory / Local / S3 / R2 drivers. Signed URLs. |
+| `nexusjs/mail` | `nexusjs/mail` | Outbound email. Null / File / SMTP transports. MJML rendering. |
+| `nexusjs/drizzle` | `nexusjs/drizzle` | **Default ORM.** Drizzle ORM integration. 5 dialects (postgres / mysql / sqlite / bun-sqlite / d1). Lucid-equivalent API. |
 
 ### Added · Drizzle backends for existing modules
 
-`nexus/session`, `nexus/health`, `nexus/limiter`, and `nexus/cache`
+`nexusjs/session`, `nexusjs/health`, `nexusjs/limiter`, and `nexusjs/cache`
 all gained Drizzle-backed backends, so a multi-pod deployment can
 share state through any Drizzle-compatible database.
 
 | Module | Drizzle backend |
 | ------ | --------------- |
-| `nexus/session` | `DrizzleSessionStorage` (`backend: 'database'`) |
-| `nexus/health` | `DrizzleHealthIndicator` (`SELECT 1` probe) |
-| `nexus/limiter` | `DrizzleRateLimitStorage` (all 3 strategies) |
-| `nexus/cache` | `DrizzleCacheStore` (with tag index for `invalidateByTag`) |
+| `nexusjs/session` | `DrizzleSessionStorage` (`backend: 'database'`) |
+| `nexusjs/health` | `DrizzleHealthIndicator` (`SELECT 1` probe) |
+| `nexusjs/limiter` | `DrizzleRateLimitStorage` (all 3 strategies) |
+| `nexusjs/cache` | `DrizzleCacheStore` (with tag index for `invalidateByTag`) |
 
 ### Added · CLI
 
@@ -669,7 +669,7 @@ share state through any Drizzle-compatible database.
 
 ### Added · Lucid gap closure (AdonisJS comparison)
 
-`nexus/drizzle` closes the biggest AdonisJS gap (Lucid ORM) with:
+`nexusjs/drizzle` closes the biggest AdonisJS gap (Lucid ORM) with:
 
 + `DrizzleModel` base class + `@Table` / `@Column` / `@PrimaryKey`
   decorators.
@@ -704,11 +704,11 @@ SQL.
 
 ### Dependencies
 
-+ **Required peer dep**: `drizzle-orm` (the entire `nexus/drizzle`
++ **Required peer dep**: `drizzle-orm` (the entire `nexusjs/drizzle`
   module is meaningless without it).
 + **Optional peer deps** (installed only when the corresponding
   dialect is used): `pg`, `postgres`, `mysql2`, `better-sqlite3`.
-+ `pino` and `pino-pretty` added to dependencies for `nexus/logger`.
++ `pino` and `pino-pretty` added to dependencies for `nexusjs/logger`.
 
 ### Documentation
 
@@ -734,17 +734,17 @@ promised" modules.
 
 ### Added
 
-+ **`nexus/auth`** — better-auth integration. `AuthService`,
++ **`nexusjs/auth`** — better-auth integration. `AuthService`,
   `AuthController`, `authMiddleware`, `@CurrentUser()` decorator.
-+ **`nexus/queue`** — BullMQ + Cloudflare Queues + memory backends.
++ **`nexusjs/queue`** — BullMQ + Cloudflare Queues + memory backends.
   `@OnQueueReady` decorator, `QueueService.add/process`, retry
   policy, `nx make:queue` scaffold.
-+ **`nexus/schedule`** — In-tree cron parser (no `croner` /
++ **`nexusjs/schedule`** — In-tree cron parser (no `croner` /
   `node-cron` deps). `@Cron` / `@Interval` / `@Timeout`
   decorators. `nx make:schedule` scaffold.
-+ **`nexus/events`** — `NexusEventEmitter` with wildcards
++ **`nexusjs/events`** — `NexusEventEmitter` with wildcards
   (`*` / `**`), priorities, guards. `@OnEvent` decorator.
-+ **`nexus/session`** — Cookie (HMAC) + memory backends. Session
++ **`nexusjs/session`** — Cookie (HMAC) + memory backends. Session
   rotation, sliding expiry, `nx make:session` scaffold.
 + **`nx` CLI** — 12 commands: `new`, `init`, `make:crud`,
   `make:controller`, `make:service`, `make:module`, `make:model`,

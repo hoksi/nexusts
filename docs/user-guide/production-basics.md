@@ -2,15 +2,15 @@
 
 > 한국어 버전: [`production-basics.ko.md`](./production-basics.ko.md)
 
-The four modules shipped in v0.3 — `nexus/health`, `nexus/config`,
-`nexus/logger`, `nexus/static` — are the **production basics** that
+The four modules shipped in v0.3 — `nexusjs/health`, `nexusjs/config`,
+`nexusjs/logger`, `nexusjs/static` — are the **production basics** that
 every NestJS / AdonisJS backend takes for granted. They share the
 same package boundary (separate entry point in the bundle) and the
 same DI pattern (`Module.forRoot({...})`).
 
 ---
 
-## 1. `nexus/health` — health checks
+## 1. `nexusjs/health` — health checks
 
 Liveness / readiness / startup endpoints for Kubernetes, load
 balancers, and ops dashboards. Backed by a uniform `HealthIndicator`
@@ -20,8 +20,8 @@ interface.
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { HealthModule } from 'nexus/health';
+import { Module } from 'nexusjs';
+import { HealthModule } from 'nexusjs/health';
 
 @Module({
   imports: [
@@ -70,9 +70,9 @@ Response body:
 ### Custom indicators
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { HealthCheckService, HealthIndicator } from 'nexus/health';
-import type { HealthIndicatorResult } from 'nexus/health';
+import { Inject, Injectable } from 'nexusjs';
+import { HealthCheckService, HealthIndicator } from 'nexusjs/health';
+import type { HealthIndicatorResult } from 'nexusjs/health';
 
 @Injectable()
 export class DatabaseHealthIndicator implements HealthIndicator {
@@ -91,7 +91,7 @@ svc.register(new DatabaseHealthIndicator(db));
 
 ---
 
-## 2. `nexus/config` — configuration with Zod validation
+## 2. `nexusjs/config` — configuration with Zod validation
 
 Type-safe, schema-validated configuration loaded from env vars and
 `.env` files. Throws (or `process.exit(1)`) on validation failure so
@@ -109,8 +109,8 @@ export const configSchema = z.object({
 });
 
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { ConfigModule } from 'nexus/config';
+import { Module } from 'nexusjs';
+import { ConfigModule } from 'nexusjs/config';
 import { configSchema } from './config/schema.js';
 
 @Module({
@@ -128,8 +128,8 @@ export class AppModule {}
 ### Usage in services
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { ConfigService } from 'nexus/config';
+import { Inject, Injectable } from 'nexusjs';
+import { ConfigService } from 'nexusjs/config';
 import { configSchema } from '../config/schema.js';
 
 @Injectable()
@@ -166,7 +166,7 @@ Zod schema validation
 
 ---
 
-## 3. `nexus/logger` — structured logging with Pino
+## 3. `nexusjs/logger` — structured logging with Pino
 
 Built-in Pino integration. Pretty-prints in dev, JSON in prod.
 Request-scoped via `AsyncLocalStorage` so every log inside a request
@@ -175,8 +175,8 @@ auto-includes `requestId` / `userId`.
 ### Quick start
 
 ```ts
-import { Module } from 'nexus';
-import { LoggerModule } from 'nexus/logger';
+import { Module } from 'nexusjs';
+import { LoggerModule } from 'nexusjs/logger';
 
 @Module({
   imports: [
@@ -193,8 +193,8 @@ export class AppModule {}
 ### Usage in services
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { Logger } from 'nexus/logger';
+import { Inject, Injectable } from 'nexusjs';
+import { Logger } from 'nexusjs/logger';
 
 @Injectable()
 class UserService {
@@ -215,7 +215,7 @@ class UserService {
 ### Request-scoped context
 
 ```ts
-import { logger } from 'nexus/logger';
+import { logger } from 'nexusjs/logger';
 
 async function handle(request: Request) {
   await logger.with({ requestId: crypto.randomUUID() }, async () => {
@@ -245,7 +245,7 @@ class OrderService {
 
 ---
 
-## 4. `nexus/static` — static file serving
+## 4. `nexusjs/static` — static file serving
 
 Serve files from a directory with proper `Content-Type`, ETag,
 `Cache-Control`, and range-request support. Path-traversal safe.
@@ -253,8 +253,8 @@ Serve files from a directory with proper `Content-Type`, ETag,
 ### Quick start
 
 ```ts
-import { Module } from 'nexus';
-import { StaticModule } from 'nexus/static';
+import { Module } from 'nexusjs';
+import { StaticModule } from 'nexusjs/static';
 import { resolve } from 'node:path';
 
 @Module({
@@ -276,8 +276,8 @@ For SPA fallback (serve `index.html` for any unmatched route), mount
 the middleware yourself:
 
 ```ts
-import { Inject, Injectable } from 'nexus';
-import { StaticService } from 'nexus/static';
+import { Inject, Injectable } from 'nexusjs';
+import { StaticService } from 'nexusjs/static';
 import { Hono } from 'hono';
 
 @Injectable()
@@ -308,16 +308,16 @@ class WebServer {
 A typical v0.3 app module:
 
 ```ts
-import { Module } from 'nexus';
-import { HealthModule } from 'nexus/health';
-import { ConfigModule } from 'nexus/config';
-import { LoggerModule } from 'nexus/logger';
-import { StaticModule } from 'nexus/static';
-import { AuthModule } from 'nexus/auth';
-import { SessionModule } from 'nexus/session';
-import { QueueModule } from 'nexus/queue';
-import { ScheduleModule } from 'nexus/schedule';
-import { EventsModule } from 'nexus/events';
+import { Module } from 'nexusjs';
+import { HealthModule } from 'nexusjs/health';
+import { ConfigModule } from 'nexusjs/config';
+import { LoggerModule } from 'nexusjs/logger';
+import { StaticModule } from 'nexusjs/static';
+import { AuthModule } from 'nexusjs/auth';
+import { SessionModule } from 'nexusjs/session';
+import { QueueModule } from 'nexusjs/queue';
+import { ScheduleModule } from 'nexusjs/schedule';
+import { EventsModule } from 'nexusjs/events';
 import { configSchema } from './config/schema.js';
 
 @Module({

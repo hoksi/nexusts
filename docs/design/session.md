@@ -8,7 +8,7 @@ Provide a uniform session-storage abstraction that:
 
 1. **Works on every runtime** — Bun / Node / Cloudflare Workers /
    Vercel / Deno Deploy.
-2. **Integrates with `nexus/auth`** without forcing it — better-auth
+2. **Integrates with `nexusjs/auth`** without forcing it — better-auth
    manages its own DB-backed sessions; `SessionService` manages
    transient state (flash messages, guest carts, OAuth flow state).
 3. **Doesn't re-invent the wheel** — encode/decode/verify the cookie
@@ -16,10 +16,10 @@ Provide a uniform session-storage abstraction that:
 
 ## 2. Why a separate module?
 
-`nexus/auth` already provides session management via better-auth's
-DB-backed sessions. So why a `nexus/session`?
+`nexusjs/auth` already provides session management via better-auth's
+DB-backed sessions. So why a `nexusjs/session`?
 
-| Need | Why `nexus/auth` alone isn't enough |
+| Need | Why `nexusjs/auth` alone isn't enough |
 | ---- | ----------------------------------- |
 | **Edge runtimes** | Better-auth's DB sessions need a database. Workers often can't reach one. Cookie sessions work with zero infrastructure. |
 | **Pre-auth state** | Guest carts, OAuth flow state, CSRF tokens — these need to exist *before* a user signs in. Better-auth's sessions are always tied to a user. |
@@ -28,7 +28,7 @@ DB-backed sessions. So why a `nexus/session`?
 | **Shared cookies** | Auth cookie + session cookie on the same request — they should coexist without one overwriting the other. |
 
 So we ship a thin cookie (and memory, and soon Redis) layer that
-sits *alongside* `nexus/auth`. Users who don't need it pay no cost
+sits *alongside* `nexusjs/auth`. Users who don't need it pay no cost
 (the entry point is separate). Users who need both call
 `AuthService.bindSession(sessions)` to wire them up.
 
@@ -81,7 +81,7 @@ in `nx.config.ts` doesn't touch controllers.
 
 ## 4. Module separation
 
-`nexus/session` is a separate entry point:
+`nexusjs/session` is a separate entry point:
 
 ```json
 "exports": {

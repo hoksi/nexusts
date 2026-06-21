@@ -1,11 +1,11 @@
 /**
- * Public API for `nexus/logger`.
+ * Public API for `nexusjs/logger`.
  *
  * Quick start:
  *
  *   // src/app/app.module.ts
- *   import { Module } from 'nexus';
- *   import { LoggerModule } from 'nexus/logger';
+ *   import { Module } from 'nexusjs';
+ *   import { LoggerModule } from 'nexusjs/logger';
  *
  *   @Module({
  *     imports: [
@@ -18,7 +18,7 @@
  *   export class AppModule {}
  *
  *   // any service
- *   import { Logger } from 'nexus/logger';
+ *   import { Logger } from 'nexusjs/logger';
  *
  *   @Injectable()
  *   class MyService {

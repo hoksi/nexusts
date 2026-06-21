@@ -6,7 +6,7 @@ NexusJS ships an auth module that wraps [`better-auth`](https://www.better-auth.
 giving you email/password, OAuth, JWT, and Passkey out of the box — all
 adapted to NexusJS's DI / decorator model.
 
-The auth module lives at `nexus/auth` and is **separate from `nexus/core`**.
+The auth module lives at `nexusjs/auth` and is **separate from `nexusjs/core`**.
 It is added to the bundle as a separate entry point so consumers who don't
 need it pay no cost.
 
@@ -52,8 +52,8 @@ Then wire it up:
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { AuthModule } from 'nexus/auth';
+import { Module } from 'nexusjs';
+import { AuthModule } from 'nexusjs/auth';
 
 @Module({
   imports: [
@@ -115,10 +115,10 @@ for any endpoints not covered by the controller.
 ## 4. Sessions
 
 ```ts
-import { Inject } from 'nexus';
-import { AuthService, CurrentUser } from 'nexus/auth';
-import type { AuthUser } from 'nexus/auth';
-import { Controller, Get, Req } from 'nexus';
+import { Inject } from 'nexusjs';
+import { AuthService, CurrentUser } from 'nexusjs/auth';
+import type { AuthUser } from 'nexusjs/auth';
+import { Controller, Get, Req } from 'nexusjs';
 import type { Context } from 'hono';
 
 @Controller('/me')
@@ -231,7 +231,7 @@ The `authMiddleware` populates `c.var.user` and `c.var.session`:
 
 ```ts
 import { Hono } from 'hono';
-import { authMiddleware, type AuthVariables } from 'nexus/auth';
+import { authMiddleware, type AuthVariables } from 'nexusjs/auth';
 import { auth } from './auth.js';
 
 const app = new Hono<{ Variables: AuthVariables }>();
@@ -360,7 +360,7 @@ For a full list of adapters, see
 The auth module is unit-testable. Inject a mock:
 
 ```ts
-import { AuthService } from 'nexus/auth';
+import { AuthService } from 'nexusjs/auth';
 
 const mockAuth = {
   getSession: async () => ({ user: { id: '1' }, session: { id: 's' } }),
@@ -402,14 +402,14 @@ instructions.
 
 ---
 
-## 14. Integration with `nexus/session`
+## 14. Integration with `nexusjs/session`
 
 `AuthService.bindSession(service)` links a `SessionService` so
 non-better-auth state (flash messages, guest carts, OAuth flow
 state) can coexist with better-auth's DB-backed sessions.
 
 ```ts
-import { SessionModule } from 'nexus/session';
+import { SessionModule } from 'nexusjs/session';
 
 @Module({
   imports: [

@@ -62,7 +62,7 @@
 
 ## 4. 모듈 분리
 
-`nexus/schedule`는 별도 진입점이다.
+`nexusjs/schedule`는 별도 진입점이다.
 
 ```json
 "exports": {

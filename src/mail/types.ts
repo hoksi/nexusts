@@ -1,5 +1,5 @@
 /**
- * `nexus/mail` — outbound email.
+ * `nexusjs/mail` — outbound email.
  *
  *   const mail = new MailService({ transport: new SmtpTransport({ host: 'smtp.gmail.com' }) });
  *   await mail.send({

@@ -9,7 +9,7 @@
  * Usage:
  *   const backend = new BullMQBackend({
  *     connection: 'redis://localhost:6379',
- *     prefix: 'nexus',
+ *     prefix: 'nexusjs',
  *   });
  *   await backend.process('send-email', async (data) => {
  *     // ...
@@ -83,7 +83,7 @@ export class BullMQBackend implements QueueBackend {
 						maxRetriesPerRequest: null,
 					}) as unknown as ConnectionOptions)
 				: options.connection;
-		this.#prefix = options.prefix ?? "nexus";
+		this.#prefix = options.prefix ?? "nexusjs";
 		this.#defaultJobOptions = options.defaultJobOptions ?? {};
 
 		this.#queue = new Queue("nexus-queue", {

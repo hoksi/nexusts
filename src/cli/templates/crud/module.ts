@@ -3,7 +3,7 @@
  */
 
 export default `
-import { Module } from 'nexus';
+import { Module } from 'nexusjs';
 import { {{ controller }} } from '../controllers/{{ kebab }}.controller.js';
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
 {{#hasRepo}}import { {{ repository }} } from '../repositories/{{ kebab }}.repository.js';{{/hasRepo}}

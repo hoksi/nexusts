@@ -1,7 +1,7 @@
 /**
  * Ambient type declarations for optional driver peer dependencies.
  *
- * `drizzle-orm` is the required peer dep for `nexus/drizzle`. The
+ * `drizzle-orm` is the required peer dep for `nexusjs/drizzle`. The
  * concrete database drivers below are optional — install only the
  * ones you need.
  */

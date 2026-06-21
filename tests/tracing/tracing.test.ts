@@ -1,5 +1,5 @@
 /**
- * Tests for `nexus/tracing`.
+ * Tests for `nexusjs/tracing`.
  *
  * Coverage:
  * 1. InMemorySpanRecorder basic ops

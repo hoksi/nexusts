@@ -1,5 +1,5 @@
 /**
- * Cloudflare Workers KV adapter for `nexus/redis`.
+ * Cloudflare Workers KV adapter for `nexusjs/redis`.
  *
  * Workers KV is **not** Redis, but the surface is close enough
  * that the same `RedisClient` API can sit on top of it. The

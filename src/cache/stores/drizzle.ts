@@ -1,8 +1,8 @@
 /**
  * `DrizzleCacheStore` — cache entries backed by any Drizzle database.
  *
- *   import { DrizzleService } from 'nexus/drizzle';
- *   import { DrizzleCacheStore } from 'nexus/cache';
+ *   import { DrizzleService } from 'nexusjs/drizzle';
+ *   import { DrizzleCacheStore } from 'nexusjs/cache';
  *
  *   const db = new DrizzleService({ dialect: 'postgres', connection: {...} });
  *   await db.open();

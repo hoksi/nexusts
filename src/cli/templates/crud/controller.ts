@@ -5,11 +5,11 @@
  */
 
 export default `
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from 'nexus';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from 'nexusjs';
 import { z } from 'zod';
-import { Validate } from 'nexus';
+import { Validate } from 'nexusjs';
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
-{{#hasInertia}}import { Inertia } from 'nexus/view/inertia';{{/hasInertia}}
+{{#hasInertia}}import { Inertia } from 'nexusjs/view/inertia';{{/hasInertia}}
 
 const Create{{ name }}Schema = z.object({
   // TODO: define fields

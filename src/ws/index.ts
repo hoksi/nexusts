@@ -1,5 +1,5 @@
 /**
- * `nexus/ws` — Hono WebSocket integration.
+ * `nexusjs/ws` — Hono WebSocket integration.
  *
  * Provides a single API for WebSocket gateways that works on both
  * Bun (primary, via `hono/adapter/bun/websocket`) and Node (via

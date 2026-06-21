@@ -12,7 +12,7 @@ A service is just a class with `@Injectable()`:
 
 ```ts
 // src/app/services/user.service.ts
-import { Inject, Injectable } from 'nexus';
+import { Inject, Injectable } from 'nexusjs';
 import type { UserRepository } from '../repositories/user.repository.js';
 
 @Injectable()
@@ -257,7 +257,7 @@ class B {
 Replace a provider in tests by creating a child container manually:
 
 ```ts
-import { DIContainer } from 'nexus';
+import { DIContainer } from 'nexusjs';
 
 const container = new DIContainer();
 container.register({ provide: 'DB', useValue: mockDb });

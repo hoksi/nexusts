@@ -78,7 +78,7 @@ my-app/
 
 ```ts
 import 'reflect-metadata';
-import { Application } from 'nexus';
+import { Application } from 'nexusjs';
 import { AppModule } from './app.module.js';
 
 const app = new Application(AppModule);
@@ -90,7 +90,7 @@ console.log('[nexus] http://localhost:3000 에서 수신 대기 중');
 ### `src/app/app.module.ts`
 
 ```ts
-import { Module } from 'nexus';
+import { Module } from 'nexusjs';
 import { HomeController } from './controllers/home.controller.js';
 
 @Module({
@@ -102,7 +102,7 @@ export class AppModule {}
 ### `src/app/controllers/home.controller.ts`
 
 ```ts
-import { Controller, Get } from 'nexus';
+import { Controller, Get } from 'nexusjs';
 
 @Controller('/')
 export class HomeController {

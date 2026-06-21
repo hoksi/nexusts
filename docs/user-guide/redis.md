@@ -1,10 +1,10 @@
-# Redis · `nexus/redis` (v0.5)
+# Redis · `nexusjs/redis` (v0.5)
 
 > New in v0.5. Runtime-aware Redis-compatible key/value client
 > that powers the new `redis` / `cloudflare-kv` session and
 > cache backends.
 
-`nexus/redis` provides:
+`nexusjs/redis` provides:
 
 - **`createRedisClient(config)`** — auto-detects the runtime
   when `config.adapter` is omitted.
@@ -22,8 +22,8 @@
 - **`RedisModule.forRoot(config)`** — wires the client into the
   DI container.
 
-Used internally by `nexus/session` (Redis + Cloudflare KV
-session backends) and `nexus/cache` (Redis cache store). You
+Used internally by `nexusjs/session` (Redis + Cloudflare KV
+session backends) and `nexusjs/cache` (Redis cache store). You
 can also use the client directly for any other use case
 (limiter storage, queue inspection, pub/sub, etc.).
 
@@ -32,8 +32,8 @@ can also use the client directly for any other use case
 ## 1. Quick start
 
 ```ts
-import { Module, Inject } from "nexus";
-import { createRedisClient, RedisClient, REDIS_CLIENT_TOKEN, RedisModule } from "nexus/redis";
+import { Module, Inject } from "nexusjs";
+import { createRedisClient, RedisClient, REDIS_CLIENT_TOKEN, RedisModule } from "nexusjs/redis";
 
 @Module({
   imports: [RedisModule.forRoot({ url: "redis://localhost:6379" })],
@@ -86,8 +86,8 @@ const redis = createRedisClient({ adapter: "node" });   // force Node
 
 ## 3. `RedisClient` API
 
-The interface is intentionally minimal — just what `nexus/session`
-and `nexus/cache` need. Future modules (limiter, queue) can adopt
+The interface is intentionally minimal — just what `nexusjs/session`
+and `nexusjs/cache` need. Future modules (limiter, queue) can adopt
 it without re-defining their own client shape.
 
 ```ts
@@ -142,15 +142,15 @@ const res = await redis.scan({ match: "myapp:prod:user:*" });
 
 ---
 
-## 4. `nexus/session` integration
+## 4. `nexusjs/session` integration
 
 `SessionModule.forRoot({ backend: "redis", redis: { client, keyPrefix } })`
 uses `RedisSessionStorage` under the hood. The same code path works
 on Bun, Node, or any other runtime that has a `RedisClient`.
 
 ```ts
-import { SessionModule } from "nexus/session";
-import { createRedisClient } from "nexus/redis";
+import { SessionModule } from "nexusjs/session";
+import { createRedisClient } from "nexusjs/redis";
 
 @Module({
   imports: [
@@ -172,8 +172,8 @@ For Cloudflare Workers, pass a `CloudflareKVAdapter` instead of
 a Redis adapter. The `SessionService` will use the same code path.
 
 ```ts
-import { SessionModule } from "nexus/session";
-import { CloudflareKVAdapter } from "nexus/redis";
+import { SessionModule } from "nexusjs/session";
+import { CloudflareKVAdapter } from "nexusjs/redis";
 
 export default {
   async fetch(req: Request, env: Env) {
@@ -189,14 +189,14 @@ don't pass it explicitly.
 
 ---
 
-## 5. `nexus/cache` integration
+## 5. `nexusjs/cache` integration
 
 `RedisCacheStore` is a `CacheStore` implementation that uses a
 `RedisClient` underneath. Tag-based invalidation is supported.
 
 ```ts
-import { CacheService } from "nexus/cache";
-import { RedisCacheStore, createRedisClient } from "nexus/redis";
+import { CacheService } from "nexusjs/cache";
+import { RedisCacheStore, createRedisClient } from "nexusjs/redis";
 
 const cache = new CacheService({
   store: new RedisCacheStore(createRedisClient({ url: process.env.REDIS_URL! })),

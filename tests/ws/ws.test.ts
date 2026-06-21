@@ -1,5 +1,5 @@
 /**
- * Tests for `nexus/ws`.
+ * Tests for `nexusjs/ws`.
  *
  * Coverage:
  * 1. WebSocketService: register, unregister, rooms, broadcast

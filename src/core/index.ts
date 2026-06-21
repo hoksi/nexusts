@@ -2,10 +2,10 @@
  * Nexus framework — public entry point.
  *
  * Re-exports the public surface of every core module so users can
- * `import { ... } from 'nexus'` without reaching into subpaths.
+ * `import { ... } from 'nexusjs'` without reaching into subpaths.
  *
  * Public surface intentionally stays small; advanced users can deep-import
- * from `nexus/core/<module>` for sub-paths.
+ * from `nexusjs/core/<module>` for sub-paths.
  */
 
 // Decorators

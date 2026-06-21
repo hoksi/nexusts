@@ -66,7 +66,7 @@ Backends are swappable; changing `backend: 'memory'` to
 
 ## 4. Module separation
 
-`nexus/schedule` is a separate entry point:
+`nexusjs/schedule` is a separate entry point:
 
 ```json
 "exports": {

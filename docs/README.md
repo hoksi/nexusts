@@ -9,7 +9,7 @@ This documentation is primarily in English; Korean translations are
 provided in `*.ko.md` files.
 
 > **Current version: v0.6** — gRPC + publishable dist. 26 modules.
-> The `nexus/grpc` module adds reflection-based gRPC server + typed
+> The `nexusjs/grpc` module adds reflection-based gRPC server + typed
 > client. The build pipeline now emits a clean `dist/` that matches
 > `package.json` `exports` and exposes the `nx` CLI via `bin`.
 > See [`../CHANGELOG.md`](../CHANGELOG.md) for the release notes.
@@ -34,34 +34,34 @@ Every module is its own bundle entry point. Install only what you use.
 
 | Module | Import path | Bundle subpath | Doc |
 | ------ | ----------- | --------------- | --- |
-| Core | `nexus` | `nexus` | (this folder) |
-| CLI | `nexus/cli` | `nx` | [`user-guide/cli.md`](./user-guide/cli.md) |
-| Auth | `nexus/auth` | `nexus/auth` | [`user-guide/auth.md`](./user-guide/auth.md) |
-| Queue | `nexus/queue` | `nexus/queue` | [`user-guide/queue.md`](./user-guide/queue.md) |
-| Schedule | `nexus/schedule` | `nexus/schedule` | [`user-guide/schedule.md`](./user-guide/schedule.md) |
-| Events | `nexus/events` | `nexus/events` | [`user-guide/events.md`](./user-guide/events.md) |
-| Session | `nexus/session` | `nexus/session` | [`user-guide/session.md`](./user-guide/session.md) |
-| **Health** | `nexus/health` | `nexus/health` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
-| **Config** | `nexus/config` | `nexus/config` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
-| **Logger** | `nexus/logger` | `nexus/logger` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
-| **Static** | `nexus/static` | `nexus/static` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
-| **Limiter** | `nexus/limiter` | `nexus/limiter` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
-| **Shield** | `nexus/shield` | `nexus/shield` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
-| **Cache** | `nexus/cache` | `nexus/cache` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
-| **Drive** | `nexus/drive` | `nexus/drive` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
-| **Mail** | `nexus/mail` | `nexus/mail` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
-| **Drizzle** | `nexus/drizzle` | `nexus/drizzle` | [`user-guide/drizzle.md`](./user-guide/drizzle.md) |
-| **OpenAPI** *(v0.4)* | `nexus/openapi` | `nexus/openapi` | [`user-guide/openapi.md`](./user-guide/openapi.md) |
-| **Upload** *(v0.4)* | `nexus/upload` | `nexus/upload` | [`user-guide/upload.md`](./user-guide/upload.md) |
-| **SSE** *(v0.4)* | `nexus/sse` | `nexus/sse` | [`user-guide/sse.md`](./user-guide/sse.md) |
-| **Tracing** *(v0.4)* | `nexus/tracing` | `nexus/tracing` | [`user-guide/tracing.md`](./user-guide/tracing.md) |
-| **Metrics** *(v0.4)* | `nexus/metrics` | `nexus/metrics` | [`user-guide/metrics.md`](./user-guide/metrics.md) |
-| **Request-scoped DI** *(v0.4)* | `nexus` (core) | `nexus/core` | [`user-guide/request-scope.md`](./user-guide/request-scope.md) |
-| **WebSockets** *(v0.5)* | `nexus/ws` | `nexus/ws` | [`user-guide/ws.md`](./user-guide/ws.md) |
-| **Crypto** *(v0.5)* | `nexus/crypto` | `nexus/crypto` | [`user-guide/crypto.md`](./user-guide/crypto.md) |
-| **i18n** *(v0.5)* | `nexus/i18n` | `nexus/i18n` | [`user-guide/i18n.md`](./user-guide/i18n.md) |
-| **Redis client** *(v0.5)* | `nexus/redis` | `nexus/redis` | [`user-guide/redis.md`](./user-guide/redis.md) |
-| **gRPC** *(v0.6)* | `nexus/grpc` | `nexus/grpc` | [`user-guide/grpc.md`](./user-guide/grpc.md) |
+| Core | `nexusjs` | `nexusjs` | (this folder) |
+| CLI | `nexusjs/cli` | `nx` | [`user-guide/cli.md`](./user-guide/cli.md) |
+| Auth | `nexusjs/auth` | `nexusjs/auth` | [`user-guide/auth.md`](./user-guide/auth.md) |
+| Queue | `nexusjs/queue` | `nexusjs/queue` | [`user-guide/queue.md`](./user-guide/queue.md) |
+| Schedule | `nexusjs/schedule` | `nexusjs/schedule` | [`user-guide/schedule.md`](./user-guide/schedule.md) |
+| Events | `nexusjs/events` | `nexusjs/events` | [`user-guide/events.md`](./user-guide/events.md) |
+| Session | `nexusjs/session` | `nexusjs/session` | [`user-guide/session.md`](./user-guide/session.md) |
+| **Health** | `nexusjs/health` | `nexusjs/health` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Config** | `nexusjs/config` | `nexusjs/config` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Logger** | `nexusjs/logger` | `nexusjs/logger` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Static** | `nexusjs/static` | `nexusjs/static` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Limiter** | `nexusjs/limiter` | `nexusjs/limiter` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Shield** | `nexusjs/shield` | `nexusjs/shield` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Cache** | `nexusjs/cache` | `nexusjs/cache` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Drive** | `nexusjs/drive` | `nexusjs/drive` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Mail** | `nexusjs/mail` | `nexusjs/mail` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Drizzle** | `nexusjs/drizzle` | `nexusjs/drizzle` | [`user-guide/drizzle.md`](./user-guide/drizzle.md) |
+| **OpenAPI** *(v0.4)* | `nexusjs/openapi` | `nexusjs/openapi` | [`user-guide/openapi.md`](./user-guide/openapi.md) |
+| **Upload** *(v0.4)* | `nexusjs/upload` | `nexusjs/upload` | [`user-guide/upload.md`](./user-guide/upload.md) |
+| **SSE** *(v0.4)* | `nexusjs/sse` | `nexusjs/sse` | [`user-guide/sse.md`](./user-guide/sse.md) |
+| **Tracing** *(v0.4)* | `nexusjs/tracing` | `nexusjs/tracing` | [`user-guide/tracing.md`](./user-guide/tracing.md) |
+| **Metrics** *(v0.4)* | `nexusjs/metrics` | `nexusjs/metrics` | [`user-guide/metrics.md`](./user-guide/metrics.md) |
+| **Request-scoped DI** *(v0.4)* | `nexusjs` (core) | `nexusjs/core` | [`user-guide/request-scope.md`](./user-guide/request-scope.md) |
+| **WebSockets** *(v0.5)* | `nexusjs/ws` | `nexusjs/ws` | [`user-guide/ws.md`](./user-guide/ws.md) |
+| **Crypto** *(v0.5)* | `nexusjs/crypto` | `nexusjs/crypto` | [`user-guide/crypto.md`](./user-guide/crypto.md) |
+| **i18n** *(v0.5)* | `nexusjs/i18n` | `nexusjs/i18n` | [`user-guide/i18n.md`](./user-guide/i18n.md) |
+| **Redis client** *(v0.5)* | `nexusjs/redis` | `nexusjs/redis` | [`user-guide/redis.md`](./user-guide/redis.md) |
+| **gRPC** *(v0.6)* | `nexusjs/grpc` | `nexusjs/grpc` | [`user-guide/grpc.md`](./user-guide/grpc.md) |
 
 ---
 
@@ -144,8 +144,8 @@ Architectural deep-dives for contributors and advanced users.
   called out explicitly when relevant.
 - TypeScript is the only supported language. Decorators require
   `experimentalDecorators: true` in `tsconfig.json`.
-- All examples import from the public entry point (`nexus`,
-  `nexus/drizzle`, `nexus/cache`, etc.) unless they intentionally
+- All examples import from the public entry point (`nexusjs`,
+  `nexusjs/drizzle`, `nexusjs/cache`, etc.) unless they intentionally
   demonstrate a deep-import.
 
 ---
@@ -158,8 +158,8 @@ Architectural deep-dives for contributors and advanced users.
 | **v0.2** | ✅ Shipped 2026-05-15 | Session auth, BullMQ queue, event system, scheduler, CLI |
 | **v0.3** | ✅ Shipped 2026-06-21 | Production basics, cross-cutting, Drizzle ORM (default) |
 | **v0.4** | ✅ Shipped 2026-06-22 | Observability (openapi, upload, sse, tracing, metrics) + request-scoped DI |
-| **v0.5** | ✅ Shipped 2026-06-23 | `nexus/ws` (Hono WebSocket integration, Bun + Node) + `nexus/crypto` (encryption + hashing) |
-| **v0.6** | ✅ **Current** 2026-06-24 | `nexus/grpc` (reflection-based gRPC server + typed client) + publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten) |
+| **v0.5** | ✅ Shipped 2026-06-23 | `nexusjs/ws` (Hono WebSocket integration, Bun + Node) + `nexusjs/crypto` (encryption + hashing) |
+| **v0.6** | ✅ **Current** 2026-06-24 | `nexusjs/grpc` (reflection-based gRPC server + typed client) + publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten) |
 | v1.0 | Planned | Stable public API surface (semver guarantees), multi-runtime CI, performance benchmarks, long-term LTS |
 
 The framework follows [Semantic Versioning](https://semver.org/). Until

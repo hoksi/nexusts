@@ -1,5 +1,5 @@
 /**
- * Tests for `nexus/metrics`.
+ * Tests for `nexusjs/metrics`.
  *
  * Coverage:
  * 1. Counter: inc, incBy, labels, error cases, render

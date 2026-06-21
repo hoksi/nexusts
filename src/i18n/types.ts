@@ -1,7 +1,7 @@
 /**
- * Public types for `nexus/i18n`.
+ * Public types for `nexusjs/i18n`.
  *
- * `nexus/i18n` provides locale-aware translation and formatting
+ * `nexusjs/i18n` provides locale-aware translation and formatting
  * for the Bun-native stack. It uses Node's built-in `Intl` API
  * for date / number / currency / pluralization — zero external
  * dependencies.

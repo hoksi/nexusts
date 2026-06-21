@@ -1,6 +1,6 @@
 # nexus/grpc — gRPC integration
 
-`nexus/grpc` lets you define gRPC services using TypeScript classes with
+`nexusjs/grpc` lets you define gRPC services using TypeScript classes with
 decorators, and serve them alongside your Hono HTTP routes. The same
 module also exposes a typed client for calling gRPC services from
 within your app.
@@ -13,7 +13,7 @@ within your app.
   internal microservice traffic.
 - **Streaming.** Server-streaming, client-streaming, and bidirectional
   streaming are first-class in gRPC. (Streaming is a planned v2
-  addition for `nexus/grpc`.)
+  addition for `nexusjs/grpc`.)
 
 ## Install
 
@@ -21,7 +21,7 @@ within your app.
 bun add @grpc/grpc-js @grpc/proto-loader
 ```
 
-Both are listed as **optional** peer dependencies in `nexus/grpc`'s
+Both are listed as **optional** peer dependencies in `nexusjs/grpc`'s
 `package.json`. The framework imports them dynamically, so they're only
 needed if you actually use the gRPC module.
 
@@ -110,7 +110,7 @@ await grpc.start();
 
 ## Typed client
 
-`nexus/grpc` also builds typed clients for the services you register.
+`nexusjs/grpc` also builds typed clients for the services you register.
 This is useful when one service in your app needs to call another:
 
 ```ts

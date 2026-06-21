@@ -1,5 +1,5 @@
 /**
- * Public entry point for `nexus/sse`.
+ * Public entry point for `nexusjs/sse`.
  */
 export * from "./types.js";
 export { SseStream } from "./sse-stream.js";

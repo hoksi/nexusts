@@ -2,13 +2,13 @@
 
 > English version: [`session.md`](./session.md)
 
-NexusJS는 균일한 `SessionStorage` 인터페이스와 여러 백엔드를 가진 `nexus/session` 모듈을 제공한다.
+NexusJS는 균일한 `SessionStorage` 인터페이스와 여러 백엔드를 가진 `nexusjs/session` 모듈을 제공한다.
 
 - **cookie** — HMAC 서명, 상태 비저장, 엣지 친화적. 전체 세션 레코드가 단일 쿠키에 인코딩된다.
 - **memory** — 인프로세스, 테스트 및 단일 인스턴스 개발용.
 - **redis** — v0.2에서 예정 (인터페이스는 정의됨).
 
-session 모듈은 **`nexus/core`와 분리**되어 있고, **`nexus/auth`와도 분리**되어 있다(better-auth는 자체 세션을 관리한다). 단, `AuthService.bindSession()`을 통해 **`nexus/auth`와 통합**된다.
+session 모듈은 **`nexusjs/core`와 분리**되어 있고, **`nexusjs/auth`와도 분리**되어 있다(better-auth는 자체 세션을 관리한다). 단, `AuthService.bindSession()`을 통해 **`nexusjs/auth`와 통합**된다.
 
 ---
 
@@ -16,8 +16,8 @@ session 모듈은 **`nexus/core`와 분리**되어 있고, **`nexus/auth`와도 
 
 ```ts
 // src/app/app.module.ts
-import { Module } from 'nexus';
-import { SessionModule } from 'nexus/session';
+import { Module } from 'nexusjs';
+import { SessionModule } from 'nexusjs/session';
 
 @Module({
   imports: [
@@ -32,8 +32,8 @@ export class AppModule {}
 
 ```ts
 // src/controllers/cart.controller.ts
-import { Controller, Post, Body } from 'nexus';
-import { SessionService, Session } from 'nexus/session';
+import { Controller, Post, Body } from 'nexusjs';
+import { SessionService, Session } from 'nexusjs/session';
 
 @Controller('/cart')
 export class CartController {
@@ -94,11 +94,11 @@ SessionModule.forRoot({
 
 ### Redis (v0.5)
 
-다중 pod 세션 스토리지(`nexus/redis` 경유). `client`는 `nexus/redis`의 `RedisClient`로, `nexus/cache` Redis 스토어와 Cloudflare KV 백엔드를 구동하는 같은 패키지.
+다중 pod 세션 스토리지(`nexusjs/redis` 경유). `client`는 `nexusjs/redis`의 `RedisClient`로, `nexusjs/cache` Redis 스토어와 Cloudflare KV 백엔드를 구동하는 같은 패키지.
 
 ```ts
-import { SessionModule } from 'nexus/session';
-import { createRedisClient } from 'nexus/redis';
+import { SessionModule } from 'nexusjs/session';
+import { createRedisClient } from 'nexusjs/redis';
 
 SessionModule.forRoot({
   backend: 'redis',
@@ -114,8 +114,8 @@ SessionModule.forRoot({
 Cloudflare Workers / Pages의 경우 Redis 어댑터 대신 `CloudflareKVAdapter` 전달. Redis 백엔드와 같은 코드 경로 — 프레임워크가 같은 스토리지 클래스를 다른 기본 클라이언트로 재사용.
 
 ```ts
-import { SessionModule } from 'nexus/session';
-import { CloudflareKVAdapter } from 'nexus/redis';
+import { SessionModule } from 'nexusjs/session';
+import { CloudflareKVAdapter } from 'nexusjs/redis';
 
 export default {
   async fetch(req: Request, env: Env) {
@@ -183,7 +183,7 @@ class MyService {
 서비스 인스턴스 없이 세션 쿠키를 인코딩/디코딩 가능 (미들웨어에서 유용):
 
 ```ts
-import { SessionService } from 'nexus/session';
+import { SessionService } from 'nexusjs/session';
 
 const cookie = SessionService.encodeCookie(record, secret);
 const record = SessionService.decodeCookie(cookieValue, secret);
@@ -268,7 +268,7 @@ async login(@Session() session, @Body() body) {
 
 ---
 
-## 8. `nexus/auth`와의 통합
+## 8. `nexusjs/auth`와의 통합
 
 `AuthService.bindSession(service)`은 `SessionService`를 auth 흐름에 연결한다. 바인딩 후 `AuthService.getSession()`은 먼저 세션 쿠키를 참조한 다음(플래시 메시지 같은 비-better-auth 상태를 위해) better-auth로 폴백한다.
 

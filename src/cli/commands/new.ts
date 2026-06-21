@@ -12,7 +12,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
-import { flagBool, logger, prompt, render, select } from "../core/index.js";
+import { flagBool, logger, render, select } from "../core/index.js";
 import { templates } from "../templates/index.js";
 
 export const newCommand: Command = {
@@ -129,7 +129,7 @@ export const newCommand: Command = {
 						nx: "nx",
 					},
 					dependencies: {
-						nexus: "*",
+						nexusjs: "*",
 						"reflect-metadata": "^0.2.2",
 						hono: "^4.6.0",
 						zod: "^3.23.8",
@@ -162,19 +162,19 @@ export const newCommand: Command = {
 		writeFileSync(
 			resolve(target, "src/app/main.ts"),
 			`import 'reflect-metadata';
-import { Application } from 'nexus';
+import { Application } from 'nexusjs';
 import { AppModule } from './app.module.js';
 
 const app = new Application(AppModule);
 
 await app.listen(3000);
-console.log('[nexus] Listening on http://localhost:3000');
+console.log('[nexusjs] Listening on http://localhost:3000');
 `,
 		);
 
 		writeFileSync(
 			resolve(target, "src/app/app.module.ts"),
-			`import { Module } from 'nexus';
+			`import { Module } from 'nexusjs';
 import { HomeController } from './controllers/home.controller.js';
 
 @Module({
@@ -187,7 +187,7 @@ export class AppModule {}
 		mkdirSync(resolve(target, "src/app/controllers"), { recursive: true });
 		writeFileSync(
 			resolve(target, "src/app/controllers/home.controller.ts"),
-			`import { Controller, Get } from 'nexus';
+			`import { Controller, Get } from 'nexusjs';
 
 @Controller('/')
 export class HomeController {

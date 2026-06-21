@@ -1,5 +1,5 @@
 /**
- * Public entry point for `nexus/cache`.
+ * Public entry point for `nexusjs/cache`.
  */
 export * from "./types.js";
 export { MemoryStore, DrizzleCacheStore } from "./stores/index.js";
