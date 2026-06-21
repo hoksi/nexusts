@@ -177,6 +177,11 @@ const consumerPkg = {
 			import: "./*/index.js",
 		},
 	},
+	// Expose the `nx` CLI as a binary so `bunx nx ...` and
+	// `npx nx ...` work in apps that install the package.
+	bin: {
+		nx: "./cli/index.js",
+	},
 	keywords: rootPkg.keywords,
 	license: rootPkg.license,
 	engines: rootPkg.engines,
