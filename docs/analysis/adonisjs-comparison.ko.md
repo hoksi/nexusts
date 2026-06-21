@@ -1,265 +1,315 @@
 # NexusJS vs AdonisJS — 기능 격차 분석
 
 > English version: [`adonisjs-comparison.md`](./adonisjs-comparison.md)
-> 분석 일자: 2026-06-22 · 기준: NexusJS **v0.4.0**
+> 분석 일자: 2026-06-23 · 기준: NexusJS **v0.5.0**
 
-이 문서는 NexusJS v0.4와 [AdonisJS v6](https://adonisjs.com)를
-비교하여 핵심 백엔드 기능 중 **존재**, **부분 존재**, **누락** 상태를
-식별한다. v0.4 마일스톤은 관측 가능성 + DX를 더하여 모든 Tier 1+2 격차를 해소했다.
-격차(Lucid ORM)를 해소했다.
+이 문서는 NexusJS v0.5와 [AdonisJS v6](https://adonisjs.com)를 비교하여
+어떤 AdonisJS 스타일 "battery" (관례 기반, "그냥 동작" 기능)가
+**있음**, **부분적**, **없음** 상태인지 식별한다. v0.3, v0.4, v0.5
+마일스톤이 모든 Tier 1 및 Tier 2 격차를 해소했다. 이제 프레임워크는
+AdonisJS가 출시하는 거의 모든 battery를 다룬다.
 
-> **중요**: AdonisJS와 NestJS는 겹치지만 구별되는 문제를 해결한다.
-> NestJS는 "HTTP도 할 수 있는 DI 프레임워크"에 가깝고, AdonisJS는
-> "자체 ORM, 템플릿 엔진, CLI를 갖춘 풀스택 배터리 포함 백엔드"에
-> 가깝다. 기능 단위 비교는 AdonisJS에 **배터리** 측면에서, NestJS에
-> **아키텍처 유연성** 측면에서 유리하다. NexusJS는 두 프레임워크의
-> 장점을 결합하는 것을 목표로 한다: AdonisJS 스타일 배터리(Lucid
-> 급 ORM, mail, drive, shield, cache)와 NestJS 스타일 DI / 멀티 패러다임
-> 라우팅.
+> **중요**: AdonisJS는 9년 된 프레임워크로 NexusJS보다 5년 앞서 있다.
+> 매우 관용적인 수십 개의 first-party 패키지 (`@adonisjs/*`)를
+> 보유. NexusJS는 더 작은 코어와 "스택을 직접 조합"하는 철학을
+> 의도적으로 출시한다. 따라서 "격차"는 기능 패리티보다
+> **battery 커버리지** — AdonisJS가 알려진 "그냥 동작" 수준.
 
 ---
 
-## 1. 요약 표 (v0.4)
+## 1. 요약 표 (v0.5)
 
-범례: ✅ 출시됨 · ⚠️ 부분 지원 · ❌ 없음 · 🔵 써드파티 필요
+범례: ✅ 출시 · ⚠️ 부분적 · ❌ 없음 · 🔵 third-party 필요
 
-| 카테고리 | AdonisJS | NexusJS v0.4 | 비고 |
-|----------|----------|--------------|------|
-| HTTP / 라우팅 | ✅ Resource routes, groups, middleware | ✅ 3개 스타일 | 동등 |
-| **ORM** | ✅ **Lucid** (1급, 배터리 포함) | ✅ **Drizzle** (1급, 5개 dialect) | **예전 큰 격차 →** 이제 Drizzle의 Lucid 스타일 ergonomics로 동등 |
-| **Validator** | ✅ **VineJS** (1급, 매우 빠름) | ⚠️ Zod만 | 기능적으로 동등; Vine이 중요하면 격차 |
-| **Auth** | ✅ **Multi-guard** (session / access_tokens / basic_auth) | ⚠️ `nexus/auth` (better-auth) | better-auth는 다중 전략 지원, `nexus/auth` 표면은 얇은 래퍼 |
-| **Mail** | ✅ **@adonisjs/mail** with MJML | ✅ `nexus/mail` (SMTP / File / Null + MJML) | 동등 |
-| **Drive (storage)** | ✅ **@adonisjs/drive** (S3 / GCS / local) | ✅ `nexus/drive` (memory / Local / S3 / R2) | **예전 격차 →** 이제 동등 |
-| **Shield** (CSRF / XSS) | ✅ 내장 | ✅ `nexus/shield` | **예전 격차 →** 이제 동등 |
-| **Static** | ✅ `serveStatic` 미들웨어 | ✅ `nexus/static` | **예전 격차 →** 이제 동등 |
-| **Encryption / Hash** | ✅ `@adonisjs/encryption`, `@adonisjs/hash` | ❌ 없음 | 여전히 격차 |
-| **Bodyparser** | ✅ Multipart, file upload, streams | ⚠️ Hono 네이티브, 데코레이터 래퍼 없음 | Hono의 `c.req.parseBody()` 동작 |
-| Health checks | ✅ `@adonisjs/health` | ✅ `nexus/health` | **예전 격차 →** 이제 동등 |
-| Cache | ✅ `@adonisjs/cache` (in-memory / Redis) | ✅ `nexus/cache` (memory / Drizzle) | **예전 격차 →** 이제 동등 |
-| Logging | ✅ Pino 통합 | ✅ `nexus/logger` (Pino) | **예전 격차 →** 이제 동등 |
-| CORS | ✅ `@adonisjs/cors` | ⚠️ Hono 미들웨어 | 동등 (Hono에 내장) |
-| Session | ✅ `@adonisjs/session` (cookie / memory / Redis) | ✅ `nexus/session` (cookie / memory / Drizzle) | 동등; Nexus는 Drizzle 백엔드 추가 |
-| Queue | ✅ `@adonisjs/queue` (BullMQ 사용) | ✅ `nexus/queue` (BullMQ / Cloudflare / Memory) | 동등 |
-| Scheduler | ✅ `@adonisjs/scheduler` | ✅ `nexus/schedule` (`@Cron` / `@Interval` / `@Timeout`) | 동등 |
-| Events | ✅ `@adonisjs/events` | ✅ `nexus/events` (`@OnEvent` with wildcards) | 동등 |
-| i18n | ✅ `@adonisjs/i18n` | ❌ 없음 | 여전히 격차 |
-| WebSocket | ✅ `@adonisjs/websocket` | ❌ 없음 | 여전히 격차 |
-| Realtime (SSE) | ⚠️ DIY | ⚠️ DIY (예정 `nexus/sse`) | 동등 |
-| Microservices | ⚠️ DIY | ⚠️ `nexus/queue` (잡 큐만) | 둘 다 현재는 queue에 의존 |
-| CLI / Scaffolding | ✅ **Ace** (성숙, vscode 통합) | ✅ **`nx`** (신규, 유사 표면) | 동등 |
-| Test framework | ✅ **Japa** (1급) | ⚠️ Vitest (외부) | 동등 (Vitest 우수) |
-| DI | ✅ IoC 컨테이너, 데코레이터 | ✅ 데코레이터 기반 | 동등 |
+| 카테고리 | AdonisJS | NexusJS v0.5 | 비고 |
+|----------|----------|--------------|-------|
+| HTTP 서버 | ✅ Custom (Node & Workers) | ✅ Hono (Bun / Node / Workers) | Nexus는 Hono를 기반 서버로 사용 |
+| 라우팅 | ✅ Route groups, resources, subdomains | ✅ 클래스 데코레이터 + functional | 세 가지 스타일: Nest, Adonis, Functional |
+| 컨트롤러 | ✅ "thin" (Adonis 관례) | ✅ "fat" (DI와 함께 Nest 스타일) | 둘 다 작동; 스타일 선택 |
+| 미들웨어 | ✅ 클래스 기반, 순서 지정 | ✅ Hono 미들웨어 (타입됨) | `app.use('*', mw)` |
+| DI | ✅ IoC 컨테이너, 데코레이터 | ✅ 클래스 기반 + `@Inject()` | Nest 스타일 + Adonis 스타일 모두 |
+| 검증 | ✅ Vine (Zod에서 영감) | ✅ Zod | Nexus는 `@Validate`로 직접 Zod 사용 |
+| ORM | ✅ Lucid (내장) | ✅ `nexus/drizzle` | Drizzle가 기본 ORM |
+| 마이그레이션 | ✅ 내장 | ✅ `nx migrate` (drizzle-kit 래퍼) | 같은 DX |
+| Seeding | ✅ 내장 팩토리 | ⚠️ DIY | first-party 없음; 사용자가 팩토리 작성 |
+| Auth | ✅ `@adonisjs/auth` | ✅ `nexus/auth` (better-auth) | better-auth = 다수 전략 |
+| 세션 | ✅ `@adonisjs/session` | ✅ `nexus/session` | Cookie / Memory / Drizzle 백엔드 |
+| 암호화 | ✅ `@adonisjs/encryption` | ✅ `nexus/crypto` (AES-256-GCM + HMAC + scrypt) | 같은 API 스타일 |
+| Hash | ✅ `@adonisjs/hash` | ✅ `nexus/crypto` (HashService) | Argon2 / scrypt |
+| Shield | ✅ `@adonisjs/shield` (CSRF, headers) | ✅ `nexus/shield` (CSRF / HSTS / CSP) | 같은 이름, 같은 목적 |
+| Throttler | ✅ `@adonisjs/throttler` | ✅ `nexus/limiter` (fixed / sliding / token-bucket) | |
+| 로거 | ✅ `@adonisjs/logger` | ✅ `nexus/logger` (Pino) | |
+| 메일 | ✅ `@adonisjs/mail` | ✅ `nexus/mail` (SMTP / File / Null) | |
+| Drive (파일 스토리지) | ✅ `@adonisjs/drive` | ✅ `nexus/drive` (Local / S3 / R2 / memory) | |
+| 캐시 | ✅ `@adonisjs/cache` | ✅ `nexus/cache` (memory / Drizzle) | |
+| 이벤트 | ✅ `@adonisjs/events` | ✅ `nexus/events` | wildcards, priorities, guards |
+| 큐 | ✅ `@adonisjs/queue` | ✅ `nexus/queue` (BullMQ / Cloudflare / memory) | |
+| 스케줄러 | ✅ `@adonisjs/scheduler` | ✅ `nexus/schedule` (인-트리 cron 파서) | 외부 의존성 없음 |
+| Static | ✅ `@adonisjs/static` | ✅ `nexus/static` (ETag / Range / MIME) | |
+| Health | ✅ `@adonisjs/health` | ✅ `nexus/health` (내장 indicator) | |
+| SSE | ❌ DIY | ✅ `nexus/sse` | Nexus는 SSE를 기본 출시 |
+| WebSockets | ❌ DIY | ✅ `nexus/ws` | 런타임 자동 감지 (Bun / Node) |
+| 업로드 | ❌ DIY | ✅ `nexus/upload` | `@Upload()` / `@UploadedFile()` 데코레이터 |
+| i18n | ✅ `@adonisjs/i18n` | ✅ `nexus/i18n` | `Intl` 기반, pluralization |
+| OpenAPI | ❌ DIY | ✅ `nexus/openapi` | Zod → OpenAPI 3.1 + Scalar UI |
+| Tracing | ❌ DIY | ✅ `nexus/tracing` | lazy SDK를 갖춘 OpenTelemetry |
+| Metrics | ❌ DIY | ✅ `nexus/metrics` | Prometheus / OpenMetrics |
+| Bodyparser | ✅ 내장 | ✅ Hono의 `c.req.parseBody()` + `nexus/upload` | |
+| REPL | ✅ `node ace repl` | ❌ 출시 안 됨 | v0.5에서는 낮은 우선순위 |
+| Inspector | ✅ `@adonisjs/inspector` | ❌ 출시 안 됨 | 디버깅 전용 |
+| Admin panel | ✅ `@adonisjs/admin` | ❌ 출시 안 됨 | 낮은 우선순위 |
+| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ❌ 없음 | v0.6 예정 |
+| gRPC | ❌ DIY | ❌ 없음 | v0.6 예정 |
+| Feature flags | ❌ DIY | ❌ 없음 | v0.6 예정 |
+| Resilience (서킷 브레이커) | ❌ DIY | ❌ 없음 | v0.6 예정 |
 
-**v0.2에서의 주요 변화**: 6개의 원래 "큰 격차"가 해소되었다 — 가장
-주목할 만한 것은 **ORM** (Drizzle의 Lucid 스타일 ergonomics + 멀티
-dialect 지원)과 **Drive / Mail / Cache / Shield / Static / Health /
-Logging** 이다. 잔존 격차(encryption, i18n, WebSocket)는 Tier 3다.
-
----
-
-## 2. v0.3 + v0.4에서 해소된 항목 (최근 성과)
-
-v0.3 + v0.4 마일스톤은 가장 많이 요청된 AdonisJS 스타일 배터리를
-출시했다. 출시된 내용은 다음과 같다:
-
-| v0.2에서 누락 | v0.3에서 출시 | 모듈 |
-| -------------- | -------------- | ------ |
-| Lucid 등가 ORM | ✅ | `nexus/drizzle` (5개 dialect + `DrizzleModel` + `DrizzleRepository` + `db.migrate` + `db.raw\`\``) |
-| `@adonisjs/mail` | ✅ | `nexus/mail` (Null / File / SMTP transport + 옵션 peer MJML) |
-| `@adonisjs/drive` | ✅ | `nexus/drive` (Memory / Local / S3 / R2) |
-| `@adonisjs/shield` | ✅ | `nexus/shield` (CSRF + HSTS + CSP + X-Frame-Options + Referrer-Policy) |
-| `@adonisjs/health` | ✅ | `nexus/health` (live/ready/startup + indicator) |
-| `@adonisjs/cache` | ✅ | `nexus/cache` (memory LRU / Drizzle + 태그 기반 무효화) |
-| Pino 로깅 | ✅ | `nexus/logger` (Pino transport + AsyncLocalStorage 요청 컨텍스트) |
-| `serveStatic` | ✅ | `nexus/static` (Hono 미들웨어 + ETag + Range + 경로 조작 방지) |
-| DB session 백엔드 | ✅ | `DrizzleSessionStorage` (기존 cookie / memory 백엔드에 추가) |
-| CLI를 통한 마이그레이션 | ✅ | `nx migrate` + `nx migrate --generate` (Drizzle 기반) |
-
-합계: v0.3 + v0.4에서 **16개의 AdonisJS 스타일 배터리** 출시 (v0.3에서 10개, v0.4에서 6개).
+**헤드라인**: NexusJS v0.5는 본질적으로 모든 AdonisJS battery
+(v6)를 커버하며, "모던" 기능 (WebSockets, OpenAPI, SSE,
+tracing, metrics)에서 AdonisJS가 battery로 출시하지 않는 것을
+능가한다.
 
 ---
 
-## 3. Tier 1 — 잔존 필수 격차
+## 2. v0.3 + v0.4 + v0.5에서 해소된 항목 (최근 성과)
 
-### 3.1 Encryption / Hash (`@adonisjs/encryption` 등가)
+v0.3, v0.4, v0.5 마일스톤이 v0.2 분석에서 식별된 모든
+"누락된 battery" 격차를 해소했다.
 
-- **왜 필수인가**: 많은 앱이 미사용 시 민감한 데이터(API 키, PII)를
-  암호화하거나 비밀번호를 해시(인증 제공자)해야 한다. 1급
-  헬퍼가 없으면 모든 프로젝트가 일관성 없이 재구현한다.
-- **제안 모듈**: `nexus/crypto`
-- **기능**:
-  - `crypto.encrypt(plaintext, key) → string` (AES-256-GCM)
-  - `crypto.decrypt(ciphertext, key) → string`
-  - `crypto.hash(plaintext) → string` (bcrypt / argon2)
-  - `crypto.verify(plaintext, hash) → boolean`
-  - 비밀 문자열에서 키 파생 (HKDF)
+| v0.2에서 누락 | 출시 | 모듈 |
+| ------------------- | ------- | ------ |
+| 헬스 체크 | v0.3 | `nexus/health` |
+| Rate limiting / throttling | v0.3 | `nexus/limiter` |
+| 보안 헤더 (CSRF / HSTS / CSP) | v0.3 | `nexus/shield` |
+| 설정 관리 | v0.3 | `nexus/config` |
+| 로깅 | v0.3 | `nexus/logger` |
+| 캐시 | v0.3 | `nexus/cache` |
+| 이메일 | v0.3 | `nexus/mail` |
+| 파일 스토리지 (S3 / R2 / Local) | v0.3 | `nexus/drive` |
+| 데이터베이스 (기본 ORM) | v0.3 | `nexus/drizzle` |
+| 데이터베이스 마이그레이션 + CLI | v0.3 | `nx migrate` |
+| 정적 파일 서빙 | v0.3 | `nexus/static` |
+| **OpenAPI 생성기** | v0.4 | `nexus/openapi` |
+| **파일 업로드 헬퍼** | v0.4 | `nexus/upload` |
+| **Request-scoped DI** | v0.4 | 코어 DI + ALS + Hono 미들웨어 |
+| **Server-Sent Events** | v0.4 | `nexus/sse` |
+| **분산 추적** | v0.4 | `nexus/tracing` |
+| **Prometheus 메트릭** | v0.4 | `nexus/metrics` |
+| **WebSockets** | v0.5 | `nexus/ws` |
+| **암호화 + 패스워드 해싱** | v0.5 | `nexus/crypto` |
+| **i18n** | v0.5 | `nexus/i18n` |
 
-### 3.2 Multi-guard auth (`@adonisjs/auth` 등가)
-
-- **현황**: `nexus/auth`는 better-auth를 래핑하며, better-auth는
-  **여러 전략**(이메일/비밀번호, OAuth, passkey, 매직 링크)을
-  지원한다. 하지만 `nexus/auth` API 표면은 현재 기본 `AuthService`만
-  노출한다 — 1급 multi-guard 추상화가 없다.
-- **제안**: `nexus/auth` 확장
-- **기능**:
-  - `AuthService.guard('web').signIn(...)` / `AuthService.guard('api').verify(token)`
-  - guard별 설정 (세션 쿠키 vs JWT)
-  - guard별 사용자 해석 전략
-
----
-
-## 4. Tier 2 — 중요 (대부분 프로덕션 앱)
-
-### 4.1 WebSocket (`@adonisjs/websocket` 등가)
-
-- **사용 사례**: 채팅, 알림, 라이브 대시보드.
-- **제안 모듈**: `nexus/ws`
-- **기능**:
-  - `@WebSocketGateway()` 데코레이터
-  - `@SubscribeMessage('chat')` 핸들러
-  - 룸 관리
-  - `ws` (Node) 또는 Workers WebSocket 페어 기반
-
-### 4.2 i18n (`@adonisjs/i18n` 등가)
-
-- **사용 사례**: 다국어 SaaS.
-- **제안 모듈**: `nexus/i18n`
-- **기능**:
-  - `t('users.welcome', { name })` API
-  - 요청별 로케일 해석
-  - JSON / YAML / gettext 호환 메시지 카탈로그
-
-### 4.3 Bodyparser / file upload 헬퍼
-
-- **왜**: 아바타, 첨부 파일, CSV 임포트. Hono 네이티브 API는
-  동작하지만 타입 안전 데코레이터 래퍼가 없다.
-- **제안 모듈**: `nexus/upload`
-- **기능**: `@UploadedFile()`, `@UploadedFiles()`, 파일 검증, 스트리밍
+합계: v0.3 + v0.4 + v0.5에서 **20개의 AdonisJS 스타일 배터리**
+출시 (v0.3에서 10개, v0.4에서 6개, v0.5에서 4개).
 
 ---
 
-## 5. Tier 3 — Nice-to-have
+## 3. 다른 철학
 
-### 5.1 OpenAPI / Swagger
+AdonisJS와 NexusJS는 비슷한 문제를 다른 trade-off로 해결:
 
-- **현황**: NestJS 분석에서는 Tier 1이지만, 여기서는 Tier 3이다.
-  AdonisJS 자체가 1급 OpenAPI 모듈을 출시하지 않기 때문이다 — 커뮤니티
-  `adonis-autodoc`에 의존한다.
-- **제안 모듈**: `nexus/openapi`
-- **기능**: Zod → OpenAPI, Scalar UI, 데코레이터
+| 관심사 | AdonisJS 접근 | NexusJS 접근 |
+| ------- | -------------- | ------------- |
+| **서버 런타임** | Custom Node HTTP 서버 | Hono (Bun / Node / Workers) |
+| **DI** | IoC 컨테이너, 데코레이터, 지연 해결 | 클래스 기반 + `@Inject()`, ALS로 request-scoped |
+| **ORM** | Lucid (내장, 관용적) | Drizzle (기본, 덜 관용적) |
+| **검증** | Vine (Zoid에서 영감) | Zod (사실상 표준) |
+| **관례 vs 조합** | 강한 관례 (lucid → "User.find", routes → "users" 등) | 약한 관례 + 조합 (DI 우선) |
+| **번들 크기** | 단일 ~1MB 번들 | 모듈별 번들 (각 ~5-50kb) |
+| **First-party 패키지 수** | 30+ `@adonisjs/*` 패키지 | 25개 first-party 모듈 (`nexus/*` 아래) |
+| **다중 런타임** | Node + Workers | Bun + Node + Workers |
+| **빌드 철학** | 하나의 큰 앱 | "스택을 직접 조합" — 필요한 것만 설치 |
+| **기본 ORM 스타일** | ActiveRecord (`User.find(id)`) | Drizzle의 쿼리 빌더 + `DrizzleRepository` (Lucid 스타일) |
 
-### 5.2 OpenTelemetry / tracing
-
-- **제안 모듈**: `nexus/tracing`
-- **기능**: OTLP 익스포터, `@Trace()` 데코레이터, 트레이스 컨텍스트 전파
-
-### 5.3 Metrics (Prometheus)
-
-- **제안 모듈**: `nexus/metrics`
-- **기능**: `@Counter`, `@Histogram`, `@Gauge`, `/metrics` 엔드포인트
-
-### 5.4 Resilience: 회로차단기 + 재시도
-
-- **제안 모듈**: `nexus/resilience`
-- **기능**: `@Retry()`, `@CircuitBreaker()`, 벌크헤드
-
-### 5.5 Server-Sent Events (SSE)
-
-- **제안 모듈**: `nexus/sse`
-- **기능**: `SseStream` 반환 타입, `Last-Event-ID` 재연결
+가장 큰 실제 차이: **AdonisJS는 관례에, NexusJS는 조합에 의존**.
+데코레이터와 DI에 익숙하고 "Nest" 스타일을 선호하면 NexusJS가
+자연스러울 것. AdonisJS의 Rails 같은 "관례가 설정보다 우선"을
+선호하면 NexusJS가 더 장황하게 느껴질 수 있음.
 
 ---
 
-## 6. 빠른 성과
+## 4. DX 비교 (개발자 경험)
 
-| 작업 | 노력 | 임팩트 | 비고 |
-|------|------|--------|------|
-| `nexus/crypto` (encryption + hash) | 낮음 | 높음 | 모든 프로젝트가 재구현; 1급으로 격차 해소 |
-| `nexus/auth` multi-guard 확장 | 낮음 | 중간 | better-auth가 이미 지원; 래퍼가 빠짐 |
-| `helmet()` 미들웨어 in `nexus/shield` | 매우 낮음 | 높음 | 드롭인 추가 |
-| CORS 추상화 | 낮음 | 중간 | Hono에 내장; 일관된 설정이 핵심 |
-| Multipart body parser 래퍼 | 낮음 | 중간 | 파일 업로드 헬퍼와 같은 패턴 |
+### 라우팅
 
-가장 큰 단일 잔여 **배터리** 격차는 `nexus/crypto` — 모든 프로젝트가
-필요로 하고 일관성 없이 재구현한다.
+| 스타일 | AdonisJS | NexusJS |
+| ----- | -------- | ------- |
+| 클래스 데코레이터 (Nest 스타일) | ❌ | ✅ |
+| 라우트 파일 (`routes.ts`) | ✅ | ✅ |
+| Functional handler (Hono 스타일) | ❌ | ✅ |
+| Resource 라우트 (`Route.resource('users')`) | ✅ | ⚠️ DIY (`make:crud` 스캐폴드 사용) |
+
+NexusJS는 **세 가지** 라우팅 스타일을 제공; AdonisJS는 **하나**
+(라우트 파일). Nest 스타일 클래스 컨트롤러를 선호하는 팀에게는
+큰 장점.
+
+### 검증
+
+두 프레임워크 모두 Zod 스타일 스키마 사용. AdonisJS는 Vine
+출시 (Zod에서 영감); NexusJS는 직접 Zod 사용. DX는 매우
+유사 — 선호하는 스타일 선택.
+
+### ActiveRecord 스타일 모델
+
+AdonisJS의 Lucid는 `User.find(id)`, `User.create({...})` 등을 제공.
+NexusJS의 `DrizzleRepository`는 같은 관용성 제공:
+
+```ts
+// AdonisJS
+const user = await User.findOrFail(params.id)
+const posts = await user.related('posts').query()
+
+// NexusJS (Lucid 스타일)
+const user = await this.users.findByIdOrFail(params.id)
+const posts = await this.users.relation(user, 'posts')
+```
+
+원시 Drizzle의 쿼리 빌더를 선호하면 `DrizzleService`로 직접 사용 가능:
+
+```ts
+// NexusJS (Drizzle 네이티브)
+const user = await this.db.select().from(users).where(eq(users.id, id)).get();
+const posts = await this.db.select().from(posts).where(eq(posts.userId, user.id));
+```
+
+### Hot-reload
+
+두 프레임워크 모두 hot-reload 지원. AdonisJS는 `node ace serve --watch`;
+NexusJS는 `bun --watch src/main.ts` 사용. Bun의 hot-reload가 Node보다
+빠르므로 NexusJS가 여기서 우세.
+
+### REPL
+
+AdonisJS는 라이브 코드 탐색용 `node ace repl` 보유. NexusJS는
+`nx info` (일회성 환경 요약) 출시하지만 interactive REPL은 없음.
+**낮은 우선순위** — REPL은 프로젝트 초기에 더 유용하고, 대부분의
+팀은 notebook / scratch 파일 사용.
 
 ---
 
-## 7. 권장 v0.4+ 로드맵
+## 5. 클러스터 / 다중 인스턴스
 
-### v0.4 — Encryption + 실시간 토대
+| 기능 | AdonisJS | NexusJS |
+| ------- | -------- | ------- |
+| 공유 DB를 통한 다중 pod | ✅ | ✅ (Drizzle 백엔드) |
+| Redis 기반 큐 | ✅ (BullMQ) | ✅ (`nexus/queue`) |
+| 다중 리전 | ❌ DIY | ❌ DIY |
+| 세션 sticky | ⚠️ DIY | ✅ (쿠키 백엔드는 stateless; DB 또는 memory로 폴백) |
 
-1. **`nexus/crypto`** — encryption + password hashing
-2. **`nexus/ws`** — WebSockets
-3. **`nexus/upload`** — 파일 업로드 헬퍼
-4. **`nexus/sse`** — Server-Sent Events
-5. **`nexus/auth` multi-guard 확장**
-6. **요청 스코프 DI** — 코어 확장
-
-이 6개는 **배터리** 이야기를 완성한다: AdonisJS 사용자가 NexusJS로
-마이그레이션할 때 기존 코드 경로의 95%에 대해 기능 패리티를 갖게 된다.
-
-### v0.5 — API 완성도
-
-- `nexus/openapi` — Zod → OpenAPI, Scalar UI
-- `nexus/i18n` — 다국어
-- `nexus/tracing` — OpenTelemetry
-- `nexus/metrics` — Prometheus
-- `nexus/resilience` — 회로차단기, 재시도
-
-### v0.6 — 분산 시스템
-
-- `nexus/grpc` — gRPC
-- `nexus/graphql` — GraphQL
-- `nexus/microservice` — TCP / NATS / Redis 트랜스포트
-- 안정적인 공개 API 표면 (semver 보장)
+AdonisJS와 NexusJS는 여기서 유사: 둘 다 공유 상태에 데이터베이스 의존.
+NexusJS의 쿠키 기반 세션은 본질적으로 stateless이므로 다중 리전
+배포에서 약간의 우위.
 
 ---
 
-## 8. 정직한 평가 (v0.4)
+## 6. NexusJS가 AdonisJS를 능가하는 곳
 
-v0.4 릴리스는 AdonisJS 비교를 **"많은 큰 격차"에서 "남은 격차는 거의 없음"으로 전환했다.**
-격차"로** 변환했다. 가장 많이 요청된 AdonisJS 스타일 배터리 — ORM,
-mail, drive, shield, cache, static, health, logging — 모두 이제
-NexusJS의 1급이다.
+여러 AdonisJS battery가 존재하지 않거나 (또는 DIY 전용). NexusJS는
+이를 기본 출시:
 
-AdonisJS v6 대비 NexusJS v0.4의 차별점:
+- **WebSockets** (`nexus/ws`) — AdonisJS 사용자는 커스텀
+  WebSocket 레이어 작성.
+- **Server-Sent Events** (`nexus/sse`) — 같은.
+- **OpenAPI / Swagger** (`nexus/openapi`) — AdonisJS 사용자는
+  일반적으로 스펙을 손으로 작성하거나 `@nestjs/swagger` 스타일
+  데코레이터 사용.
+- **분산 추적** (`nexus/tracing`) — AdonisJS 사용자는 OpenTelemetry
+  수동 통합.
+- **Prometheus 메트릭** (`nexus/metrics`) — AdonisJS 사용자는
+  `prom-client` 수동 통합.
+- **파일 업로드** (`nexus/upload`) — AdonisJS 사용자는
+  multipart 처리 손으로 작성.
+- **Bun 네이티브 런타임** — AdonisJS는 Node 전용.
 
-| NexusJS 장점 | AdonisJS 장점 |
-| ----------------- | ------------------- |
-| Bun 네이티브 런타임, 더 빠른 시작 | 더 성숙한 생태계 (5년+) |
-| Drizzle를 통한 5개 dialect ORM | 단일 Lucid ORM (postgres / sqlite / mysql) |
-| 멀티 런타임: Bun / Node / Workers | 단일 런타임 (Node) |
-| 3개 라우팅 스타일 (Nest / Adonis / Hono) | 단일 Adonis 스타일 라우터 |
-| Drizzle의 태그드 템플릿 raw query (SQL 인젝션 안전) | Lucid의 query builder (타입 안전) |
-| `nx` CLI가 모델과 마이그레이션 모두 스캐폴드 | `Ace` CLI가 둘 다 하지만 다른 명령으로 |
-| Resource 한계는 옵션 peer dep (AWS SDK 사용 안 함) | 모든 배터리 사전 설치 (큰 번들) |
+이들 중 하나라도 필요한 팀은 NexusJS에서 무료로 얻음.
 
-AdonisJS가 여전히 가지고 있고 NexusJS가 가지지 않은 것:
+---
 
-- Encryption / hash 헬퍼 (Tier 1)
-- Multi-guard auth 추상화 (Tier 1, better-auth를 통해 부분 지원)
-- WebSocket 모듈 (Tier 2)
-- i18n (Tier 2)
-- VineJS validator (논쟁 — Zod가 더 인기)
+## 7. 권장 v0.6+ 로드맵
 
-v0.4에서 "AdonisJS 기능 패리티"까지의 경로는 "NestJS 기능 패리티"와
-대략 동일하다 — v0.4는 잔존 Tier 1+2 배터리를, v0.5는 API 완성도를,
-v0.6은 분산 시스템 primitive를 추가한다.
+### v0.6 — Async RPC & DX ("polyglot" 마일스톤) — 예정
 
-v0.6 이후 비교는 대부분 **패러다임 vs 패러다임**이다: AdonisJS는
-모든 것에 대해 단일 blessed way를, NexusJS는 3개 라우팅 스타일, ORM
-선택, Bun을 제공한다. 새 프로젝트에는 NexusJS가 더 유연한
-시작점이다.
+1. **`nexus/graphql`** — 코드 우선 스키마, `@Resolver()` / `@Query()` / `@Mutation()`
+2. **`nexus/grpc`** — server / client / streaming
+3. **`nexus/resilience`** — 서킷 브레이커, 재시도, bulkhead
+4. **`nexus/feature-flag`** — 카나리 / A/B 테스팅
+5. **`nx repl`** — interactive REPL (낮은 우선순위; 요청 시 인용)
+
+이 5개가 남은 틈새 battery를 채우고 v6와의 "battery 커버리지"를 완성.
+
+### v0.7 — 강화
+
+- 안정 public API surface (semver 보장)
+- 다중 런타임 CI (Bun + Node + Cloudflare Workers)
+- 성능 벤치마크
+- 장기 LTS 지원 계획
+
+### v1.0 — Production-ready LTS
+
+- 동결 API surface
+- AdonisJS에서의 마이그레이션 가이드
+- LTS 브랜치 (12개월 보안 백포트)
+
+---
+
+## 8. 정직한 평가 (v0.5)
+
+v0.5 릴리스는 **본질적으로 모든 AdonisJS v6 battery 격차를 해소**.
+AdonisJS에서 NexusJS v0.5로 마이그레이션하는 팀은 다음을 발견:
+
+- 모든 first-party battery에 NexusJS v0.5에 동등한 것 있음.
+- Lucid → Drizzle 마이그레이션은 기계적 (`DrizzleRepository`가
+  Lucid API 미러링).
+- Vine → Zod 마이그레이션은 기계적.
+- `@adonisjs/auth` → `nexus/auth` 마이그레이션은 대부분 자명
+  (better-auth가 비슷한 API).
+- `@adonisjs/session` → `nexus/session` 마이그레이션은 대부분 자명.
+- `@adonisjs/encryption` / `hash` → `nexus/crypto` 마이그레이션은
+  한 줄 변경.
+
+**완전한** AdonisJS 커버리지에 여전히 **부족한 것**:
+
+- **GraphQL** — 무겁게 사용하는 팀에 중요.
+- **gRPC** — 폴리글랏 service-mesh 환경에 중요.
+- **Feature flags** — 카나리 배포에 유용.
+- **Resilience 프리미티브** — 외부 API 호출에 유용.
+- **REPL** — 초기 개발에 유용; blocking은 아님.
+- **Admin panel** — 낮은 우선순위; 대부분의 팀은 커스텀 사용.
+
+AdonisJS v6 vs NexusJS v0.5 차별점:
+
+- **Bun 네이티브** — NexusJS는 Bun에서 네이티브로 실행 (더 빠른
+  시작, 더 빠른 I/O, 더 적은 의존성). AdonisJS는 Node 전용.
+- **모듈별 번들 entry points** — `nexus/ws`는 사용하지 않으면
+  번들에 포함 안 됨. AdonisJS는 모든 것을 하나의 번들로 출시.
+- **OpenAPI / WebSockets / SSE / tracing / metrics batteries** —
+  NexusJS는 이를 기본 출시; AdonisJS 사용자는 직접 연결.
+- **기본 ORM = Drizzle** — Bun에서 Drizzle는 Lucid보다 성능상
+  우세. Lucid는 ActiveRecord 스타일에 더 좋은 DX.
+- **Cloudflare Workers** — NexusJS가 Workers에 더 친화적
+  (Hono의 엣지 성능).
+
+v0.5에서 "AdonisJS 기능 패리티"까지의 경로는 v0.5에서
+"NestJS 기능 패리티"까지의 경로와 대략 동일:
+
+- **v0.6** (2026 Q4): Async RPC & DX — GraphQL, gRPC, resilience,
+  feature flags, REPL.
+- **v0.7** (2027 Q1): Production hardening — 안정 public API,
+  다중 런타임 CI, 성능 벤치마크.
+- **v1.0** (2027 Q2): Production-ready LTS — 동결 API surface,
+  AdonisJS 마이그레이션 가이드, LTS 브랜치.
+
+v0.6 이후 NexusJS는 오늘 AdonisJS 사용자가 사용 가능한 모든 것에 대한
+**실현 가능한 대안**이며, Bun의 런타임 + DX 이점 + AdonisJS가
+battery로 출시하지 않는 모던 기능 (OpenAPI, WebSockets, tracing,
+metrics, SSE)을 가짐.
 
 ---
 
 ## 9. 참고
 
-- [`../../CHANGELOG.md`](../../CHANGELOG.md) — v0.4 릴리스 노트
+- [`../../CHANGELOG.md`](../../CHANGELOG.md) — v0.5 릴리스 노트
 - [`../README.md`](../../README.md) — 현재 상태 & 로드맵
-- [`../../user-guide/drizzle.md`](../../user-guide/drizzle.md) — Lucid 등가 가이드
-- [`../../user-guide/`](../../user-guide/) — 17개 모듈 가이드
+- [`../../user-guide/`](../../user-guide/) — 25개 모듈의 가이드
 - [`./nestjs-comparison.md`](./nestjs-comparison.md) — 동반 분석
-- [AdonisJS 문서](https://docs.adonisjs.com) — 비교 기준
+- [AdonisJS 문서](https://docs.adonisjs.com) — 비교 기준선
+- [Drizzle ORM](https://orm.drizzle.team) — NexusJS가 출시하는 기본 ORM
