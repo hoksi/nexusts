@@ -105,6 +105,7 @@ export interface NxConfig {
 		modules: string;
 		models: string;
 		migrations: string;
+		seeds?: string;
 		middleware: string;
 		dto: string;
 	};
@@ -154,6 +155,7 @@ export const DEFAULT_CONFIG: NxConfig = {
 		modules: "src/app/modules",
 		models: "src/app/models",
 		migrations: "src/app/database/migrations",
+		seeds: "db/seeds",
 		middleware: "src/app/middleware",
 		dto: "src/app/dto",
 	},

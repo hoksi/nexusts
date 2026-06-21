@@ -1,5 +1,5 @@
 /**
- * Tests for the `nx migrate` command and dialect-aware make:model/make:migration.
+ * Tests for the `nx db:migrate` command and dialect-aware make:model/make:migration.
  *
  * We test the command by invoking its `run` method directly with a
  * stubbed CommandContext. No real database is required.
@@ -276,11 +276,14 @@ describe("make:migration with --dialect", () => {
 	});
 });
 
-describe("nx migrate command exists", () => {
-	it("exports the migrate command and the help text mentions --status", () => {
-		const mod = require("../../src/cli/commands/migrate.js");
-		expect(mod.default.name).toBe("migrate");
-		expect(mod.default.aliases).toContain("m");
+describe("nx db:migrate command exists", () => {
+	it("exports the db:migrate command with new name and aliases", () => {
+		const mod = require("../../src/cli/commands/db-migrate.js");
+		expect(mod.default.name).toBe("db:migrate");
+		// Old alias kept for backward-compat
+		expect(mod.default.aliases).toContain("migrate");
+		// New short alias
+		expect(mod.default.aliases).toContain("db:m");
 		const hasStatus = mod.default.flags.some(
 			(f: { name: string }) => f.name === "status",
 		);

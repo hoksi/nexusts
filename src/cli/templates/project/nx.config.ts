@@ -52,6 +52,7 @@ export default {
     modules:     'src/app/modules',
     models:      'src/app/models',
     migrations:  'src/app/database/migrations',
+    seeds:       'db/seeds',
     middleware:  'src/app/middleware',
     dto:         'src/app/dto',
   },

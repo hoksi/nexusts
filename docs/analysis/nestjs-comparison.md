@@ -70,7 +70,7 @@ documents what shipped and where.
 | Email integration (`@nestjs/mailer` equivalent) | v0.3 | `nexus/mail` |
 | File storage abstraction | v0.3 | `nexus/drive` (memory / Local / S3 / R2) |
 | Database integration | v0.3 | `nexus/drizzle` (default ORM) |
-| Database migrations | v0.3 | `nx migrate` + `nx migrate --generate` |
+| Database migrations | v0.3 | `nx db:migrate` + `nx db:migrate --generate` |
 | Static file serving | v0.3 | `nexus/static` |
 | Default ORM (Drizzle-style) | v0.3 | `nexus/drizzle` |
 | **OpenAPI / Swagger** | v0.4 | `nexus/openapi` |

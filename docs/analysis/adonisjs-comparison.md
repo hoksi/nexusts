@@ -33,7 +33,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | DI | ✅ IoC container, decorators | ✅ Class-based + `@Inject()` | Both Nest-style and Adonis-style |
 | Validation | ✅ Vine (Zod-inspired) | ✅ Zod | Nexus uses Zod directly via `@Validate` |
 | ORM | ✅ Lucid (built-in) | ✅ `nexus/drizzle` | Drizzle is the default ORM |
-| Migrations | ✅ Built-in | ✅ `nx migrate` (drizzle-kit wrapper) | Same DX |
+| Migrations | ✅ Built-in | ✅ `nx db:migrate` (drizzle-kit wrapper) | Same DX |
 | Seeding | ✅ Built-in factories | ⚠️ DIY | No first-party; users write factories |
 | Auth | ✅ `@adonisjs/auth` | ✅ `nexus/auth` (better-auth) | better-auth = many strategies |
 | Sessions | ✅ `@adonisjs/session` | ✅ `nexus/session` | Cookie / Memory / Drizzle backends |
@@ -89,7 +89,7 @@ The v0.3, v0.4, and v0.5 milestones together closed every
 | Email | v0.3 | `nexus/mail` |
 | File storage (S3 / R2 / Local) | v0.3 | `nexus/drive` |
 | Database (default ORM) | v0.3 | `nexus/drizzle` |
-| Database migrations + CLI | v0.3 | `nx migrate` |
+| Database migrations + CLI | v0.3 | `nx db:migrate` |
 | Static file serving | v0.3 | `nexus/static` |
 | **OpenAPI generator** | v0.4 | `nexus/openapi` |
 | **File upload helper** | v0.4 | `nexus/upload` |

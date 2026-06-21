@@ -121,6 +121,18 @@ WebSocket auth via sub-protocol token, session cookie (existing
 - New bundle entry point: `./ws`. 23 entry points total;
   46 runtime files emitted to `dist/`.
 
+### Changed · CLI
+
+- `nx migrate` is now `nx db:migrate`. The old name still
+  works as an alias for backward compatibility; the new
+  short alias is `nx db:m`.
+- New `nx db:seed` command (aliases: `db:s`, `seed`) runs
+  every seed file in `db/seeds/` (configurable via
+  `paths.seeds` in `nx.config.ts`). Sub-flags: `--file
+  <name>` to run a single seed, `--create <name>` to
+  scaffold a new one, `--reset` to truncate every table
+  first (DESTRUCTIVE).
+
 ### Dependencies
 
 - **Optional peer dep** `nexus/ws`:

@@ -67,7 +67,7 @@ Tier 2 격차를 해소했다. 출시된 것을 문서화한다.
 | 이메일 통합 (`@nestjs/mailer` 등가) | v0.3 | `nexus/mail` |
 | 파일 스토리지 추상화 | v0.3 | `nexus/drive` (memory / Local / S3 / R2) |
 | 데이터베이스 통합 | v0.3 | `nexus/drizzle` (기본 ORM) |
-| 데이터베이스 마이그레이션 | v0.3 | `nx migrate` + `nx migrate --generate` |
+| 데이터베이스 마이그레이션 | v0.3 | `nx db:migrate` + `nx db:migrate --generate` |
 | 정적 파일 서빙 | v0.3 | `nexus/static` |
 | 기본 ORM (Drizzle 스타일) | v0.3 | `nexus/drizzle` |
 | **OpenAPI / Swagger** | v0.4 | `nexus/openapi` |

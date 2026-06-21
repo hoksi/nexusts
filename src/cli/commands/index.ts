@@ -21,7 +21,8 @@ import makeSchedule from "./make-schedule.js";
 import makeService from "./make-service.js";
 import makeSession from "./make-session.js";
 import makeValidator from "./make-validator.js";
-import migrate from "./migrate.js";
+import dbMigrate from "./db-migrate.js";
+import dbSeed from "./db-seed.js";
 import newCmd from "./new.js";
 import routeList from "./route-list.js";
 
@@ -41,7 +42,8 @@ export const commands: Command[] = [
 	makeSchedule,
 	makeListener,
 	makeSession,
-	migrate,
+	dbMigrate,
+	dbSeed,
 	routeList,
 	info,
 ];

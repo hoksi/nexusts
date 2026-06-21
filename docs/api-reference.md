@@ -993,11 +993,12 @@ import { commands, findCommand } from "nexus/cli";
 ```ts
 import { commands, findCommand } from 'nexus/cli';
 
-// 18 commands (v0.3, unchanged in v0.4):
+// 20 commands (v0.4 + v0.5):
 //   new, init, make:crud, make:controller, make:service, make:module,
 //   make:model, make:migration, make:middleware, make:validator,
 //   make:auth, make:queue, make:schedule, make:listener, make:session,
-//   migrate, route:list, info
+//   db:migrate (alias: migrate), db:seed (alias: seed),
+//   route:list, info
 ```
 
 CLI usage (from a project):
@@ -1006,9 +1007,13 @@ CLI usage (from a project):
 nx init --orm drizzle --db postgres      # initialise nx.config.ts + drizzle.config.ts
 nx make:model User --columns 'email:text,age:int' --dialect postgres
 nx make:migration create_users_table --dialect postgres
-nx migrate                                # apply pending migrations
-nx migrate --status                       # show applied migrations
-nx migrate --generate "add_email_to_users"
+nx db:migrate                            # apply pending migrations (alias: nx migrate)
+nx db:migrate --status                   # show applied migrations
+nx db:migrate --generate "add_email_to_users"
+nx db:seed                                # run all seeds in db/seeds/
+nx db:seed --create users                 # scaffold a new seed file
+nx db:seed --file 01_users                # run a single seed
+nx db:seed --reset                        # truncate all tables, then seed
 nx route:list                             # list registered routes
 nx info                                   # show resolved config
 ```

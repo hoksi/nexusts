@@ -30,7 +30,7 @@ AdonisJS가 출시하는 거의 모든 battery를 다룬다.
 | DI | ✅ IoC 컨테이너, 데코레이터 | ✅ 클래스 기반 + `@Inject()` | Nest 스타일 + Adonis 스타일 모두 |
 | 검증 | ✅ Vine (Zod에서 영감) | ✅ Zod | Nexus는 `@Validate`로 직접 Zod 사용 |
 | ORM | ✅ Lucid (내장) | ✅ `nexus/drizzle` | Drizzle가 기본 ORM |
-| 마이그레이션 | ✅ 내장 | ✅ `nx migrate` (drizzle-kit 래퍼) | 같은 DX |
+| 마이그레이션 | ✅ 내장 | ✅ `nx db:migrate` (drizzle-kit 래퍼) | 같은 DX |
 | Seeding | ✅ 내장 팩토리 | ⚠️ DIY | first-party 없음; 사용자가 팩토리 작성 |
 | Auth | ✅ `@adonisjs/auth` | ✅ `nexus/auth` (better-auth) | better-auth = 다수 전략 |
 | 세션 | ✅ `@adonisjs/session` | ✅ `nexus/session` | Cookie / Memory / Drizzle 백엔드 |
@@ -86,7 +86,7 @@ v0.3, v0.4, v0.5 마일스톤이 v0.2 분석에서 식별된 모든
 | 이메일 | v0.3 | `nexus/mail` |
 | 파일 스토리지 (S3 / R2 / Local) | v0.3 | `nexus/drive` |
 | 데이터베이스 (기본 ORM) | v0.3 | `nexus/drizzle` |
-| 데이터베이스 마이그레이션 + CLI | v0.3 | `nx migrate` |
+| 데이터베이스 마이그레이션 + CLI | v0.3 | `nx db:migrate` |
 | 정적 파일 서빙 | v0.3 | `nexus/static` |
 | **OpenAPI 생성기** | v0.4 | `nexus/openapi` |
 | **파일 업로드 헬퍼** | v0.4 | `nexus/upload` |

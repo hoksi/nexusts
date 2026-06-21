@@ -1,5 +1,5 @@
 /**
- * `nx migrate` — apply pending migrations.
+ * `nx db:migrate` — apply pending database migrations.
  *
  * Two modes:
  *
@@ -19,10 +19,12 @@
  *      but prefer the `nx` alias over the bare command.
  *
  * Examples:
- *   nx migrate
- *   nx migrate --status
- *   nx migrate --generate "add_user_email"
- *   nx migrate --folder ./drizzle --dialect postgres
+ *   nx db:migrate
+ *   nx db:migrate --status
+ *   nx db:migrate --generate "add_user_email"
+ *   nx db:migrate --folder ./drizzle --dialect postgres
+ *
+ * See also: `nx db:seed` for inserting fixture data.
  */
 
 import { spawn } from "node:child_process";
@@ -31,17 +33,17 @@ import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
 import { logger } from "../core/index.js";
 
-export const migrateCommand: Command = {
-	name: "migrate",
-	aliases: ["m"],
+export const dbMigrateCommand: Command = {
+	name: "db:migrate",
+	aliases: ["db:m", "migrate"],
 	summary: "Apply pending database migrations",
 	description:
-		"Runs the Drizzle migrator against the configured migrations folder. Use --status to inspect, --generate to scaffold a new migration via drizzle-kit.",
+		"Runs the Drizzle migrator against the configured migrations folder. Use --status to inspect, --generate to scaffold a new migration via drizzle-kit. See also `nx db:seed` for fixture data.",
 	examples: [
-		"nx migrate",
-		"nx migrate --status",
-		"nx migrate --generate 'add_email_to_users'",
-		"nx migrate --folder ./drizzle",
+		"nx db:migrate",
+		"nx db:migrate --status",
+		"nx db:migrate --generate 'add_email_to_users'",
+		"nx db:migrate --folder ./drizzle",
 	],
 	flags: [
 		{
@@ -199,4 +201,4 @@ function relativeImport(cwd: string, target: string): string {
 	return rel;
 }
 
-export default migrateCommand;
+export default dbMigrateCommand;

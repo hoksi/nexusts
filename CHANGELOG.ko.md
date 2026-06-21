@@ -66,6 +66,16 @@ Sub-protocol 토큰, 세션 쿠키 (기존 `nexus/session` 미들웨어),
 - 신규 번들 entry point: `./ws`. 23 entry points 합계;
   46 runtime files emitted to `dist/`.
 
+### 변경 · CLI
+
+- `nx migrate`는 이제 `nx db:migrate`. 이전 이름은 하위 호환을
+  위해 여전히 별칭으로 작동; 새 짧은 별칭은 `nx db:m`.
+- 신규 `nx db:seed` 명령 (별칭: `db:s`, `seed`)이 `db/seeds/`
+  (nx.config.ts의 `paths.seeds`로 설정 가능)의 모든 시드
+  파일 실행. 서브 플래그: `--file <name>`로 단일 시드 실행,
+  `--create <name>`로 시드 파일 스캐폴드, `--reset`로 모든
+  테이블 truncate 후 시드 실행 (파괴적).
+
 ### 의존성
 
 - **`nexus/ws`의 optional peer dep**:

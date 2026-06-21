@@ -256,10 +256,16 @@ nx make:model User --columns 'email:text,status:boolean' --dialect postgres
 nx make:migration create_users_table --dialect postgres --columns 'email:text'
 
 # Apply pending migrations
-nx migrate
+nx db:migrate
 
 # Inspect migration state
-nx migrate --status
+nx db:migrate --status
+
+# Run database seeds
+nx db:seed
+
+# Scaffold a new seed file
+nx db:seed --create users
 ```
 
 See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
