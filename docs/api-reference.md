@@ -306,22 +306,413 @@ function createSolidAdapter(opts: { components: ComponentRegistry }): SsrAdapter
 
 ---
 
-## Router (raw API)
+## `nexus/auth` (`better-auth`)
 
 ```ts
-class Router {
-  // Adonis style
-  add(method: HttpMethod, path: string, controller: Type, methodName: string): void;
+import {
+  AuthModule, AuthService, AuthController,
+  CurrentUser, authMiddleware,
+} from 'nexus/auth';
 
-  // Functional style
-  raw(method: HttpMethod, path: string, handler: HonoHandler): void;
-
-  // Decorator-driven
-  registerController(controller: Type, container: DIContainer): void;
+class AuthModule {
+  static forRoot(config: AuthConfig): Type;
 }
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
+class AuthService {
+  static readonly TOKEN: symbol;
+  signIn(email: string, password: string): Promise<Session>;
+  signOut(sessionId: string): Promise<void>;
+  getUser(id: string): Promise<User | null>;
+  // wraps better-auth — extend via the underlying client
+}
+
+function CurrentUser(options?: { required?: boolean }): ParameterDecorator;
+
+function authMiddleware(options?: { required?: boolean }): HonoMiddleware;
 ```
+
+---
+
+## `nexus/queue`
+
+```ts
+import {
+  QueueModule, QueueService,
+  MemoryQueueBackend, BullMQBackend, CloudflareQueueBackend,
+  OnQueueReady,
+} from 'nexus/queue';
+
+class QueueModule { static forRoot(config: QueueConfig): Type; }
+class QueueService {
+  static readonly TOKEN: symbol;
+  add<T>(name: string, data: T, options?: AddOptions): Promise<AddedJob>;
+  addBatch(jobs: Array<{ name: string; data: any; options?: AddOptions }>): Promise<AddedJob[]>;
+  process<T>(name: string, handler: JobHandler<T>): Promise<WorkerHandle>;
+  on(listener: QueueEventListener): () => void;
+  start(): Promise<void>;
+  stop(): Promise<void>;
+}
+
+function OnQueueReady(name: string): MethodDecorator;
+```
+
+---
+
+## `nexus/schedule`
+
+```ts
+import {
+  ScheduleModule, ScheduleService,
+  Cron, Interval, Timeout,
+  durationToMs, // '1s' | '1m' | '1h' | '1d' | number -> ms
+} from 'nexus/schedule';
+
+class ScheduleModule { static forRoot(config?: ScheduleConfig): Type; }
+class ScheduleService {
+  static readonly TOKEN: symbol;
+  register(name: string, cron: string, fn: () => Promise<any> | any): void;
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  list(): RegisteredTask[];
+}
+
+function Cron(expression: string): MethodDecorator;
+function Interval(ms: number): MethodDecorator;
+function Timeout(ms: number): MethodDecorator;
+```
+
+---
+
+## `nexus/events`
+
+```ts
+import {
+  EventsModule, EventsService,
+  NexusEventEmitter, OnEvent,
+} from 'nexus/events';
+
+class EventsModule { static forRoot(): Type; }
+class EventsService extends NexusEventEmitter {
+  static readonly TOKEN: symbol;
+  emit(event: string, payload?: any): Promise<void>;
+  on(pattern: string, listener: (payload: any) => void | Promise<void>): () => void;
+  onAny(listener: (event: string, payload: any) => void | Promise<void>): () => void;
+}
+
+function OnEvent(pattern: string, opts?: { priority?: number; guard?: (payload: any) => boolean }): MethodDecorator;
+```
+
+---
+
+## `nexus/session`
+
+```ts
+import {
+  SessionModule, SessionService,
+  MemorySessionStorage, CookieSessionStorage, DrizzleSessionStorage,
+  Session, CurrentSession, // current alias
+} from 'nexus/session';
+
+class SessionModule { static forRoot(config: SessionConfig): Type; }
+class SessionService {
+  static readonly TOKEN: symbol;
+  create<T = SessionData>(opts?: CreateSessionOptions<T>): Promise<SessionRecord<T>>;
+  read(id: string): Promise<SessionRecord | null>;
+  readMany(query?: SessionQuery): Promise<SessionRecord[]>;
+  update<T = SessionData>(id: string, opts: UpdateSessionOptions<T>): Promise<SessionRecord<T> | null>;
+  destroy(id: string, reason?: 'logout' | 'expired' | 'admin' | 'unknown'): Promise<boolean>;
+  rotate(id: string): Promise<SessionRecord | null>;
+  gc(): Promise<number>;
+  on(listener: SessionEventListener): () => void;
+}
+
+function Session(options?: { required?: boolean }): ParameterDecorator;
+```
+
+---
+
+## `nexus/health`
+
+```ts
+import {
+  HealthModule, HealthCheckService, HealthController,
+  MemoryHealthIndicator, DiskHealthIndicator, HttpHealthIndicator,
+  DrizzleHealthIndicator, CustomPingIndicator,
+} from 'nexus/health';
+
+class HealthModule { static forRoot(config?: HealthConfig): Type; }
+class HealthCheckService {
+  static readonly TOKEN: symbol;
+  register(indicator: HealthIndicator): void;
+  unregister(name: string): boolean;
+  list(): string[];
+  check(kind?: 'liveness' | 'readiness' | 'startup'): Promise<HealthCheckResult>;
+}
+```
+
+---
+
+## `nexus/config`
+
+```ts
+import { ConfigModule, ConfigService } from 'nexus/config';
+
+class ConfigModule { static forRoot(config: ConfigConfig): Type; }
+class ConfigService<S extends ZodSchema> {
+  static readonly TOKEN: symbol;
+  get<K extends keyof InferConfig<S>>(key: K): InferConfig<S>[K];
+  get<K extends string>(key: K, opts: { default: any }): any;
+  require<K extends keyof InferConfig<S>>(key: K): InferConfig<S>[K];
+  env(key: string): string | undefined;
+  reload(): Promise<void>;
+}
+```
+
+---
+
+## `nexus/logger`
+
+```ts
+import { LoggerModule, Logger, NullTransport, PrettyTransport, PinoTransport } from 'nexus/logger';
+
+class LoggerModule { static forRoot(options?: LoggerOptions): Type; }
+class Logger {
+  static readonly TOKEN: symbol;
+  trace(msg: string, ctx?: object): void;
+  debug(msg: string, ctx?: object): void;
+  info(msg: string, ctx?: object): void;
+  warn(msg: string, ctx?: object): void;
+  error(msg: string, ctx?: object): void;
+  fatal(msg: string, ctx?: object): void;
+  with(ctx: object, fn: () => Promise<any>): Promise<any>;
+  child(ctx: object): Logger;
+  attachLogger(fn: (q: string, p: unknown[]) => void): void;
+}
+```
+
+---
+
+## `nexus/static`
+
+```ts
+import { StaticModule, StaticService, ServeStaticOptions } from 'nexus/static';
+
+class StaticModule { static forRoot(config: ServeStaticOptions): Type; }
+class StaticService {
+  static readonly TOKEN: symbol;
+  middleware(): HonoMiddleware;
+}
+```
+
+---
+
+## `nexus/limiter`
+
+```ts
+import {
+  LimiterModule, LimiterService, LimiterMiddleware,
+  MemoryRateLimitStorage, DrizzleRateLimitStorage,
+  RateLimit, durationToMs,
+} from 'nexus/limiter';
+
+class LimiterModule { static forRoot(config?: LimiterConfig): Type; }
+class LimiterService {
+  static readonly TOKEN: symbol;
+  rules: RateLimitRule[];
+  check(key: string, rule: RateLimitRule): Promise<RateLimitResult>;
+  reset(key: string): Promise<void>;
+}
+
+function RateLimit(rule: RateLimitRule): MethodDecorator;
+```
+
+---
+
+## `nexus/shield`
+
+```ts
+import { ShieldModule, ShieldService, CsrfGuard, HeadersGuard } from 'nexus/shield';
+
+class ShieldModule { static forRoot(config?: ShieldConfig): Type; }
+class ShieldService {
+  static readonly TOKEN: symbol;
+  middleware(): HonoMiddleware;
+  issueToken(headers: Headers): { token: string; html: string };
+}
+```
+
+---
+
+## `nexus/cache`
+
+```ts
+import {
+  CacheModule, CacheService,
+  MemoryStore, DrizzleCacheStore,
+  Cacheable, CacheInvalidate,
+} from 'nexus/cache';
+
+class CacheModule { static forRoot(config?: CacheConfig): Type; }
+class CacheService {
+  static readonly TOKEN: symbol;
+  get<T = unknown>(key: string): Promise<T | undefined>;
+  set<T = unknown>(key: string, value: T, ttl?: number): Promise<void>;
+  delete(key: string): Promise<boolean>;
+  clear(pattern?: string): Promise<number>;
+  wrap<T>(key: string, fn: () => Promise<T>, ttl?: number): Promise<T>;
+  invalidateByTag(tag: string): Promise<number>;
+  gc(): Promise<number>;
+  applyDecorators(instance: any): void;
+}
+
+function Cacheable(prefix: string, keyFn: (...args: any[]) => string, ttlSeconds?: number): MethodDecorator;
+function CacheInvalidate(prefix: string, keyFn: (...args: any[]) => string): MethodDecorator;
+```
+
+---
+
+## `nexus/drive`
+
+```ts
+import {
+  DriveModule, DriveService,
+  MemoryDriver, LocalDriver, S3Driver,
+} from 'nexus/drive';
+
+class DriveModule { static forRoot(config?: DriveConfig): Type; }
+class DriveService {
+  static readonly TOKEN: symbol;
+  driver: StorageDriver;
+  put(key: string, body: FileContent, opts?: PutOptions): Promise<void>;
+  get(key: string): Promise<Buffer>;
+  delete(key: string): Promise<boolean>;
+  exists(key: string): Promise<boolean>;
+  head(key: string): Promise<FileMetadata>;
+  list(opts?: ListOptions): Promise<ListResult>;
+  getSignedUrl(key: string, opts?: SignedUrlOptions): Promise<string>;
+  copy(src: string, dest: string): Promise<void>;
+  move(src: string, dest: string): Promise<void>;
+}
+```
+
+---
+
+## `nexus/mail`
+
+```ts
+import {
+  MailModule, MailService,
+  NullTransport, FileTransport, SmtpTransport,
+} from 'nexus/mail';
+
+class MailModule { static forRoot(config?: MailConfig): Type; }
+class MailService {
+  static readonly TOKEN: symbol;
+  send(msg: MailMessage): Promise<MailSendResult>;
+  sendBatch(msg: Omit<MailMessage, 'to'>, recipients: string[]): Promise<MailSendResult[]>;
+  renderMjml(template: string, vars?: Record<string, unknown>): Promise<string>;
+}
+```
+
+---
+
+## `nexus/drizzle` (default ORM)
+
+```ts
+import {
+  DrizzleModule, DrizzleService,
+  DrizzleModel, DrizzleRepository,
+  Table, Column, PrimaryKey,
+  resolveDriver, postgresDriver, mysqlDriver, sqliteDriver, bunSqliteDriver, d1Driver,
+  RawQuery,
+} from 'nexus/drizzle';
+
+class DrizzleModule { static forRoot(config: DrizzleConfig): Type; }
+class DrizzleService {
+  static readonly TOKEN: symbol;
+  dialect: string;
+  client: any;  // the underlying Drizzle client (type depends on dialect)
+
+  open(): Promise<void>;
+  close(): Promise<void>;
+
+  // Drizzle passthroughs (typed via dialect-specific generics)
+  select(): any;
+  insert(table: any): any;
+  update(table: any): any;
+  delete(table: any): any;
+
+  // ACID transactions
+  transaction<T>(fn: (tx: DrizzleService) => Promise<T>): Promise<T>;
+
+  // SQL-injection-safe raw queries
+  raw: (strings: TemplateStringsArray, ...values: unknown[]) => RawQuery;
+  rawQuery<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>;
+
+  // Migrations
+  migrate(folder: string): Promise<MigrateResult>;
+  appliedMigrations(): Promise<MigrationRecord[]>;
+}
+
+class DrizzleRepository<TTable = any, TRow = Record<string, unknown>> {
+  constructor(db: DrizzleService, table: TTable);
+  findAll(opts?: FindAllOptions): Promise<TRow[]>;
+  findOne(where: any): Promise<TRow | undefined>;
+  create(values: Partial<TRow> | Array<Partial<TRow>>): Promise<TRow | TRow[]>;
+  update(where: any, patch: Partial<TRow>): Promise<TRow[]>;
+  delete(where: any): Promise<number>;
+  transaction<T>(fn: (tx: DrizzleRepository<TTable, TRow>) => Promise<T>): Promise<T>;
+}
+
+function Table(name: string): ClassDecorator;
+function Column(opts?: Partial<ColumnMetadata>): PropertyDecorator;
+function PrimaryKey(opts?: Partial<ColumnMetadata>): PropertyDecorator;
+```
+
+### Drizzle dialects (5 supported)
+
+```ts
+type DrizzleDialect = 'postgres' | 'mysql' | 'sqlite' | 'bun-sqlite' | 'd1';
+```
+
+| Dialect | Driver | Optional peer dep |
+| ------- | ------ | ----------------- |
+| `postgres` | `postgres.js` (default) → `pg` fallback | `postgres` or `pg` |
+| `mysql` | `mysql2` | `mysql2` |
+| `sqlite` | `better-sqlite3` | `better-sqlite3` |
+| `bun-sqlite` | `bun:sqlite` (built-in) | none (Bun only) |
+| `d1` | Cloudflare D1 binding | none (Workers only) |
+
+See [user-guide/drizzle.md](./user-guide/drizzle.md) for the full guide.
+
+---
+
+## `nexus/cli` (`nx`)
+
+```ts
+import { commands, findCommand } from 'nexus/cli';
+
+// 18 commands (v0.3):
+//   new, init, make:crud, make:controller, make:service, make:module,
+//   make:model, make:migration, make:middleware, make:validator,
+//   make:auth, make:queue, make:schedule, make:listener, make:session,
+//   migrate, route:list, info
+```
+
+CLI usage (from a project):
+
+```bash
+nx init --orm drizzle --db postgres      # initialise nx.config.ts + drizzle.config.ts
+nx make:model User --columns 'email:text,age:int' --dialect postgres
+nx make:migration create_users_table --dialect postgres
+nx migrate                                # apply pending migrations
+nx migrate --status                       # show applied migrations
+nx migrate --generate "add_email_to_users"
+nx route:list                             # list registered routes
+nx info                                   # show resolved config
+```
+
+See [user-guide/cli.md](./user-guide/cli.md) for the full guide.
 
 ---
 
@@ -369,28 +760,54 @@ class CloudflareRuntime{ fetch: (req: Request, env?: any, ctx?: any) => Promise<
 
 ---
 
-## ORM (Drizzle adapter)
+## ORM (Drizzle)
+
+The full Drizzle integration lives in `nexus/drizzle`. See the
+[user guide](./user-guide/drizzle.md) and the [Drizzle section
+above](#nexusdrizzle-default-orm).
 
 ```ts
-interface DrizzleAdapterConfig {
-  schema: Record<string, any>;
-  driver: 'bun-sqlite' | 'node-sqlite' | 'libsql' | 'postgres' | 'mysql';
-}
+import {
+  DrizzleModule, DrizzleService,
+  DrizzleRepository, DrizzleModel,
+  Table, Column, PrimaryKey,
+} from 'nexus/drizzle';
 
-class DrizzleAdapter {
-  constructor(config: DrizzleAdapterConfig);
-  // exposes the underlying drizzle instance for queries.
-}
+class DrizzleModule { static forRoot(config: DrizzleConfig): Type; }
+// ... see full API above
+```
+
+Quick example:
+
+```ts
+const db = new DrizzleService({
+  dialect: 'postgres',
+  connection: { url: process.env.DATABASE_URL! },
+});
+await db.open();
+
+const user = await db
+  .select()
+  .from(users)
+  .where(eq(users.id, 42))
+  .get();
+
+const rows = await db.raw`SELECT * FROM users WHERE email = ${email}`.all();
 ```
 
 ---
 
 ## See also
 
-- [Getting started](./getting-started.md)
-- [Controllers & decorators](./controllers.md)
-- [Dependency injection](./dependency-injection.md)
-- [Validation](./validation.md)
-- [View engines](./view-engines.md)
-- [Inertia.js adapter](./inertia.md)
-- [Runtime & deployment](./runtime-deployment.md)
+- [Getting started](./user-guide/getting-started.md)
+- [Controllers & decorators](./user-guide/controllers.md)
+- [Dependency injection](./user-guide/dependency-injection.md)
+- [Validation](./user-guide/validation.md)
+- [View engines](./user-guide/view-engines.md)
+- [Inertia.js adapter](./user-guide/inertia.md)
+- [Runtime & deployment](./user-guide/runtime-deployment.md)
+- [Production basics (health / config / logger / static)](./user-guide/production-basics.md)
+- [Cross-cutting features (limiter / shield / cache / drive / mail)](./user-guide/cross-cutting-features.md)
+- [Drizzle ORM (default)](./user-guide/drizzle.md)
+- [CLI (`nx` command runner)](./user-guide/cli.md)
+- [Changelog](../CHANGELOG.md)

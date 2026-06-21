@@ -2,13 +2,42 @@
 
 **Bun Native Fullstack Framework** — NestJS structure × Adonis productivity × Hono edge performance.
 
-> **v0.2** — feature-complete MVP. MVC core, DI, validation, three
-> routing styles, view engines (Rendu / Edge / Inertia), auth
-> (Session / JWT / OAuth / Passkey), queue (BullMQ / Cloudflare),
-> schedule (`@Cron` / `@Interval` / `@Timeout`), events
-> (`@OnEvent`), session (cookie / memory), and `nx` CLI all ship
-> out of the box. Cloudflare D1/KV/R2/DO adapters and AI agent
-> module are next (v0.3).
+> **v0.3 — production-ready.** All 17 modules ship. Drizzle is the
+> default ORM with full Lucid-equivalent ergonomics. Multi-pod
+> session, health, rate-limit, and cache via any Drizzle-compatible
+> database. The `nx` CLI scaffolds models, migrations, and runs
+> them. See [CHANGELOG.md](./CHANGELOG.md) for the v0.3 release notes.
+
+---
+
+## What's in v0.3
+
+The framework now ships **17 independent modules** — every one is
+its own bundle entry point, so you install only what you use.
+
+| Module | Purpose |
+| ------ | ------- |
+| `nexus` (core) | MVC + DI + validation + 3 routing styles + view engines + Inertia.js |
+| `nexus/cli` (`nx`) | Adonis ACE-style command runner — `new`, `init`, `make:*`, `migrate`, `info` |
+| `nexus/auth` | better-auth integration with `@CurrentUser` and `authMiddleware` |
+| `nexus/queue` | BullMQ + Cloudflare Queues + memory backends. `@OnQueueReady` decorator |
+| `nexus/schedule` | Custom cron parser. `@Cron` / `@Interval` / `@Timeout` decorators |
+| `nexus/events` | `NexusEventEmitter` with wildcards, priorities, guards. `@OnEvent` decorator |
+| `nexus/session` | Cookie (HMAC) + memory + **Drizzle** backends. Sliding expiry, rotation |
+| `nexus/health` | `/health/live` · `/health/ready` · `/health/startup`. Built-in indicators |
+| `nexus/config` | Zod-validated configuration. Layered loading from env, `.env`, `load()` |
+| `nexus/logger` | Pino-backed structured logging. Pretty-print in dev, JSON in prod |
+| `nexus/static` | Static file serving with ETag, Range, path-traversal protection |
+| `nexus/limiter` | Rate limiting. 3 strategies × memory / **Drizzle** storage |
+| `nexus/shield` | Security suite: CSRF + HSTS + CSP + X-Frame-Options + Referrer-Policy |
+| `nexus/cache` | Application cache. Memory (LRU) / **Drizzle** backends. Tag invalidation |
+| `nexus/drive` | File storage abstraction. Memory / Local / S3 / R2 drivers |
+| `nexus/mail` | Outbound email. Null / File / SMTP transports. MJML rendering |
+| `nexus/drizzle` | **Default ORM.** 5 dialects, `DrizzleModel`, `DrizzleRepository`, migrations, raw SQL (injection-safe) |
+
+See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
+Drizzle integration guide, and [CHANGELOG.md](./CHANGELOG.md) for the
+detailed v0.3 release notes.
 
 ---
 
@@ -24,13 +53,18 @@
 | Functional handler (Hono style)  |   △    |   ❌   |   ✅   |    ✅     |
 | Zod validation pipeline          |   △    |   ✅   |   ❌   |    ✅     |
 | Three view engines (Rendu/Edge/Inertia) | ❌ |   ✅   |   ❌   |    ✅     |
+| **Default ORM (Drizzle, 5 dialects)** |   △   | Lucid  |   ❌   |    ✅     |
+| **Multi-pod session, cache, limiter via Drizzle** |  △ | ✅ | ❌ | **✅** |
+| **17 independent bundle entry points** |   ❌   |   △   |   ❌   |    ✅     |
+| **SQL-injection-safe raw queries by construction** |   △   |   △   |   ❌   |    ✅     |
+| **Migrations + autoMigrate on boot** |   △   |   ✅   |   ❌   |    ✅     |
 
 ---
 
 ## Install
 
 ```bash
-bun create nexus my-app   # (planned)
+bunx create-nexus my-app   # scaffold a new project
 cd my-app
 bun install
 bun run dev
@@ -40,11 +74,74 @@ Or use it as a library in an existing project:
 
 ```bash
 bun add nexus reflect-metadata zod hono
+# Add the modules you need:
+bun add nexus/auth nexus/queue nexus/drizzle
+```
+
+Every module is its own bundle entry point — install only what you
+use. The CLI (`nx`) is shipped as the `nx` bin and the `nexus/cli`
+import:
+
+```bash
+bun add nexus/cli     # optional — for the `nx` command runner
 ```
 
 ---
 
 ## Quick start
+
+A minimal app with the **default ORM (Drizzle)** and the most
+common modules:
+
+```ts
+// src/db/schema.ts
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+```
+
+```ts
+// src/app/app.module.ts
+import { Module } from 'nexus';
+import { DrizzleModule } from 'nexus/drizzle';
+import { ConfigModule } from 'nexus/config';
+import { LoggerModule } from 'nexus/logger';
+import { HealthModule } from 'nexus/health';
+import { LimiterModule } from 'nexus/limiter';
+import { SessionModule } from 'nexus/session';
+import { CacheModule } from 'nexus/cache';
+import { DriveModule } from 'nexus/drive';
+import { MailModule } from 'nexus/mail';
+import { ShieldModule } from 'nexus/shield';
+import { AuthModule } from 'nexus/auth';
+import { UserModule } from './modules/user.module.js';
+import { configSchema } from './config/schema.js';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ schema: configSchema, exitOnError: true }),
+    LoggerModule.forRoot({ pretty: process.env.NODE_ENV !== 'production' }),
+    HealthModule.forRoot({ builtIn: { memory: true, disk: { threshold: 0.1 } } }),
+    DrizzleModule.forRoot({
+      dialect: 'postgres',
+      connection: { url: process.env.DATABASE_URL! },
+    }),
+    SessionModule.forRoot({ backend: 'cookie', cookie: { secret: process.env.SESSION_SECRET! } }),
+    CacheModule.forRoot({ defaultTtl: 300 }),
+    DriveModule.forRoot({ driver: new LocalDriver({ root: '/var/data' }) }),
+    MailModule.forRoot({ defaultFrom: 'no-reply@example.com' }),
+    LimiterModule.forRoot({ rules: [{ path: '/api/*', points: 100, duration: '1m' }] }),
+    ShieldModule.forRoot({ csrf: { enabled: true }, hsts: { maxAge: 31_536_000 } }),
+    AuthModule.forRoot({ /* better-auth config */ }),
+    UserModule,
+  ],
+})
+export class AppModule {}
+```
 
 ```ts
 // src/app/main.ts
@@ -57,72 +154,56 @@ await app.listen(3000);
 ```
 
 ```ts
-// src/app/app.module.ts
+// src/app/modules/user/user.module.ts
 import { Module } from 'nexus';
-import { UserModule } from './modules/user.module.js';
-
-@Module({ imports: [UserModule] })
-export class AppModule {}
-```
-
-```ts
-// src/app/modules/user.module.ts
-import { Module } from 'nexus';
-import { UserController } from '../controllers/user.controller.js';
-import { UserService } from '../services/user.service.js';
+import { UserController } from './user.controller.js';
+import { UserService } from './user.service.js';
+import { UserRepository } from './user.repository.js';
 
 @Module({
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserRepository],
 })
 export class UserModule {}
 ```
 
 ```ts
-// src/app/services/user.service.ts
-import { Injectable } from 'nexus';
+// src/app/modules/user/user.service.ts
+import { Inject, Injectable } from 'nexus';
+import { DrizzleService } from 'nexus/drizzle';
+import { eq } from 'drizzle-orm';
+import { users } from '../../db/schema.js';
 
 @Injectable()
 export class UserService {
-  private users = [{ id: 1, name: 'Alice', email: 'alice@example.com' }];
+  constructor(@Inject(DrizzleService.TOKEN) private db: DrizzleService) {}
 
-  findAll() { return this.users; }
-
-  create(data: { name: string; email: string }) {
-    const user = { id: this.users.length + 1, ...data };
-    this.users.push(user);
-    return user;
+  findAll() { return this.db.select().from(users).all(); }
+  findById(id: number) { return this.db.select().from(users).where(eq(users.id, id)).get(); }
+  async create(email: string) {
+    return (await this.db.insert(users).values({ email }).returning())[0];
   }
 }
 ```
 
 ```ts
-// src/app/controllers/user.controller.ts
+// src/app/modules/user/user.controller.ts
 import { z } from 'zod';
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Validate } from 'nexus';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Validate } from 'nexus';
+import { UserService } from './user.service.js';
 
 const CreateUserSchema = z.object({
-  name: z.string().min(1),
   email: z.string().email(),
 });
 
 @Controller('/users')
 export class UserController {
-  constructor(@Inject(UserService) private readonly users: UserService) {}
+  constructor(@Inject(UserService) private users: UserService) {}
 
-  @Get('/')
-  @Validate({
-    query: z.object({ q: z.string().optional(), limit: z.coerce.number().int().max(100).optional() }),
-  })
-  async index(@Query() query: { q?: string; limit?: number }) {
-    return this.users.findAll();
-  }
-
-  @Post('/')
-  @Validate({ body: CreateUserSchema })
-  async create(@Body() body: z.infer<typeof CreateUserSchema>) {
-    return { status: 201, body: this.users.create(body) };
-  }
+  @Get('/')        async index() { return this.users.findAll(); }
+  @Get('/:id')     async show(@Param('id') id: string) { return this.users.findById(Number(id)); }
+  @Post('/')       @Validate({ body: CreateUserSchema }) async create(@Body() body: z.infer<typeof CreateUserSchema>) { return this.users.create(body.email); }
+  @Delete('/:id')  async destroy(@Param('id') id: string) { /* ... */ }
 }
 ```
 
@@ -132,13 +213,35 @@ $ bun run dev
 [nexus] Listening on http://localhost:3000
 
 $ curl http://localhost:3000/users
-[{"id":1,"name":"Alice","email":"alice@example.com"}]
+[{"id":1,"email":"alice@example.com", ...}]
 
 $ curl -X POST http://localhost:3000/users \
        -H "Content-Type: application/json" \
-       -d '{"name":"Bob","email":"bob@example.com"}'
-{"id":2,"name":"Bob","email":"bob@example.com"}
+       -d '{"email":"bob@example.com"}'
+{"id":2,"email":"bob@example.com"}
 ```
+
+### Generate the schema with the CLI
+
+```bash
+# Initialise nx.config.ts + drizzle.config.ts
+nx init --orm drizzle --db postgres
+
+# Generate a model
+nx make:model User --columns 'email:text,status:boolean' --dialect postgres
+
+# Generate a migration
+nx make:migration create_users_table --dialect postgres --columns 'email:text'
+
+# Apply pending migrations
+nx migrate
+
+# Inspect migration state
+nx migrate --status
+```
+
+See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
+full Drizzle integration guide.
 
 ---
 
@@ -477,89 +580,68 @@ export default {
 ## Project layout (the framework source)
 
 ```
-src/core/
-├── constants.ts          # Metadata keys, param types
-├── application.ts        # Main Application class
-├── di/
-│   ├── tokens.ts         # InjectionToken, Provider, ModuleOptions
-│   ├── container.ts      # DIContainer + ApplicationContainer
-│   └── scanner.ts        # ModuleScanner
-├── decorators/
-│   ├── module.ts         # @Module
-│   ├── controller.ts     # @Controller
-│   ├── injectable.ts     # @Injectable, @Inject
-│   ├── http-methods.ts   # @Get, @Post, ...
-│   ├── params.ts         # @Body, @Query, @Param, ...
-│   ├── validate.ts       # @Validate
-│   └── repository.ts     # @Repository
-├── http/
-│   ├── server.ts         # NexusServer (Hono wrapper)
-│   ├── router.ts         # Multi-style router
-│   ├── middleware.ts     # logger / errorHandler
-│   └── context.ts        # Hono context types
-├── validation/
-│   └── validator.ts      # Zod schema runner
-├── view/
-│   ├── types.ts          # ViewAdapter interface
-│   ├── rendu.ts          # Rendu adapter
-│   ├── edge.ts           # Edge adapter
-│   └── inertia/          # Inertia.js v2/v3 adapter
-│       ├── types.ts
-│       ├── helpers.ts          # defer, always, optional, merge, deepMerge, once, lazy
-│       ├── inertia-adapter.ts  # Inertia class (render, form, share, location, back)
-│       ├── inertia-response.ts # XHR vs HTML serialization
-│       ├── form-helper.ts      # InertiaFormBuilder (errors, errorBag, PRG)
-│       ├── form-middleware.ts  # CSRF + body parsing
-│       ├── default-ssr.ts      # HTML shell renderer
-│       └── ssr/                # React / Vue / Svelte / Solid adapters
-├── orm/
-│   └── drizzle-adapter.ts # Optional Drizzle integration
-└── runtime/
-    ├── bun.ts            # Bun.serve adapter
-    ├── node.ts           # node:http adapter
-    └── cloudflare.ts     # Workers fetch adapter
+src/
+├── core/                   # Framework core (always shipped)
+│   ├── constants.ts        # Metadata keys, param types
+│   ├── application.ts      # Main Application class
+│   ├── di/                 # DIContainer, scanner, tokens
+│   ├── decorators/         # @Module, @Controller, @Injectable, @Get, @Body, @Validate, ...
+│   ├── http/               # NexusServer (Hono), multi-style router, middleware
+│   ├── validation/         # Zod schema runner
+│   ├── view/               # Rendu / Edge / Inertia adapters
+│   └── runtime/            # Bun / Node / Cloudflare Workers adapters
+├── cli/                    # `nx` command runner (optional bundle)
+│   ├── commands/           # new, init, make:*, migrate, info
+│   ├── templates/          # mustache-lite scaffolds
+│   └── core/               # arg parser, prompts, fs helpers
+├── auth/                   # `nexus/auth` (better-auth wrapper)
+├── queue/                  # `nexus/queue` (BullMQ / Cloudflare / memory)
+├── schedule/               # `nexus/schedule` (custom cron parser)
+├── events/                 # `nexus/events` (typed emitter)
+├── session/                # `nexus/session` (cookie / memory / drizzle backends)
+├── health/                 # `nexus/health` (live/ready/startup + indicators)
+├── config/                 # `nexus/config` (Zod-validated env config)
+├── logger/                 # `nexus/logger` (Pino transports)
+├── static/                 # `nexus/static` (file serving)
+├── limiter/                # `nexus/limiter` (rate limiting)
+├── shield/                 # `nexus/shield` (CSRF + security headers)
+├── cache/                  # `nexus/cache` (LRU + drizzle)
+├── drive/                  # `nexus/drive` (storage abstraction)
+├── mail/                   # `nexus/mail` (SMTP / File / Null)
+└── drizzle/                # `nexus/drizzle` (default ORM)
+    ├── drivers/            # postgres / mysql / sqlite / bun-sqlite / d1
+    ├── repository/         # DrizzleRepository (Lucid-style)
+    ├── decorators/         # @Table / @Column / @PrimaryKey
+    ├── drizzle.service.ts  # Main entry point
+    └── drizzle.module.ts   # DI module
+```
+
 ```
 
 ---
 
 ## Roadmap
 
-**v0.2 (current)** — feature modules, integrations, dev tooling.
+**v0.1** ✅ — MVC core, DI, validation, Rendu/Edge/Inertia adapters, CLI bootstrap.
+**v0.2** ✅ — auth, queue, schedule, events, session, full `nx` CLI.
+**v0.3 (current)** ✅ — production basics (health, config, logger, static),
+cross-cutting (limiter, shield, cache, drive, mail), and `nexus/drizzle`
+as the default ORM. Every Tier 1+2 gap from the NestJS / AdonisJS
+analyses is closed.
 
-- ✅ MVC + DI + validation + view foundation
-- ✅ **`nexus/auth`** — Session / JWT / OAuth / Passkey (better-auth)
-- ✅ **`nexus/queue`** — BullMQ / Cloudflare Queues
-- ✅ **`nexus/schedule`** — `@Cron` / `@Interval` / `@Timeout`
-- ✅ **`nexus/events`** — `@OnEvent` with wildcards, priorities, guards
-- ✅ **`nexus/session`** — cookie (HMAC) / memory backends
-- ✅ **`nx` CLI** — Adonis ACE / Rails-style scaffolds
-- ✅ Design docs + user guides (English + Korean)
+**v0.4** — observability & AI.
 
-**v0.3 (next)** — persistence, edge, AI.
-
-- Redis session backend (`SessionModule.forRoot({ backend: 'redis' })`)
-- Database session backend (Drizzle / Prisma adapter)
-- CSRF token integration + flash-message middleware
-- Distributed session rotation
-- Cloudflare D1 / KV / R2 / Durable Objects adapters
+- `nexus/tracing` — OpenTelemetry exporter
+- `nexus/metrics` — Prometheus exporter
+- `nexus/i18n` — multi-locale messages
 - AI agent module + MCP server
-- `nx` improvements: completion scripts, plugin system, hot-reload
-
-**v0.4** — SSR, observability.
-
-- React / Vue / Svelte / Solid SSR adapter improvements
-- Edge streaming view engine
-- OpenTelemetry / Prometheus exporter
-- `nx dev` hot reload for worker code
-- Email integration (transactional + templating)
 
 **v0.5 → 1.0** — production hardening.
 
-- Schema migration tool (Drizzle-style generate / apply)
-- Production-grade rate limiting + WAF integration
 - Stable public API surface (semver guarantees)
-- Removal of all `v0.1` deprecated aliases (`@CurrentUser` → `@User`,
-  `@CurrentSession` → `@Session`, etc.)
+- Removal of all `v0.1` deprecated aliases
+- Performance benchmarks + cross-runtime parity tests
+- Long-term LTS support plan
 
 ---
 

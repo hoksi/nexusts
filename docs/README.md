@@ -8,32 +8,46 @@ AdonisJS, and the edge performance of Hono.
 This documentation is primarily in English; Korean translations are
 provided in `*.ko.md` files.
 
+> **Current version: v0.3** — production-ready. See
+> [`../CHANGELOG.md`](../CHANGELOG.md) for the release notes.
+
 ---
 
 ## 目录 / 목차
 
 | Section | English | 한국어 |
 | ------- | ------- | ------ |
+| **Changelog** (변경 로그) | [`../CHANGELOG.md`](../CHANGELOG.md) | (English only) |
 | **Design documents** (아키텍처 · 설계) | [`docs/design/`](./design/) | [`docs/design/`](./design/) (`*.ko.md`) |
 | **User guide** (사용자 메뉴얼) | [`docs/user-guide/`](./user-guide/) | [`docs/user-guide/`](./user-guide/) (`*.ko.md`) |
-| **API reference** (API 레퍼런스) | [`docs/api-reference.md`](./api-reference.md) | [`docs/api-reference.ko.md`](./api-reference.ko.md) |
+| **Analysis** (분석 · 비교) | [`docs/analysis/`](./analysis/) | [`docs/analysis/`](./analysis/) (`*.ko.md`) |
+| **API reference** (API 레퍼런스) | [`api-reference.md`](./api-reference.md) | [`api-reference.ko.md`](./api-reference.ko.md) |
 
 ---
 
-## Design documents · 설계 문서
+## Modules shipped in v0.3 (17 total)
 
-Architectural deep-dives for contributors and advanced users.
-기여자 및 고급 사용자를 위한 아키텍처 심층 문서.
+Every module is its own bundle entry point. Install only what you use.
 
-| Document | English | 한국어 |
-| -------- | ------- | ------ |
-| Architecture overview | [`architecture.md`](./design/architecture.md) | [`architecture.ko.md`](./design/architecture.ko.md) |
-| DI container design | [`di-container.md`](./design/di-container.md) | [`di-container.ko.md`](./design/di-container.ko.md) |
-| Inertia adapter design | [`inertia-adapter.md`](./design/inertia-adapter.md) | [`inertia-adapter.ko.md`](./design/inertia-adapter.ko.md) |
-| Auth module design | [`auth.md`](./design/auth.md) | [`auth.ko.md`](./design/auth.ko.md) |
-| Queue module design | [`queue.md`](./design/queue.md) | [`queue.ko.md`](./design/queue.ko.md) |
-| Schedule module design | [`schedule.md`](./design/schedule.md) | [`schedule.ko.md`](./design/schedule.ko.md) |
-| Session module design | [`session.md`](./design/session.md) | [`session.ko.md`](./design/session.ko.md) |
+| Module | Import path | Bundle subpath | Doc |
+| ------ | ----------- | --------------- | --- |
+| Core | `nexus` | `nexus` | (this folder) |
+| CLI | `nexus/cli` | `nx` | [`user-guide/cli.md`](./user-guide/cli.md) |
+| Auth | `nexus/auth` | `nexus/auth` | [`user-guide/auth.md`](./user-guide/auth.md) |
+| Queue | `nexus/queue` | `nexus/queue` | [`user-guide/queue.md`](./user-guide/queue.md) |
+| Schedule | `nexus/schedule` | `nexus/schedule` | [`user-guide/schedule.md`](./user-guide/schedule.md) |
+| Events | `nexus/events` | `nexus/events` | [`user-guide/events.md`](./user-guide/events.md) |
+| Session | `nexus/session` | `nexus/session` | [`user-guide/session.md`](./user-guide/session.md) |
+| **Health** | `nexus/health` | `nexus/health` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Config** | `nexus/config` | `nexus/config` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Logger** | `nexus/logger` | `nexus/logger` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Static** | `nexus/static` | `nexus/static` | [`user-guide/production-basics.md`](./user-guide/production-basics.md) |
+| **Limiter** | `nexus/limiter` | `nexus/limiter` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Shield** | `nexus/shield` | `nexus/shield` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Cache** | `nexus/cache` | `nexus/cache` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Drive** | `nexus/drive` | `nexus/drive` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Mail** | `nexus/mail` | `nexus/mail` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
+| **Drizzle** | `nexus/drizzle` | `nexus/drizzle` | [`user-guide/drizzle.md`](./user-guide/drizzle.md) |
 
 ---
 
@@ -54,20 +68,47 @@ Step-by-step guides for building applications.
 | **Queue (BullMQ / Cloudflare Queues)** | [`user-guide/queue.md`](./user-guide/queue.md) | [`user-guide/queue.ko.md`](./user-guide/queue.ko.md) |
 | **Schedule · `@Cron` decorator** | [`user-guide/schedule.md`](./user-guide/schedule.md) | [`user-guide/schedule.ko.md`](./user-guide/schedule.ko.md) |
 | **Event System** | [`user-guide/events.md`](./user-guide/events.md) | [`user-guide/events.ko.md`](./user-guide/events.ko.md) |
-| **Session (cookie / memory / Redis)** | [`user-guide/session.md`](./user-guide/session.md) | [`user-guide/session.ko.md`](./user-guide/session.ko.md) |
+| **Session (cookie / memory / Drizzle)** | [`user-guide/session.md`](./user-guide/session.md) | [`user-guide/session.ko.md`](./user-guide/session.ko.md) |
+| **Production basics (health / config / logger / static)** | [`user-guide/production-basics.md`](./user-guide/production-basics.md) | [`user-guide/production-basics.ko.md`](./user-guide/production-basics.ko.md) |
+| **Cross-cutting (limiter / shield / cache / drive / mail)** | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) | [`user-guide/cross-cutting-features.ko.md`](./user-guide/cross-cutting-features.ko.md) |
+| **Drizzle ORM (default ORM)** | [`user-guide/drizzle.md`](./user-guide/drizzle.md) | [`user-guide/drizzle.ko.md`](./user-guide/drizzle.ko.md) |
 | Runtime & deployment | [`user-guide/runtime-deployment.md`](./user-guide/runtime-deployment.md) | [`user-guide/runtime-deployment.ko.md`](./user-guide/runtime-deployment.ko.md) |
 | **CLI · `nx` command runner** | [`user-guide/cli.md`](./user-guide/cli.md) | [`user-guide/cli.ko.md`](./user-guide/cli.ko.md) |
 
 ---
 
+## Design documents · 설계 문서
+
+Architectural deep-dives for contributors and advanced users.
+기여자 및 고급 사용자를 위한 아키텍처 심층 문서.
+
+| Document | English | 한국어 |
+| -------- | ------- | ------ |
+| Architecture overview | [`design/architecture.md`](./design/architecture.md) | [`design/architecture.ko.md`](./design/architecture.ko.md) |
+| DI container design | [`design/di-container.md`](./design/di-container.md) | [`design/di-container.ko.md`](./design/di-container.ko.md) |
+| Inertia adapter design | [`design/inertia-adapter.md`](./design/inertia-adapter.md) | [`design/inertia-adapter.ko.md`](./design/inertia-adapter.ko.md) |
+| Auth module design | [`design/auth.md`](./design/auth.md) | [`design/auth.ko.md`](./design/auth.ko.md) |
+| Queue module design | [`design/queue.md`](./design/queue.md) | [`design/queue.ko.md`](./design/queue.ko.md) |
+| Schedule module design | [`design/schedule.md`](./design/schedule.md) | [`design/schedule.ko.md`](./design/schedule.ko.md) |
+| Session module design | [`design/session.md`](./design/session.md) | [`design/session.ko.md`](./design/session.ko.md) |
+
+---
+
+## Analysis · 비교 분석
+
+| Comparison | English | 한국어 |
+| ---------- | ------- | ------ |
+| NestJS feature gap | [`analysis/nestjs-comparison.md`](./analysis/nestjs-comparison.md) | [`analysis/nestjs-comparison.ko.md`](./analysis/nestjs-comparison.ko.md) |
+| AdonisJS feature gap | [`analysis/adonisjs-comparison.md`](./analysis/adonisjs-comparison.md) | [`analysis/adonisjs-comparison.ko.md`](./analysis/adonisjs-comparison.ko.md) |
+
+---
+
 ## Quick links · 바로가기
 
-- **Repository layout** — see [`README.md`](../README.md)
-- **Source structure** — [`src/core/`](../src/core/)
-- **Tests** — [`tests/`](../tests/)
-- **Framework comparisons**:
-  - [`analysis/nestjs-comparison.md`](./analysis/nestjs-comparison.md) — feature gap analysis vs NestJS
-  - [`analysis/adonisjs-comparison.md`](./analysis/adonisjs-comparison.md) — feature gap analysis vs AdonisJS
+- **Repository layout** — see [`../README.md`](../README.md)
+- **Source structure** — [`src/core/`](../src/core/) and the 17 module folders
+- **Tests** — [`../tests/`](../tests/)
+- **Changelog** — [`../CHANGELOG.md`](../CHANGELOG.md)
 
 ---
 
@@ -78,8 +119,8 @@ Step-by-step guides for building applications.
 - TypeScript is the only supported language. Decorators require
   `experimentalDecorators: true` in `tsconfig.json`.
 - All examples import from the public entry point (`nexus`,
-  `nexus/view/inertia`, etc.) unless they intentionally demonstrate a
-  deep-import.
+  `nexus/drizzle`, `nexus/cache`, etc.) unless they intentionally
+  demonstrate a deep-import.
 
 ---
 
@@ -87,10 +128,12 @@ Step-by-step guides for building applications.
 
 | Version | Status | Notes |
 | ------- | ------ | ----- |
-| **v0.1** | Current | MVC core, DI, validation, Rendu/Edge/Inertia adapters |
-| **v0.2** | Planned | Session auth, JWT, BullMQ queue, event system, scheduler |
-| **v0.3** | Planned | Cloudflare D1/KV/R2/Durable Objects adapters, AI agent module, MCP server |
-| **v0.4** | Planned | Edge streaming view engine |
+| **v0.1** | ✅ Shipped 2026-04-30 | MVC core, DI, validation, Rendu/Edge/Inertia adapters |
+| **v0.2** | ✅ Shipped 2026-05-15 | Session auth, BullMQ queue, event system, scheduler, CLI |
+| **v0.3** | ✅ **Current** | Production basics, cross-cutting, Drizzle ORM (default) |
+| v0.4 | Planned | Observability (tracing, metrics), i18n, AI agent module |
+| v0.5 → 1.0 | Planned | Production hardening, stable public API |
 
 The framework follows [Semantic Versioning](https://semver.org/). Until
-v1.0, minor version bumps may include breaking changes.
+v1.0, minor version bumps may include breaking changes. See
+[`../CHANGELOG.md`](../CHANGELOG.md) for the full release history.

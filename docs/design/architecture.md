@@ -1,6 +1,6 @@
 # Architecture Overview
 
-> Last updated: v0.1 (MVC core)
+> Last updated: v0.3 (production-ready)
 > 한국어 버전: [`architecture.ko.md`](./architecture.ko.md)
 
 ## 1. Goals
@@ -18,13 +18,13 @@ guiding principles:
 4. **Edge-first** — every adapter is designed to fit inside a Workers
    request budget. No blocking I/O on the hot path.
 
-The framework is intentionally **small in scope** (the v0.1 MVP is the
-core MVC + DI + validation + view foundation) and grows in well-isolated
-modules.
+In v0.3 the framework has grown to **17 independent modules** —
+each a separate bundle entry point. The user picks only what they
+need; the core stays small.
 
 ---
 
-## 2. Layer diagram
+## 2. Layer diagram (v0.3)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -34,6 +34,17 @@ modules.
 │                       User code                              │
 │   Modules · Controllers · Services · Repositories · DTOs     │
 ├──────────────────────────────────────────────────────────────┤
+│                  Optional Modules (v0.3)                     │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐  │
+│  │ auth      │ │ queue      │ │ schedule   │ │ events     │  │
+│  │ session   │ │ health     │ │ config     │ │ logger     │  │
+│  │ static    │ │ limiter    │ │ shield     │ │ cache      │  │
+│  │ drive     │ │ mail       │ │            │ │            │  │
+│  └────────────┘ └────────────┘ └────────────┘ └────────────┘  │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │ drizzle (default ORM — postgres/mysql/sqlite/d1)         │ │
+│  └─────────────────────────────────────────────────────────┘ │
+├──────────────────────────────────────────────────────────────┤
 │                      Core (framework)                        │
 │  ┌────────┐ ┌────────┐ ┌────────────┐ ┌───────────────────┐  │
 │  │  DI    │ │  HTTP  │ │ Validation │ │     View          │  │
@@ -41,13 +52,13 @@ modules.
 │  │scanner │ │router │ │            │ │ Inertia / SSR     │  │
 │  └────────┘ └────────┘ └────────────┘ └───────────────────┘  │
 │  ┌────────┐ ┌────────┐ ┌────────────────────────────────────┐ │
-│  │  ORM   │ │Runtime │ │           Decorators               │ │
-│  │Drizzle │ │Bun/Node│ │ @Controller @Injectable @Module    │ │
-│  │        │ │Cloudfl.│ │ @Get/@Post @Body/@Query @Validate  │ │
+│  │Runtime │ │  CLI   │ │           Decorators               │ │
+│  │Bun/Node│ │ nx ... │ │ @Controller @Injectable @Module    │ │
+│  │Cloudfl.│ │        │ │ @Get/@Post @Body/@Query @Validate  │ │
 │  └────────┘ └────────┘ └────────────────────────────────────┘ │
 ├──────────────────────────────────────────────────────────────┤
 │                   Platform adapters                          │
-│              Hono (HTTP core) · Drizzle · Zod                │
+│            Hono · Drizzle · Zod · Pino · BullMQ             │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -230,20 +241,54 @@ version bump.
 
 ---
 
-## 9. What's intentionally **not** in v0.1
+## 9. Modules shipped in v0.3
 
-To keep the MVP focused and shippable, the following are deferred to
-later versions:
+The framework is **17 independent modules**. Each is its own bundle
+entry point — install only what you need.
 
-- **Authentication** (session, JWT, OAuth, passkey) — v0.2
-- **Queue** (BullMQ, Cloudflare Queues) — v0.2
-- **Event system / scheduler** — v0.2
-- **Cloudflare D1 / KV / R2 / Durable Objects adapters** — v0.3
-- **AI agent module / MCP server** — v0.3
-- **Edge streaming view engine** — v0.4
+| Module | Bundle subpath | Replaces / supersedes |
+| ------ | -------------- | --------------------- |
+| `nexus` | `nexus` | core MVC + DI + validation + views |
+| `nexus/cli` | `nx` | Adonis ACE-style command runner |
+| `nexus/auth` | `nexus/auth` | session, JWT, OAuth, passkey (better-auth) |
+| `nexus/queue` | `nexus/queue` | BullMQ, Cloudflare Queues, memory |
+| `nexus/schedule` | `nexus/schedule` | `@Cron` / `@Interval` / `@Timeout` |
+| `nexus/events` | `nexus/events` | `@OnEvent` with wildcards, priorities, guards |
+| `nexus/session` | `nexus/session` | cookie (HMAC), memory, Drizzle |
+| `nexus/health` | `nexus/health` | liveness/readiness/startup, indicators |
+| `nexus/config` | `nexus/config` | Zod-validated env config |
+| `nexus/logger` | `nexus/logger` | Pino-backed structured logging |
+| `nexus/static` | `nexus/static` | static file serving with ETag, Range |
+| `nexus/limiter` | `nexus/limiter` | 3 strategies × memory/Drizzle storage |
+| `nexus/shield` | `nexus/shield` | CSRF, HSTS, CSP, security headers |
+| `nexus/cache` | `nexus/cache` | memory (LRU) / Drizzle, tag invalidation |
+| `nexus/drive` | `nexus/drive` | memory/Local/S3/R2 storage abstraction |
+| `nexus/mail` | `nexus/mail` | SMTP / File / Null, MJML |
+| `nexus/drizzle` | `nexus/drizzle` | **default ORM** (5 dialects) |
 
-These will be added in well-isolated modules that don't break the
-existing API.
+### Drizzle as the data backbone
+
+`nexus/drizzle` is the default ORM and is wired into every
+DB-dependent module:
+
+- `nexus/session` → `DrizzleSessionStorage`
+- `nexus/health`  → `DrizzleHealthIndicator`
+- `nexus/limiter` → `DrizzleRateLimitStorage`
+- `nexus/cache`   → `DrizzleCacheStore`
+
+A multi-pod deployment can share session, health, rate-limit, and
+cache state through any Drizzle-compatible database.
+
+---
+
+## 10. What's planned for v0.4+
+
+- **Observability**: `nexus/tracing` (OpenTelemetry), `nexus/metrics`
+  (Prometheus).
+- **i18n**: `nexus/i18n` for multi-locale messages.
+- **AI agent module** + MCP server integration.
+- **Stable public API** (semver guarantees).
+- **Removal of v0.1 deprecated aliases**.
 
 ---
 
