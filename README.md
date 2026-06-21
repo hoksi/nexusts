@@ -13,7 +13,7 @@
 
 ## What's in v0.4
 
-The framework now ships **24 independent modules** — every one is
+The framework now ships **25 independent modules** — every one is
 its own bundle entry point, so you install only what you use. Tier 1
 and Tier 2 gaps from the NestJS / AdonisJS gap analyses are now
 fully closed.
@@ -45,6 +45,7 @@ fully closed.
 | **Request-scoped DI** *(core)* | `@Injectable({ scope: 'request' })` for per-request provider lifetime via `AsyncLocalStorage` |
 | `nexus/ws` | WebSockets on Bun (primary) and Node (via `ws`). `@WebSocketGateway()`, `@OnWebSocketMessage()`, rooms, broadcast |
 | `nexus/crypto` | AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF, encrypted data |
+| `nexus/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
 
 See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
 Drizzle integration guide, [docs/user-guide/tracing.md](./docs/user-guide/tracing.md)
@@ -68,7 +69,7 @@ v0.4 release notes.
 | Three view engines (Rendu/Edge/Inertia) | ❌ |   ✅   |   ❌   |    ✅     |
 | **Default ORM (Drizzle, 5 dialects)** |   △   | Lucid  |   ❌   |    ✅     |
 | **Multi-pod session, cache, limiter via Drizzle** |  △ | ✅ | ❌ | **✅** |
-| **24 independent bundle entry points** |   ❌   |   △   |   ❌   |    ✅     |
+| **25 independent bundle entry points** |   ❌   |   △   |   ❌   |    ✅     |
 | **SQL-injection-safe raw queries by construction** |   △   |   △   |   ❌   |    ✅     |
 | **Migrations + autoMigrate on boot** |   △   |   ✅   |   ❌   |    ✅     |
 
@@ -650,9 +651,10 @@ cross-cutting (limiter, shield, cache, drive, mail), and `nexus/drizzle`
 as the default ORM. Every Tier 1+2 gap from the NestJS / AdonisJS
 analyses is closed.
 
-**v0.5 (current)** ✅ — Realtime + crypto. Two new modules:
+**v0.5 (current)** ✅ — Realtime + crypto + i18n. Three new modules:
 - `nexus/ws` — unified WebSocket API (`@WebSocketGateway()` + `@OnWebSocketMessage()`). Works on Bun (primary, via `hono/bun`) and Node (via the `ws` package).
 - `nexus/crypto` — AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF tokens, encrypted data. Other modules (`session`, `shield`) use it internally for HMAC.
+- `nexus/i18n` — locale-aware translations + `Intl` formatters. Pluralization via `|`, locale detection middleware, JSON catalogs.
 
 **v0.4** ✅ — observability and developer experience.
 Every Tier 1 and Tier 2 gap from the NestJS / AdonisJS analyses

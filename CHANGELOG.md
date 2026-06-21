@@ -28,6 +28,35 @@ modules are opt-in — install them only when you need them.
 
 ---
 
+### Added · `nexus/i18n`
+
+Internationalization / localization for the Bun-native stack.
+Modeled on `@adonisjs/i18n`. Zero external dependencies — uses
+Node's built-in `Intl` API.
+
+- **`I18nService`** — translate, format dates / numbers / currency.
+  - `t(key, args?, locale?)` / `tOr(key, fallback, args?, locale?)` /
+    `tChoice(key, count, args?, locale?)`
+  - Interpolation: `:name` placeholders
+  - Pluralization: `|` separator with `Intl.PluralRules`
+    (1-segment → other; 2-segment → one|other; …; 6-segment →
+    zero|one|two|few|many|other)
+  - Nested keys: `auth.welcome` resolves `{ auth: { welcome: "..." } }`
+  - Locale fallback chain: exact → region (`fr-CA` → `fr`) →
+    default locale → raw key
+  - `formatDate`, `formatNumber`, `formatCurrency`, `compare`
+    (locale-aware sort)
+  - `addMessages(locale, dict)` merges into the catalog at runtime
+- **`I18nModule.forRoot(config)`** — wires the service into the
+  DI container. Optionally loads `*.json` files from a directory
+  (Node only).
+- **`i18nMiddleware(service)`** — Hono middleware. Detection
+  priority: `?lang=` → `lang` cookie → `Accept-Language` (with
+  quality scores) → default. Attaches `c.var.locale` and
+  `c.var.i18n`.
+- **`@CurrentLocale()`** — controller parameter decorator that
+  injects the active locale string.
+
 ### Added · `nexus/ws`
 
 `nexus/ws` gives a single, ergonomic API for Hono's
@@ -165,6 +194,35 @@ signed out after the upgrade. New `nexus/ws` and `nexus/crypto`
 modules are opt-in — install them only when you need them.
 
 ---
+
+### Added · `nexus/i18n`
+
+Internationalization / localization for the Bun-native stack.
+Modeled on `@adonisjs/i18n`. Zero external dependencies — uses
+Node's built-in `Intl` API.
+
+- **`I18nService`** — translate, format dates / numbers / currency.
+  - `t(key, args?, locale?)` / `tOr(key, fallback, args?, locale?)` /
+    `tChoice(key, count, args?, locale?)`
+  - Interpolation: `:name` placeholders
+  - Pluralization: `|` separator with `Intl.PluralRules`
+    (1-segment → other; 2-segment → one|other; …; 6-segment →
+    zero|one|two|few|many|other)
+  - Nested keys: `auth.welcome` resolves `{ auth: { welcome: "..." } }`
+  - Locale fallback chain: exact → region (`fr-CA` → `fr`) →
+    default locale → raw key
+  - `formatDate`, `formatNumber`, `formatCurrency`, `compare`
+    (locale-aware sort)
+  - `addMessages(locale, dict)` merges into the catalog at runtime
+- **`I18nModule.forRoot(config)`** — wires the service into the
+  DI container. Optionally loads `*.json` files from a directory
+  (Node only).
+- **`i18nMiddleware(service)`** — Hono middleware. Detection
+  priority: `?lang=` → `lang` cookie → `Accept-Language` (with
+  quality scores) → default. Attaches `c.var.locale` and
+  `c.var.i18n`.
+- **`@CurrentLocale()`** — controller parameter decorator that
+  injects the active locale string.
 
 ### Added · `nexus/ws`
 

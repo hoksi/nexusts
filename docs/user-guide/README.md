@@ -27,6 +27,7 @@ NexusJS로 애플리케이션을 개발하기 위한 단계별 가이드.
 | **Prometheus metrics (v0.4)** | [`metrics.md`](./metrics.md) | [`metrics.ko.md`](./metrics.ko.md) |
 | **WebSockets (v0.5)** | [`ws.md`](./ws.md) | [`ws.ko.md`](./ws.ko.md) |
 | **Crypto (v0.5)** | [`crypto.md`](./crypto.md) | [`crypto.ko.md`](./crypto.ko.md) |
+| **i18n (v0.5)** | [`i18n.md`](./i18n.md) | [`i18n.ko.md`](./i18n.ko.md) |
 | Runtime & deployment | [`runtime-deployment.md`](./runtime-deployment.md) | [`runtime-deployment.ko.md`](./runtime-deployment.ko.md) |
 | **CLI · `nx` command runner** | [`cli.md`](./cli.md) | [`cli.ko.md`](./cli.ko.md) |
 

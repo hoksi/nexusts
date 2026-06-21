@@ -27,7 +27,7 @@ provided in `*.ko.md` files.
 
 ---
 
-## Modules shipped in v0.5 (24 total)
+## Modules shipped in v0.5 (25 total)
 
 Every module is its own bundle entry point. Install only what you use.
 
@@ -58,6 +58,7 @@ Every module is its own bundle entry point. Install only what you use.
 | **Request-scoped DI** *(v0.4)* | `nexus` (core) | `nexus/core` | [`user-guide/request-scope.md`](./user-guide/request-scope.md) |
 | **WebSockets** *(v0.5)* | `nexus/ws` | `nexus/ws` | [`user-guide/ws.md`](./user-guide/ws.md) |
 | **Crypto** *(v0.5)* | `nexus/crypto` | `nexus/crypto` | [`user-guide/crypto.md`](./user-guide/crypto.md) |
+| **i18n** *(v0.5)* | `nexus/i18n` | `nexus/i18n` | [`user-guide/i18n.md`](./user-guide/i18n.md) |
 
 ---
 
@@ -92,6 +93,7 @@ Step-by-step guides for building applications.
 | **Request-scoped DI** *(v0.4)* | [`user-guide/request-scope.md`](./user-guide/request-scope.md) | [`user-guide/request-scope.ko.md`](./user-guide/request-scope.ko.md) |
 | **WebSockets** *(v0.5)* | [`user-guide/ws.md`](./user-guide/ws.md) | [`user-guide/ws.ko.md`](./user-guide/ws.ko.md) |
 | **Crypto** *(v0.5)* | [`user-guide/crypto.md`](./user-guide/crypto.md) | [`user-guide/crypto.ko.md`](./user-guide/crypto.ko.md) |
+| **i18n** *(v0.5)* | [`user-guide/i18n.md`](./user-guide/i18n.md) | [`user-guide/i18n.ko.md`](./user-guide/i18n.ko.md) |
 
 ---
 

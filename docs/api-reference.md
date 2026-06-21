@@ -837,6 +837,43 @@ See [user-guide/metrics.md](./user-guide/metrics.md).
 
 ---
 
+## `nexus/i18n` (v0.5)
+
+```ts
+import { I18nModule, I18nService, I18N_SERVICE_TOKEN, i18nMiddleware, CurrentLocale } from "nexus/i18n";
+
+@Module({
+  imports: [I18nModule.forRoot({
+    defaultLocale: "en",
+    messages: { en: { hello: "Hello, :name!" }, ko: { hello: "안녕하세요, :name님!" } },
+  })],
+})
+class AppModule {}
+
+const svc = new I18nService({ messages: { en: { hi: "hi" } } });
+svc.t("hi");                                          // → "hi" (default)
+svc.t("hi", undefined, "ko");                          // → (or default fallback)
+svc.t("items", { count: 5 });                          // pluralization
+
+svc.formatDate(new Date());
+svc.formatCurrency(1234.56, { currency: "USD" });
+svc.formatNumber(1234.56, { locale: "de-DE" });
+
+app.use("*", i18nMiddleware(svc));  // sets c.var.locale
+
+class Ctrl {
+  @Get("/")
+  index(@CurrentLocale() locale: string) { return { locale }; }
+}
+```
+
+Pluralization uses `|` separator with `Intl.PluralRules`. Date /
+number / currency formatting uses Node's built-in `Intl`.
+
+See [user-guide/i18n.md](./user-guide/i18n.md).
+
+---
+
 ## `nexus/crypto` (v0.5)
 
 ```ts
