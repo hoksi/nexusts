@@ -50,6 +50,11 @@ export class NexusServer {
 
 	/** Install the framework's built-in middleware. */
 	private bootstrap(): void {
+		// Request-scope middleware MUST come first so that everything
+		// downstream (logging, error handler, controllers) can read
+		// from the request scope.
+		const { requestScopeMiddleware } = require("../di/request-middleware.js") as typeof import("../di/request-middleware.js");
+		this.app.use("*", requestScopeMiddleware(this.container as any));
 		if (this.options.errorHandler) this.app.use("*", errorHandler());
 		if (this.options.logging) this.app.use("*", logger());
 		// CORS is intentionally NOT enabled by default. Use

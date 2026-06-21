@@ -22,6 +22,7 @@ import type {
 	Type,
 	ValueProvider,
 } from "./tokens.js";
+import { RequestScopeStorage } from "./request-scope.js";
 
 interface ProviderRecord {
 	token: InjectionToken<any>;
@@ -80,10 +81,14 @@ export class DIContainer {
 	private normalizeProvider(provider: Provider<any>): ProviderRecord {
 		if (this.isClass(provider)) {
 			const dependencies = this.readClassDependencies(provider);
+			// Read scope from @Injectable({ scope }) metadata if present.
+			const classScope = Reflect.getMetadata("nexus:di:scope", provider) as
+				| ProviderScope
+				| undefined;
 			return {
 				token: provider,
 				provider,
-				scope: "singleton",
+				scope: classScope ?? "singleton",
 				dependencies,
 			};
 		}
@@ -149,6 +154,21 @@ export class DIContainer {
 		// Singletons are memoized at the container level where they were registered.
 		const cached = this.singletons.get(token);
 		if (cached !== undefined) return cached;
+
+		// Request-scoped providers are memoized per active request. The
+		// request scope is held in AsyncLocalStorage so any deep call
+		// (services, repositories, ...) sees the same instance.
+		const record0 = this.providers.get(token);
+		if (record0 && record0.scope === "request") {
+			const scope = RequestScopeStorage.get();
+			if (scope) {
+				const r2 = scope.container.singletons.get(token);
+				if (r2 !== undefined) return r2;
+				const inst = this.instantiate(record0);
+				scope.container.singletons.set(token, inst);
+				return inst;
+			}
+		}
 
 		const record = this.providers.get(token);
 		if (!record) {
