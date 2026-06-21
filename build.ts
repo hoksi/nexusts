@@ -58,6 +58,7 @@ const result = await Bun.build({
 		"./src/crypto/index.ts",
 		"./src/i18n/index.ts",
 		"./src/redis/index.ts",
+		"./src/grpc/index.ts",
 		
 	],
 	outdir: "./dist",

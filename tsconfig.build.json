@@ -27,6 +27,7 @@
     "src/crypto/**/*.ts",
     "src/i18n/**/*.ts",
     "src/redis/**/*.ts",
+    "src/grpc/**/*.ts",
     "src/core/**/*.d.ts",
     "src/cli/**/*.d.ts",
     "src/auth/**/*.d.ts",
