@@ -9,7 +9,88 @@ NexusJS의 모든 주요 변경 사항이 이 파일에 기록됩니다.
 
 ---
 
-## [0.6.1] — 2026-06-25
+## [0.6.2] — 2026-06-26
+
+v0.6.2는 기존 `nx new <name>` 흐름에 두 개의 companion CLI 커맨드를
+추가하고, npm에 실제로 push하는 데 필요한 publish 메타데이터를 보강.
+API / 런타임 변경 없음.
+
+### 추가 · `nx init [dir]`
+
+이미 존재하는 프로젝트(예: `bun init` 이후, 또는 기존 앱)에 non-destructive하게
+scaffold. `nx new <name>`의 companion:
+
+- `nx new my-app`  →  새 디렉토리에 fresh project 생성
+- `nx init`        →  cwd에 scaffold, 기존 파일은 skip
+
+동작:
+
+- `package.json` — merge; `nexusjs` dep이 없을 때만 추가. 사용자의
+  기존 deps (hono, zod 등) 보존.
+- `tsconfig.json` — merge; `experimentalDecorators` +
+  `emitDecoratorMetadata`가 없으면 추가; `src/**/*.ts`와
+  `nx.config.ts`를 `include`에 없으면 추가.
+- `nx.config.ts`, `src/app/*`, `README.md` — 파일이 있으면 skip,
+  없으면 create.
+- `--force` 플래그로 전부 덮어쓰기.
+
+### 추가 · `nx config`
+
+`nx.config.ts` (+ Drizzle 선택 시 `drizzle.config.ts`)의 idempotent
+업데이트. 기존 파일 값을 읽고 flag override와 merge한 뒤 re-render.
+주요 사용 사례:
+
+```
+nx config                                          # guided prompts
+nx config --db postgres --db-url postgres://...     # db 변경
+nx config --orm drizzle --db bun-sqlite            # Drizzle 추가
+nx config --frontend vue                           # Inertia frontend 변경
+nx config --view inertia --no-ssr                  # SSR 비활성화
+```
+
+Driver → drizzle dialect 매핑:
+
+```
+bun-sqlite / node-sqlite / libsql  →  sqlite
+postgres                            →  postgresql
+mysql                               →  mysql
+```
+
+ORM을 drizzle에서 다른 걸로 바꾸면 기존 `drizzle.config.ts`는
+손대지 않음 (의도적일 수 있음).
+
+### 수정 · publish 메타데이터
+
+- `LICENSE` (MIT) repo root에 추가, `package.json` `files[]`에 등록.
+- `repository`, `homepage`, `bugs` 필드를 `package.json`에 추가하여
+  npm 페이지에 GitHub 링크 노출.
+- `npm pack --dry-run`으로 publish tarball에 `LICENSE`, `README.md`,
+  `dist/` (26개 모듈) 포함 확인.
+
+### 문서
+
+- `README.md`: roadmap과 license 섹션 재구성. Forms / Lazy props /
+  SSR adapters / Form middleware 섹션이 Roadmap 안에 끼어 있던 것을
+  Inertia 섹션 뒤로 이동. License는 runtime + optional peer deps와
+  각 라이선스를 나열하는 third-party notices 블록으로 확장.
+- `docs/user-guide/grpc.ko.md` 추가 (gRPC 가이드 한국어 번역).
+- `docs/analysis/*` baseline 헤더 v0.5.0 → v0.6.1로 업데이트.
+- `docs/design/architecture.md` v0.4 / 22 modules → v0.6.1 / 26 modules.
+- `docs/api-reference.{md,ko.md}`: 새 `nexusjs/grpc` (v0.6) 섹션 추가;
+  "See also"에 gRPC와 testing 링크 추가.
+- 모든 architecture 다이어그램의 `nexus/X` → `nexusjs/X` (22 파일, 33회 치환).
+
+### 검증 (v0.6.2)
+
+- `nx init` (cli): 7/7 테스트 통과
+- `nx config` (cli): 17/17 테스트 통과
+- 전체 suite: 659/663 (4개 실패는 v0.5부터 알려진
+  `tests/validation` 이슈, 무관)
+- `bun run build`: dist version 0.6.2, 26개 모듈
+- `bunx tsc --noEmit` 클린
+- `npm pack --dry-run`: tarball에 LICENSE + README.md + dist/ 포함
+
+---
 
 v0.6.1은 **patch release**. 새 기능 없음; 모든 consumer-facing 표면에
  영향을 주는 rename 하나, 그리고 빌드 파이프라인 수정.
@@ -597,9 +678,7 @@ Feature-complete MVP. 프레임워크가 "v0.2 약속" 모듈을 모두 획득.
 
 ---
 
-[0.6.1]: https://github.com/kabyeon/nexusjs/compare/v0.6.0...v0.6.1
-[0.6.0]: https://github.com/kabyeon/nexusjs/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/kabyeon/nexusjs/compare/v0.4.0...v0.5.0
+[0.6.2]: https://github.com/kabyeon/nexusjs/compare/v0.6.1...v0.6.2
 [0.4.0]: https://github.com/kabyeon/nexusjs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kabyeon/nexusjs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kabyeon/nexusjs/compare/v0.1.0...v0.2.0

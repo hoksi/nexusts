@@ -9,7 +9,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.6.1] — 2026-06-25
+## [0.6.2] — 2026-06-26
+
+v0.6.2 adds two companion CLI commands to the existing
+`nx new <name>` flow, plus the publish metadata needed to actually
+push to npm. No API or runtime changes.
+
+### Added · `nx init [dir]`
+
+Non-destructive scaffold for projects that already exist
+(e.g. after `bun init` or in an existing app). Companion to
+`nx new <name>`:
+
+- `nx new my-app`  →  create a fresh project in a new dir
+- `nx init`        →  scaffold into cwd, skip files that exist
+
+Behaviour:
+
+- `package.json` — merge; only adds `nexusjs` dep if missing.
+  Preserves the user's existing deps (hono, zod, etc.).
+- `tsconfig.json` — merge; adds `experimentalDecorators` +
+  `emitDecoratorMetadata` if missing; appends `src/**/*.ts` and
+  `nx.config.ts` to `include` if missing.
+- `nx.config.ts`, `src/app/*`, `README.md` — skip if file
+  exists, otherwise create.
+- `--force` flag overwrites everything.
+
+### Added · `nx config`
+
+Idempotent update of `nx.config.ts` (+ `drizzle.config.ts` if
+Drizzle is selected). Reads the existing file's values, merges
+with flag overrides, and re-renders. Typical use cases:
+
+```
+nx config                                          # guided prompts
+nx config --db postgres --db-url postgres://...     # change db
+nx config --orm drizzle --db bun-sqlite            # add Drizzle
+nx config --frontend vue                           # change Inertia frontend
+nx config --view inertia --no-ssr                  # disable SSR
+```
+
+Driver → drizzle dialect mapping:
+
+```
+bun-sqlite / node-sqlite / libsql  →  sqlite
+postgres                            →  postgresql
+mysql                               →  mysql
+```
+
+If the project's ORM is switched away from drizzle, an existing
+`drizzle.config.ts` is left as-is (may be intentional).
+
+### Fixed · publish metadata
+
+- `LICENSE` (MIT) added at the repo root and registered in
+  `package.json` `files[]`.
+- `repository`, `homepage`, `bugs` fields added to `package.json`
+  so the npm page shows GitHub links.
+- `npm pack --dry-run` confirms the published tarball contains
+  `LICENSE`, `README.md`, and `dist/` (26 modules).
+
+### Docs
+
+- `README.md`: roadmap and license sections restructured.
+  Forms / Lazy props / SSR adapters / Form middleware sections
+  moved from inside the Roadmap section to their proper place
+  (after the Inertia section). License expanded with a
+  third-party notices block listing runtime + optional peer
+  deps with their licenses.
+- `docs/user-guide/grpc.ko.md` added (Korean translation of the
+  gRPC guide).
+- `docs/analysis/*` baseline header bumped from v0.5.0 to v0.6.1.
+- `docs/design/architecture.md` bumped from v0.4 / 22 modules to
+  v0.6.1 / 26 modules.
+- `docs/api-reference.{md,ko.md}`: new `nexusjs/grpc` (v0.6) section
+  added; "See also" updated with gRPC and testing links.
+- All architecture-diagram `nexus/X` → `nexusjs/X` substitutions
+  (22 files, 33 replacements).
+
+### Verification (v0.6.2)
+
+- `nx init` (cli): 7/7 tests pass
+- `nx config` (cli): 17/17 tests pass
+- Full suite: 659/663 (4 pre-existing `tests/validation`
+  failures from v0.5, unchanged)
+- `bun run build`: dist version 0.6.2, 26 modules
+- `bunx tsc --noEmit` clean
+- `npm pack --dry-run`: LICENSE + README.md + dist/ in tarball
+
+---
 
 v0.6.1 is a **patch release**. No new features; one rename that
 affects every consumer-facing surface, plus a build-pipeline fix.
@@ -867,9 +955,7 @@ Initial release. **feature-complete MVP core.**
 
 ---
 
-[0.6.1]: https://github.com/kabyeon/nexusjs/compare/v0.6.0...v0.6.1
-[0.6.0]: https://github.com/kabyeon/nexusjs/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/kabyeon/nexusjs/compare/v0.4.0...v0.5.0
+[0.6.2]: https://github.com/kabyeon/nexusjs/compare/v0.6.1...v0.6.2
 [0.3.0]: https://github.com/kabyeon/nexusjs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kabyeon/nexusjs/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kabyeon/nexusjs/releases/tag/v0.1.0

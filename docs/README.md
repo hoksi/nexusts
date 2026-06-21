@@ -8,12 +8,13 @@ AdonisJS, and the edge performance of Hono.
 This documentation is primarily in English; Korean translations are
 provided in `*.ko.md` files.
 
-> **Current version: v0.6.1** — patch release. The `nexus` → `nexusjs`
-> rename is now complete across every consumer-facing surface (191
-> files, 1281 substitutions), the `dist/` build is publishable
-> end-to-end (`bunx nx` works), and the docs are in sync with the
-> published name. No new features; 26 modules unchanged.
-> See [`../CHANGELOG.md`](../CHANGELOG.md) for the release notes.
+> **Current version: v0.6.2** — `nx init` + `nx config` CLI. Two
+> companion commands to `nx new`: `init` scaffolds into an existing
+> directory (e.g. after `bun init`) without overwriting user files,
+> and `config` updates `nx.config.ts` (+ `drizzle.config.ts` when
+> Drizzle is selected) idempotently. No runtime API changes; 26
+> modules unchanged. See [`../CHANGELOG.md`](../CHANGELOG.md) for
+> the release notes.
 
 ---
 
@@ -161,7 +162,8 @@ Architectural deep-dives for contributors and advanced users.
 | **v0.4** | ✅ Shipped 2026-06-22 | Observability (openapi, upload, sse, tracing, metrics) + request-scoped DI |
 | **v0.5** | ✅ Shipped 2026-06-23 | `nexusjs/ws` (Hono WebSocket integration, Bun + Node) + `nexusjs/crypto` (encryption + hashing) |
 | **v0.6** | ✅ Shipped 2026-06-24 | `nexusjs/grpc` (reflection-based gRPC server + typed client) + publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten) |
-| **v0.6.1** | ✅ **Current** 2026-06-25 | Patch: `nexus` → `nexusjs` rename (191 files), `bin` field fix, `dist/src/*` flatten; no new features |
+| **v0.6.1** | ✅ Shipped 2026-06-25 | Patch: `nexus` → `nexusjs` rename (191 files), `bin` field fix, `dist/src/*` flatten; no new features |
+| **v0.6.2** | ✅ **Current** 2026-06-26 | Patch: `nx init` (non-destructive scaffold) + `nx config` (idempotent nx.config.ts / drizzle.config.ts updater) + `LICENSE` and publish metadata. No API changes. |
 | v1.0 | Planned | Stable public API surface (semver guarantees), multi-runtime CI, performance benchmarks, long-term LTS |
 
 The framework follows [Semantic Versioning](https://semver.org/). Until
