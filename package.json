@@ -130,6 +130,10 @@
     "./ws": {
       "types": "./dist/ws/index.d.ts",
       "import": "./dist/ws/index.js"
+    },
+    "./crypto": {
+      "types": "./dist/crypto/index.d.ts",
+      "import": "./dist/crypto/index.js"
     }
   },
   "bin": {

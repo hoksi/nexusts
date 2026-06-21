@@ -27,7 +27,7 @@ provided in `*.ko.md` files.
 
 ---
 
-## Modules shipped in v0.5 (23 total)
+## Modules shipped in v0.5 (24 total)
 
 Every module is its own bundle entry point. Install only what you use.
 
@@ -57,6 +57,7 @@ Every module is its own bundle entry point. Install only what you use.
 | **Metrics** *(v0.4)* | `nexus/metrics` | `nexus/metrics` | [`user-guide/metrics.md`](./user-guide/metrics.md) |
 | **Request-scoped DI** *(v0.4)* | `nexus` (core) | `nexus/core` | [`user-guide/request-scope.md`](./user-guide/request-scope.md) |
 | **WebSockets** *(v0.5)* | `nexus/ws` | `nexus/ws` | [`user-guide/ws.md`](./user-guide/ws.md) |
+| **Crypto** *(v0.5)* | `nexus/crypto` | `nexus/crypto` | [`user-guide/crypto.md`](./user-guide/crypto.md) |
 
 ---
 
@@ -90,6 +91,7 @@ Step-by-step guides for building applications.
 | **Metrics** *(v0.4)* | [`user-guide/metrics.md`](./user-guide/metrics.md) | [`user-guide/metrics.ko.md`](./user-guide/metrics.ko.md) |
 | **Request-scoped DI** *(v0.4)* | [`user-guide/request-scope.md`](./user-guide/request-scope.md) | [`user-guide/request-scope.ko.md`](./user-guide/request-scope.ko.md) |
 | **WebSockets** *(v0.5)* | [`user-guide/ws.md`](./user-guide/ws.md) | [`user-guide/ws.ko.md`](./user-guide/ws.ko.md) |
+| **Crypto** *(v0.5)* | [`user-guide/crypto.md`](./user-guide/crypto.md) | [`user-guide/crypto.ko.md`](./user-guide/crypto.ko.md) |
 
 ---
 
@@ -148,7 +150,7 @@ Architectural deep-dives for contributors and advanced users.
 | **v0.2** | ✅ Shipped 2026-05-15 | Session auth, BullMQ queue, event system, scheduler, CLI |
 | **v0.3** | ✅ Shipped 2026-06-21 | Production basics, cross-cutting, Drizzle ORM (default) |
 | **v0.4** | ✅ Shipped 2026-06-22 | Observability (openapi, upload, sse, tracing, metrics) + request-scoped DI |
-| **v0.5** | ✅ **Current** | `nexus/ws` (Hono WebSocket integration, Bun + Node runtimes) |
+| **v0.5** | ✅ **Current** | `nexus/ws` (Hono WebSocket integration, Bun + Node) + `nexus/crypto` (encryption + hashing) |
 | v1.0 | Planned | `nexus/i18n`, AI agent module, production hardening, stable public API |
 
 The framework follows [Semantic Versioning](https://semver.org/). Until

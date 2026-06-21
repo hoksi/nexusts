@@ -11,10 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0] — 2026-06-23
 
-v0.5 is the **realtime** milestone. The framework gains a unified
-WebSocket API that works on Bun (primary) and Node.js (via the
-`ws` package) through a single decorator-based gateway pattern.
-The framework now ships 23 modules (was 22 in v0.4).
+v0.5 is the **realtime + crypto** milestone. The framework gains
+a unified WebSocket API that works on Bun (primary) and Node.js
+(via the `ws` package), plus a zero-dependency encryption +
+password-hashing module. The framework now ships 24 modules
+(was 22 in v0.4).
+
+### Migration from v0.4
+
+The vast majority of v0.4 code is compatible with v0.5 unchanged.
+No breaking changes in this release EXCEPT the cookie session
+backend and the CSRF guard now use HKDF-derived HMAC keys:
+existing signed cookies will be invalidated. Users will be
+signed out after the upgrade. New `nexus/ws` and `nexus/crypto`
+modules are opt-in — install them only when you need them.
+
+---
 
 ### Added · `nexus/ws`
 
@@ -104,16 +116,57 @@ WebSocket auth via sub-protocol token, session cookie (existing
 - `tsc --noEmit` clean.
 - 23 bundle entry points; 46 runtime files emitted to `dist/`.
 
+### Added · `nexus/crypto`
+
+Encryption + password hashing, modeled on `@adonisjs/encryption`
+and `@adonisjs/hash`.
+
+- **`EncryptionService`** — AES-256-GCM authenticated encryption.
+  Two 32-byte sub-keys (AES, HMAC) derived from the user's master
+  key via HKDF-SHA256. Output format
+  `v1.<iv>.<tag>.<ciphertext>.<expiry>.<purpose>.<mac>`.
+  - `encrypt(value, { expiresAt, purpose })` / `decrypt<T>(payload)`
+  - `sign(value, purpose)` / `unsign(signed, purpose)` for stateless
+    HMAC signing (cookie, CSRF, signed URL)
+  - `signRaw(value, purpose)` / `verifyRaw(value, sig, purpose)` for
+    pre-encoded values (no b64 wrapping)
+  - `isEncrypted(payload)` for cheap detection
+- **`HashService`** — scrypt password hashing (default, Node
+  built-in, no extra deps) with optional `@node-rs/argon2` peer.
+  - `hash(password, { algorithm })` — produces a self-describing
+    PHC-style string with cost parameters
+  - `verify(stored, plain)` — constant-time compare
+  - `needsRehash(stored)` — true when the cost parameters are below
+    the current security floor
+- **`CryptoModule.forRoot({ key, hash })`** — wires both into the
+  DI container.
+
+### Changed · `nexus/session` and `nexus/shield` migrated
+
+- `CookieSessionStorage` (the cookie session backend) now uses
+  `EncryptionService.signRaw/verifyRaw` for the cookie signature
+  (was: `node:crypto`'s `createHmac` directly).
+- `ShieldInternals.sign/verify` (the CSRF HMAC helpers) now use
+  `EncryptionService.signRaw/verifyRaw` with the purpose tag
+  `"csrf"`.
+- Both modules use the user's existing `secret` config — the
+  framework derives a separate HMAC sub-key from it. **Existing
+  signed cookies will be invalidated on upgrade** because the
+  derived HMAC key differs from the previous direct-HMAC approach.
+  Users will need to re-authenticate after upgrading.
+
 ### Migration from v0.4
 
 The vast majority of v0.4 code is compatible with v0.5 unchanged.
-No breaking changes in this release. New `nexus/ws` module is
-opt-in — install it (and the `ws` package on Node) only when you
-need WebSockets.
+No breaking changes in this release EXCEPT the cookie session
+backend and the CSRF guard now use HKDF-derived HMAC keys:
+existing signed cookies will be invalidated. Users will be
+signed out after the upgrade. New `nexus/ws` and `nexus/crypto`
+modules are opt-in — install them only when you need them.
 
 ---
 
-## [0.4.0] — 2026-06-22
+### Added · `nexus/ws`
 
 v0.4 is the **observability and developer experience** milestone.
 Every "Tier 1" *and* "Tier 2" gap from the NestJS / AdonisJS

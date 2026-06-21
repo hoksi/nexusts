@@ -3,10 +3,16 @@
  * a single signed cookie. No server-side state. Ideal for edge
  * runtimes (Workers, Vercel) where shared storage isn't available.
  *
+ * The signature is produced by `EncryptionService` (HMAC-SHA256
+ * with HKDF-derived key). The `secret` config is the master key —
+ * the framework derives a separate HMAC sub-key from it.
+ *
  * Cookie format: `<base64url(payload)>.<base64url(hmac)>`
  *
  * - The payload is the JSON-serialized SessionRecord.
- * - The HMAC is HMAC-SHA256 over the payload using `secret`.
+ * - The HMAC is over the payload using the framework's
+ *   `EncryptionService.sign(..., "session")` with a purpose tag
+ *   so a session token can't be replayed as a CSRF token, etc.
  * - The two are joined with `.`. On read we recompute the HMAC and
  *   compare in constant time.
  *
@@ -14,7 +20,8 @@
  * decoding — we don't need server state for that.
  */
 
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
+import { EncryptionService } from "../../crypto/encryption.js";
 import type {
 	SessionStorage,
 	SessionRecord,
@@ -46,10 +53,6 @@ function randomId(bytes = 24): string {
 	return b64urlEncode(Buffer.from(arr));
 }
 
-function sign(secret: string, payload: string): string {
-	return b64urlEncode(createHmac("sha256", secret).update(payload).digest());
-}
-
 function safeEq(a: string, b: string): boolean {
 	const ab = Buffer.from(a);
 	const bb = Buffer.from(b);
@@ -66,6 +69,7 @@ export function encodeSessionCookie(
 	record: SessionRecord,
 	secret: string,
 ): string {
+	const enc = new EncryptionService(secret);
 	const payload = b64urlEncode(
 		JSON.stringify({
 			id: record.id,
@@ -80,7 +84,10 @@ export function encodeSessionCookie(
 			...(record.metadata ? { metadata: record.metadata } : {}),
 		}),
 	);
-	const sig = sign(secret, payload);
+	// Sign the b64 payload with purpose "session". The HMAC is
+	// produced by EncryptionService (HKDF-derived key + purpose tag),
+	// so a session token can't be replayed as another purpose.
+	const sig = enc.signRaw(payload, "session");
 	return `${payload}.${sig}`;
 }
 
@@ -89,11 +96,12 @@ export function decodeSessionCookie<T = SessionData>(
 	cookieValue: string,
 	secret: string,
 ): SessionRecord<T> | null {
-	const dot = cookieValue.indexOf(".");
-	if (dot < 0) return null;
-	const payload = cookieValue.slice(0, dot);
-	const sig = cookieValue.slice(dot + 1);
-	if (!safeEq(sig, sign(secret, payload))) return null;
+	const enc = new EncryptionService(secret);
+	const lastDot = cookieValue.lastIndexOf(".");
+	if (lastDot < 1) return null;
+	const payload = cookieValue.slice(0, lastDot);
+	const sig = cookieValue.slice(lastDot + 1);
+	if (!enc.verifyRaw(payload, sig, "session")) return null;
 	try {
 		const obj = JSON.parse(b64urlDecode(payload).toString("utf8")) as Record<
 			string,

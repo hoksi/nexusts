@@ -837,6 +837,38 @@ See [user-guide/metrics.md](./user-guide/metrics.md).
 
 ---
 
+## `nexus/crypto` (v0.5)
+
+```ts
+import { CryptoModule, EncryptionService, HashService } from "nexus/crypto";
+
+@Module({ imports: [CryptoModule.forRoot({ key: process.env.APP_KEY! })] })
+class AppModule {}
+
+// Symmetric encryption
+const enc = new EncryptionService(key);
+const ciphertext = enc.encrypt("secret", { expiresAt: 60 * 60, purpose: "session" });
+const plain = enc.decrypt<string>(ciphertext);
+
+// HMAC sign / unsign
+const signed = enc.sign("userId=42", "api-token");
+const value = enc.unsign(signed, "api-token");
+
+// Password hashing (scrypt default)
+const hash = new HashService();
+const stored = await hash.hash("hunter2");
+const ok = await hash.verify(stored, "hunter2");
+const needsUpgrade = hash.needsRehash(stored);
+```
+
+`EncryptionService` uses AES-256-GCM with HKDF-derived AES + HMAC
+keys. `HashService` defaults to scrypt; argon2 is available via the
+optional `@node-rs/argon2` peer.
+
+See [user-guide/crypto.md](./user-guide/crypto.md).
+
+---
+
 ## `nexus/ws` (v0.5)
 
 ```ts

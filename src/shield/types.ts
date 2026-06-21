@@ -21,7 +21,8 @@
  */
 
 import "reflect-metadata";
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { randomBytes } from "node:crypto";
+import { EncryptionService } from "../crypto/encryption.js";
 
 /** CSRF protection configuration. */
 export interface CsrfConfig {
@@ -84,30 +85,29 @@ function randomToken(bytes = 24): string {
 	return randomBytes(bytes).toString("base64url");
 }
 
-/** Sign `value` with `secret` using HMAC-SHA256. Returns `value.signature`. */
+/**
+ * Sign `value` with `secret` using EncryptionService.
+ *
+ * Returns the signed value in `<value>.<signature>` format. The
+ * HMAC is HKDF-derived from the secret + purpose tag ("csrf"), so
+ * a CSRF token can't be replayed as another-purpose token.
+ */
 function sign(value: string, secret: string): string {
-	const sig = createHmac("sha256", secret).update(value).digest("base64url");
+	const sig = new EncryptionService(secret).signRaw(value, "csrf");
 	return `${value}.${sig}`;
 }
 
-/** Verify a signed token. */
+/**
+ * Verify a signed token. Returns the original value on success,
+ * `null` on failure (tampered, wrong purpose, malformed).
+ */
 function verify(signed: string, secret: string): string | null {
 	const lastDot = signed.lastIndexOf(".");
 	if (lastDot < 1) return null;
 	const value = signed.slice(0, lastDot);
 	const sig = signed.slice(lastDot + 1);
-	const expected = createHmac("sha256", secret)
-		.update(value)
-		.digest("base64url");
-	try {
-		const a = Buffer.from(sig);
-		const b = Buffer.from(expected);
-		if (a.length !== b.length) return null;
-		if (!timingSafeEqual(a, b)) return null;
-		return value;
-	} catch {
-		return null;
-	}
+	if (!new EncryptionService(secret).verifyRaw(value, sig, "csrf")) return null;
+	return value;
 }
 
 export const ShieldInternals = {
