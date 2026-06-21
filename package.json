@@ -110,6 +110,10 @@
     "./openapi": {
       "types": "./dist/openapi/index.d.ts",
       "import": "./dist/openapi/index.js"
+    },
+    "./upload": {
+      "types": "./dist/upload/index.d.ts",
+      "import": "./dist/upload/index.js"
     }
   },
   "bin": {

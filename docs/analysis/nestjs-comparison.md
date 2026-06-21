@@ -65,8 +65,10 @@ analysis. This section documents what shipped and where.
 | Database migrations | ✅ | `nx migrate` + `nx migrate --generate` |
 | Static file serving | ✅ | `nexus/static` |
 | Default ORM (Drizzle-style) | ✅ | `nexus/drizzle` |
+| **OpenAPI / Swagger** (v0.4) | ✅ | `nexus/openapi` |
+| **File upload helper** (v0.4) | ✅ | `nexus/upload` |
 
-Total: **12 Tier 1+2 gaps closed** in the v0.3 release.
+Total: **14 Tier 1+2 gaps closed** since v0.2 (12 in v0.3 + 2 in v0.4).
 
 ---
 
@@ -77,28 +79,16 @@ doesn't yet cover.
 
 ### 3.1 OpenAPI / Swagger (`@nestjs/swagger` equivalent)
 
-- **Why critical**: API documentation, client SDK generation, and
-  contract testing all depend on an OpenAPI artifact. Without it,
-  frontend and backend teams drift on the contract.
-- **Proposed module**: `nexus/openapi`
-- **Features**:
-  - `@ApiResponse()`, `@ApiProperty()`, `@ApiTags()` decorators
-  - `/docs` UI (Scalar or Swagger UI)
-  - Auto-derivation from Zod schemas (Zod → JSON Schema → OpenAPI)
-  - Client SDK generation via `openapi-typescript`
+- **Status**: ✅ closed in v0.4 by `nexus/openapi` (Zod → JSON
+  Schema, Scalar UI, full OpenAPI 3.1 emission from route metadata).
+  See [`../../user-guide/openapi.md`](../../user-guide/openapi.md).
 
 ### 3.2 File upload helper (`multer` equivalent)
 
-- **Why critical**: Avatars, attachments, CSV imports, profile photos.
-  The Hono native API (`c.req.parseBody()`) works but has no
-  type-safe decorator wrapper.
-- **Proposed module**: `nexus/upload`
-- **Features**:
-  - `@UploadedFile()` decorator (typed)
-  - `@UploadedFiles()` for multi-file
-  - File validation (size, MIME type)
-  - Storage adapters: local disk, S3, R2 (via `nexus/drive`)
-  - Streaming upload (don't buffer to disk)
+- **Status**: ✅ closed in v0.4 by `nexus/upload`
+  (`@UploadedFile()` / `@UploadedFiles()` decorators, size +
+  MIME validation, optional `nexus/drive` storage). See
+  [`../../user-guide/upload.md`](../../user-guide/upload.md).
 
 ---
 
@@ -238,11 +228,11 @@ for itself in the first week of any new project by eliminating the
 
 ## 7. Recommended v0.4+ roadmap
 
-### v0.4 — API completeness (the "SDK-friendly" milestone)
+### v0.4 — API completeness (the "SDK-friendly" milestone) — **in progress**
 
 1. **`nexus/openapi`** — Zod → OpenAPI, Scalar UI
 2. **`nexus/upload`** — file upload helper
-3. **`nexus/sse`** — Server-Sent Events
+3. `nexus/sse` — Server-Sent Events
 4. **Request-scoped DI** — core extension
 5. **`nexus/tracing`** — OpenTelemetry
 6. **`nexus/metrics`** — Prometheus
@@ -268,12 +258,17 @@ the standard for modern backend services.
 
 ## 8. Honest assessment (v0.3)
 
-NexusJS v0.3 is **production-ready for most CRUD backends**:
+NexusJS v0.4 is **production-ready for the majority of backend
+services**:
 
 - The MVC + DI + validation core is solid and battle-tested.
-- All 17 optional modules (auth, queue, schedule, events, session,
+- All 19 optional modules (auth, queue, schedule, events, session,
   health, config, logger, static, limiter, shield, cache, drive,
-  mail, drizzle, cli) are independently usable and well-scoped.
+  mail, drizzle, cli, openapi, upload) are independently usable
+  and well-scoped.
+- Tier 1 gaps are **fully closed** as of v0.4 (12 closed in v0.3
+  - openapi + upload). What's left is Tier 2 (SSE, request-scoped
+  DI, tracing, metrics).
 - Drizzle as the default ORM closes the AdonisJS-Lucid gap and is
   arguably the **strongest** ORM choice for Bun-native apps.
 - The CLI is genuinely better than NestJS's `nest g` for new

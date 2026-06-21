@@ -50,6 +50,7 @@ const result = await Bun.build({
 		"./src/mail/index.ts",
 		"./src/drizzle/index.ts",
 		"./src/openapi/index.ts",
+		"./src/upload/index.ts",
 	],
 	outdir: "./dist",
 	target: "bun",

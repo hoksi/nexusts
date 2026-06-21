@@ -20,6 +20,7 @@ NexusJS로 애플리케이션을 개발하기 위한 단계별 가이드.
 | **Cross-cutting (limiter / shield / cache / drive / mail)** | [`cross-cutting-features.md`](./cross-cutting-features.md) | [`cross-cutting-features.ko.md`](./cross-cutting-features.ko.md) |
 | **Drizzle ORM (default ORM)** | [`drizzle.md`](./drizzle.md) | [`drizzle.ko.md`](./drizzle.ko.md) |
 | **OpenAPI 3.1 + Scalar UI (v0.4)** | [`openapi.md`](./openapi.md) | [`openapi.ko.md`](./openapi.ko.md) |
+| **File upload helper (v0.4)** | [`upload.md`](./upload.md) | [`upload.ko.md`](./upload.ko.md) |
 | Runtime & deployment | [`runtime-deployment.md`](./runtime-deployment.md) | [`runtime-deployment.ko.md`](./runtime-deployment.ko.md) |
 | **CLI · `nx` command runner** | [`cli.md`](./cli.md) | [`cli.ko.md`](./cli.ko.md) |
 
