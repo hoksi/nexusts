@@ -1,4 +1,4 @@
-# nexus/openapi — OpenAPI 3.1 + Scalar UI
+# nexusjs/openapi — OpenAPI 3.1 + Scalar UI
 
 > English version: [`openapi.md`](./openapi.md)
 > **v0.4**에서 추가됨 (NestJS / AdonisJS 분석의 Tier 1 격차).
@@ -19,7 +19,7 @@ GET /docs           →  Scalar UI (CDN 로드)
 ## 1. 빠른 시작
 
 ```bash
-bun add nexus/openapi
+bun add nexusjs/openapi
 ```
 
 ```ts

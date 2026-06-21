@@ -43,7 +43,7 @@ lines of security-sensitive / operationally-fragile code.
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              nexus/queue  (separate entry point)             │
+│              nexusjs/queue  (separate entry point)             │
 │                                                              │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐ │
 │  │  QueueService    │  │ @OnQueueReady    │  │ invokeReady- │ │

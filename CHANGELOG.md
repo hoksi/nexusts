@@ -9,7 +9,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.6.0] — 2026-06-24
+## [0.6.1] — 2026-06-25
+
+v0.6.1 is a **patch release**. No new features; one rename that
+affects every consumer-facing surface, plus a build-pipeline fix.
+
+### Changed · package rename `nexus` → `nexusjs`
+
+The published npm package has always been `nexusjs` (the bare name
+`nexus` is registered on npm by an unaffiliated project). v0.6.1
+aligns every internal reference with the published name:
+
+- All `src/` and `tests/` import paths now use `nexusjs` / `nexusjs/X`.
+- CLI templates (`src/cli/templates/**`) emit `nexusjs` imports in
+  the generated files.
+- `nx new` scaffolds new apps with `"nexusjs": "*"` in
+  `package.json` and `from 'nexusjs'` in every generated file.
+- All `docs/**` import examples updated.
+- JSDoc module-path references in backticks (e.g. `` `nexusjs/grpc` ``)
+  updated to the published name.
+
+191 files, 1281 substitutions. `Symbol.for("nexus:...")` DI tokens
+and the `"nexus-csrf"` default cookie name are intentionally left
+as-is (internal implementation details / runtime behaviour, not
+package references).
+
+### Fixed · build pipeline
+
+- **`bin` field missing from consumer `package.json`.** The CLI
+  is now exposed as `bin: { nx: "./cli/index.js" }` so
+  `bunx nx` / `npx nx` work in apps that install the package.
+- **`dist/src/*` → `dist/*` flatten.** `bun.build()` and `tsc`
+  both emit `dist/src/<name>/...` because they preserve the source
+  path. Added a post-build `moveRecursive()` step so the published
+  layout matches `package.json` `exports`.
+
+### Docs
+
+- New: [`docs/user-guide/grpc.md`](./docs/user-guide/grpc.md) and
+  Korean translation [`docs/user-guide/grpc.ko.md`](./docs/user-guide/grpc.ko.md)
+  — full gRPC guide.
+- New: [`docs/user-guide/testing-published-package.md`](./docs/user-guide/testing-published-package.md)
+  and Korean translation
+  [`docs/user-guide/testing-published-package.ko.md`](./docs/user-guide/testing-published-package.ko.md)
+  — how to test `dist/` locally (`bun link` / `file:` / `npm pack`).
+- All import examples across the docs/ tree updated to `nexusjs`.
+- `docs/README.md` module table now includes `nexusjs/grpc` and
+  reflects the 26-module v0.6 line.
+
+### Verification (v0.6.1)
+
+- `nexusjs/grpc`: 10 / 10 tests pass.
+- Full suite: 635 / 639 tests pass (4 pre-existing `tests/validation`
+  failures from v0.5, unchanged by this release).
+- `bun run build` produces a clean 26-module `dist/` with
+  `package.json` `exports` field that resolves correctly
+  end-to-end (`bun add ../nexusjs/dist` → `bunx nx` works).
+- `bunx tsc --noEmit` clean across `src/`.
+- `nx new my-app` in a fresh sandbox produces `package.json` with
+  `"nexusjs": "*"` and `from 'nexusjs'` in every generated file.
+
+### Migration from v0.6.0
+
+No code changes required if you were already using `nexusjs` imports
+(which you had to be, since that's the published name). If any of
+your source files still have `from "nexus"` or `from "nexus/X"`,
+update them to `nexusjs` / `nexusjs/X` — they were never going to
+resolve against the published package.
+
+---
 
 v0.6 is the **gRPC + tooling** milestone. The framework gains a
 first-class gRPC integration with reflection-based proto loading
@@ -20,66 +88,66 @@ publishable `dist/` layout that matches `package.json` `exports`.
 
 gRPC server + typed client integration on top of `@grpc/grpc-js`
 
-+ `@grpc/proto-loader`. Both are **optional** peer dependencies
+- `@grpc/proto-loader`. Both are **optional** peer dependencies
 — install them only if you use the gRPC module.
 
-+ **Reflection-based proto loading.** No codegen step. Drop
+- **Reflection-based proto loading.** No codegen step. Drop
   `.proto` files anywhere and pass `protoPath` to
   `GrpcModule.forRoot(...)`.
-+ **Decorator-based service impls.** Mark a class with
+- **Decorator-based service impls.** Mark a class with
   `@GrpcService("ServiceName")` and its methods with
   `@GrpcMethod("FindById")`. JS method names are independent
   of the proto names.
-+ **DI integration.** Service impls are full DI citizens; use
+- **DI integration.** Service impls are full DI citizens; use
   `@Inject(Token)` for dependencies like the database or the
   event bus.
-+ **Typed client.** `grpc.client<UserClient>("ServiceName", { url })`
+- **Typed client.** `grpc.client<UserClient>("ServiceName", { url })`
   returns an object with one Promise-returning method per
   service method. Method names are converted to camelCase
   (`FindById` → `findById`).
-+ **Multi-service / multi-proto.** A single server can host
+- **Multi-service / multi-proto.** A single server can host
   several services across several `.proto` files.
-+ **Lifecycle.** `await grpc.start()` binds; `await grpc.stop()`
+- **Lifecycle.** `await grpc.start()` binds; `await grpc.stop()`
   does graceful shutdown (1s timeout, then force).
-+ **v1 scope: unary methods only.** Server-streaming,
+- **v1 scope: unary methods only.** Server-streaming,
   client-streaming, and bidi streaming are planned for v2.
 
 ### Fixed · build pipeline
 
-+ **`dist/src/*` → `dist/*` flatten.** `bun.build()` and `tsc`
+- **`dist/src/*` → `dist/*` flatten.** `bun.build()` and `tsc`
   both emit files under `dist/src/<name>/...` because they
   preserve the source path. Added a post-build `moveRecursive()`
   step so the published layout matches the `exports` field
   (`./<name>/index.js`, not `./src/<name>/index.js`).
-+ **Missing `bin` field in consumer `package.json`.** The CLI
+- **Missing `bin` field in consumer `package.json`.** The CLI
   is now exposed as `bin: { nx: "./cli/index.js" }` so
   `bunx nx` / `npx nx` work in apps that install the package.
-+ **`@opentelemetry/sdk-node` empty string peer dep.** Was
+- **`@opentelemetry/sdk-node` empty string peer dep.** Was
   being declared as `""` in the published peer-deps list; the
   build script now strips empty strings.
 
 ### Docs
 
-+ New: [`docs/user-guide/grpc.md`](./docs/user-guide/grpc.md)
+- New: [`docs/user-guide/grpc.md`](./docs/user-guide/grpc.md)
   — full gRPC guide (English).
-+ New: [`docs/user-guide/testing-published-package.md`](./docs/user-guide/testing-published-package.md)
+- New: [`docs/user-guide/testing-published-package.md`](./docs/user-guide/testing-published-package.md)
   — how to test `dist/` locally (`bun link` / `file:` / `npm pack`).
-+ Both documents also have Korean (`*.ko.md`) translations.
+- Both documents also have Korean (`*.ko.md`) translations.
 
 ### Verification (v0.6)
 
-+ `nexusjs/grpc`: 10 / 10 tests pass.
-+ Full suite: 634 / 639 tests pass (5 pre-existing
+- `nexusjs/grpc`: 10 / 10 tests pass.
+- Full suite: 634 / 639 tests pass (5 pre-existing
   `tests/validation` failures from v0.5, unrelated to v0.6).
-+ `bun run build` produces a clean 26-module `dist/` with
+- `bun run build` produces a clean 26-module `dist/` with
   `package.json` `exports` field that resolves correctly
   end-to-end (`bun add ../nexusjs/dist` → `bunx nx` works).
-+ `bunx tsc --noEmit` clean across `src/`.
-+ `nexusjs/grpc` entry point is 54th runtime file in `dist/`.
+- `bunx tsc --noEmit` clean across `src/`.
+- `nexusjs/grpc` entry point is 54th runtime file in `dist/`.
 
 ### Notes
 
-+ The version was 0.4.0 in `package.json` for the entire v0.5
+- The version was 0.4.0 in `package.json` for the entire v0.5
   work cycle; we're bumping to 0.6.0 because v0.6 ships the
   gRPC module + the publishable `dist/` pipeline, both of which
   are user-visible additions. The v0.5 line (ws / crypto / i18n
@@ -100,11 +168,11 @@ A runtime-aware Redis-compatible key/value client. Powers the new
 `redis` and `cloudflare-kv` session / cache backends. Three
 runtime adapters (plus an in-process `memory`):
 
-+ **`bun`** — uses the built-in `Bun.redis` (no extra package).
-+ **`node`** — uses `ioredis` (now an optional peer dep).
-+ **`cloudflare`** — uses Cloudflare Workers KV (no extra package;
+- **`bun`** — uses the built-in `Bun.redis` (no extra package).
+- **`node`** — uses `ioredis` (now an optional peer dep).
+- **`cloudflare`** — uses Cloudflare Workers KV (no extra package;
   ideal for the Workers / Pages runtime).
-+ **`memory`** — in-process map (for tests and single-process dev).
+- **`memory`** — in-process map (for tests and single-process dev).
 
 Auto-detected from the runtime. Same `RedisClient` API across
 all four adapters, so any module that needs a key/value store
@@ -143,27 +211,27 @@ Internationalization / localization for the Bun-native stack.
 Modeled on `@adonisjs/i18n`. Zero external dependencies — uses
 Node's built-in `Intl` API.
 
-+ **`I18nService`** — translate, format dates / numbers / currency.
-  + `t(key, args?, locale?)` / `tOr(key, fallback, args?, locale?)` /
+- **`I18nService`** — translate, format dates / numbers / currency.
+  - `t(key, args?, locale?)` / `tOr(key, fallback, args?, locale?)` /
     `tChoice(key, count, args?, locale?)`
-  + Interpolation: `:name` placeholders
-  + Pluralization: `|` separator with `Intl.PluralRules`
+  - Interpolation: `:name` placeholders
+  - Pluralization: `|` separator with `Intl.PluralRules`
     (1-segment → other; 2-segment → one|other; …; 6-segment →
     zero|one|two|few|many|other)
-  + Nested keys: `auth.welcome` resolves `{ auth: { welcome: "..." } }`
-  + Locale fallback chain: exact → region (`fr-CA` → `fr`) →
+  - Nested keys: `auth.welcome` resolves `{ auth: { welcome: "..." } }`
+  - Locale fallback chain: exact → region (`fr-CA` → `fr`) →
     default locale → raw key
-  + `formatDate`, `formatNumber`, `formatCurrency`, `compare`
+  - `formatDate`, `formatNumber`, `formatCurrency`, `compare`
     (locale-aware sort)
-  + `addMessages(locale, dict)` merges into the catalog at runtime
-+ **`I18nModule.forRoot(config)`** — wires the service into the
+  - `addMessages(locale, dict)` merges into the catalog at runtime
+- **`I18nModule.forRoot(config)`** — wires the service into the
   DI container. Optionally loads `*.json` files from a directory
   (Node only).
-+ **`i18nMiddleware(service)`** — Hono middleware. Detection
+- **`i18nMiddleware(service)`** — Hono middleware. Detection
   priority: `?lang=` → `lang` cookie → `Accept-Language` (with
   quality scores) → default. Attaches `c.var.locale` and
   `c.var.i18n`.
-+ **`@CurrentLocale()`** — controller parameter decorator that
+- **`@CurrentLocale()`** — controller parameter decorator that
   injects the active locale string.
 
 ### Added · `nexusjs/ws`
@@ -171,27 +239,27 @@ Node's built-in `Intl` API.
 `nexusjs/ws` gives a single, ergonomic API for Hono's
 runtime-specific WebSocket support.
 
-+ **`@WebSocketGateway(path)`** — class decorator. Marks a class
+- **`@WebSocketGateway(path)`** — class decorator. Marks a class
   as a WebSocket gateway. The framework installs a Hono
   `upgradeWebSocket` handler at `<path>`.
-+ **`@OnWebSocketOpen()`, `@OnWebSocketMessage()`,
+- **`@OnWebSocketOpen()`, `@OnWebSocketMessage()`,
   `@OnWebSocketClose()`, `@OnWebSocketError()`** — method
   decorator factories. Bind lifecycle events to specific methods.
-+ **`WebSocketService`** — DI-friendly service for connection
+- **`WebSocketService`** — DI-friendly service for connection
   tracking, rooms, and broadcasting.
-+ **`WebSocketClient`** — per-connection wrapper with `id`,
+- **`WebSocketClient`** — per-connection wrapper with `id`,
   `rooms`, `data`, `send()`, `close()`, `joinRoom()` /
   `leaveRoom()`.
-+ **Runtime auto-detection** — Bun is detected automatically. On
+- **Runtime auto-detection** — Bun is detected automatically. On
   Node, the framework lazy-imports the `ws` package (optional
   peer dep).
-+ **`BunWsAdapter`** — wraps Hono's `createBunWebSocket` and
+- **`BunWsAdapter`** — wraps Hono's `createBunWebSocket` and
   returns a `websocket` config object for `Bun.serve()`.
-+ **`NodeWsAdapter`** — wraps the `ws` package, returns a
+- **`NodeWsAdapter`** — wraps the `ws` package, returns a
   `handleUpgrade` function for `http.Server.upgrade` events.
-+ **Rooms** — `joinRoom`, `leaveRoom`, `broadcastToRoom`,
+- **Rooms** — `joinRoom`, `leaveRoom`, `broadcastToRoom`,
   `getRoomMembers`. Rooms auto-clean when empty.
-+ **Broadcast** — `broadcast(data, filter?)` reaches every open
+- **Broadcast** — `broadcast(data, filter?)` reaches every open
   client; `sendTo(id, data)` reaches one.
 
 ### Added · API surface
@@ -226,13 +294,13 @@ WebSocket auth via sub-protocol token, session cookie (existing
 
 ### Changed
 
-+ Package version bumped to `0.5.0`.
-+ New bundle entry point: `./ws`. 23 entry points total;
+- Package version bumped to `0.5.0`.
+- New bundle entry point: `./ws`. 23 entry points total;
   46 runtime files emitted to `dist/`.
 
 ### Added · CLI
 
-+ New `nx repl` command (aliases: `console`, `shell`). Boots
+- New `nx repl` command (aliases: `console`, `shell`). Boots
   the user's AppModule and drops into an interactive REPL with
   `app`, `container`, `db`, `logger`, `cfg`, `cache`, and
   `events` pre-loaded. Supports multi-line input (bracket-matching),
@@ -243,10 +311,10 @@ WebSocket auth via sub-protocol token, session cookie (existing
 
 ### Changed · CLI
 
-+ `nx migrate` is now `nx db:migrate`. The old name still
+- `nx migrate` is now `nx db:migrate`. The old name still
   works as an alias for backward compatibility; the new
   short alias is `nx db:m`.
-+ New `nx db:seed` command (aliases: `db:s`, `seed`) runs
+- New `nx db:seed` command (aliases: `db:s`, `seed`) runs
   every seed file in `db/seeds/` (configurable via
   `paths.seeds` in `nx.config.ts`). Sub-flags: `--file
   <name>` to run a single seed, `--create <name>` to
@@ -255,62 +323,62 @@ WebSocket auth via sub-protocol token, session cookie (existing
 
 ### Dependencies
 
-+ **Optional peer dep** `nexusjs/ws`:
-  + `ws` (^8.18.0) — only on Node runtime. Bun apps don't need it.
+- **Optional peer dep** `nexusjs/ws`:
+  - `ws` (^8.18.0) — only on Node runtime. Bun apps don't need it.
 
 ### Documentation
 
-+ New guide `docs/user-guide/ws.md` (English) + `ws.ko.md`
+- New guide `docs/user-guide/ws.md` (English) + `ws.ko.md`
   (Korean): quick start (Bun and Node), `WebSocketService` API,
   `WebSocketClient` wrapper, auth patterns, heartbeats, Cloudflare
   Workers integration recipe, configuration reference.
-+ Updated:
-  + `docs/README.md` — module table now lists 23 entries.
-  + `docs/api-reference.md` — new `nexusjs/ws` section.
-  + `README.md` — module count 22 → 23; roadmap updated.
+- Updated:
+  - `docs/README.md` — module table now lists 23 entries.
+  - `docs/api-reference.md` — new `nexusjs/ws` section.
+  - `README.md` — module count 22 → 23; roadmap updated.
 
 ### Verification (v0.5)
 
-+ **490 / 490 tests pass** in 2.71s (excluding pre-existing failures
+- **490 / 490 tests pass** in 2.71s (excluding pre-existing failures
   in `tests/validation`, `tests/e2e`, `tests/config` that predate
   v0.3). Up from 464 in v0.4 (+26 new).
-+ `tsc --noEmit` clean.
-+ 23 bundle entry points; 46 runtime files emitted to `dist/`.
+- `tsc --noEmit` clean.
+- 23 bundle entry points; 46 runtime files emitted to `dist/`.
 
 ### Added · `nexusjs/crypto`
 
 Encryption + password hashing, modeled on `@adonisjs/encryption`
 and `@adonisjs/hash`.
 
-+ **`EncryptionService`** — AES-256-GCM authenticated encryption.
+- **`EncryptionService`** — AES-256-GCM authenticated encryption.
   Two 32-byte sub-keys (AES, HMAC) derived from the user's master
   key via HKDF-SHA256. Output format
   `v1.<iv>.<tag>.<ciphertext>.<expiry>.<purpose>.<mac>`.
-  + `encrypt(value, { expiresAt, purpose })` / `decrypt<T>(payload)`
-  + `sign(value, purpose)` / `unsign(signed, purpose)` for stateless
+  - `encrypt(value, { expiresAt, purpose })` / `decrypt<T>(payload)`
+  - `sign(value, purpose)` / `unsign(signed, purpose)` for stateless
     HMAC signing (cookie, CSRF, signed URL)
-  + `signRaw(value, purpose)` / `verifyRaw(value, sig, purpose)` for
+  - `signRaw(value, purpose)` / `verifyRaw(value, sig, purpose)` for
     pre-encoded values (no b64 wrapping)
-  + `isEncrypted(payload)` for cheap detection
-+ **`HashService`** — scrypt password hashing (default, Node
+  - `isEncrypted(payload)` for cheap detection
+- **`HashService`** — scrypt password hashing (default, Node
   built-in, no extra deps) with optional `@node-rs/argon2` peer.
-  + `hash(password, { algorithm })` — produces a self-describing
+  - `hash(password, { algorithm })` — produces a self-describing
     PHC-style string with cost parameters
-  + `verify(stored, plain)` — constant-time compare
-  + `needsRehash(stored)` — true when the cost parameters are below
+  - `verify(stored, plain)` — constant-time compare
+  - `needsRehash(stored)` — true when the cost parameters are below
     the current security floor
-+ **`CryptoModule.forRoot({ key, hash })`** — wires both into the
+- **`CryptoModule.forRoot({ key, hash })`** — wires both into the
   DI container.
 
 ### Changed · `nexusjs/session` and `nexusjs/shield` migrated
 
-+ `CookieSessionStorage` (the cookie session backend) now uses
+- `CookieSessionStorage` (the cookie session backend) now uses
   `EncryptionService.signRaw/verifyRaw` for the cookie signature
   (was: `node:crypto`'s `createHmac` directly).
-+ `ShieldInternals.sign/verify` (the CSRF HMAC helpers) now use
+- `ShieldInternals.sign/verify` (the CSRF HMAC helpers) now use
   `EncryptionService.signRaw/verifyRaw` with the purpose tag
   `"csrf"`.
-+ Both modules use the user's existing `secret` config — the
+- Both modules use the user's existing `secret` config — the
   framework derives a separate HMAC sub-key from it. **Existing
   signed cookies will be invalidated on upgrade** because the
   derived HMAC key differs from the previous direct-HMAC approach.
@@ -322,11 +390,11 @@ A runtime-aware Redis-compatible key/value client. Powers the new
 `redis` and `cloudflare-kv` session / cache backends. Three
 runtime adapters (plus an in-process `memory`):
 
-+ **`bun`** — uses the built-in `Bun.redis` (no extra package).
-+ **`node`** — uses `ioredis` (now an optional peer dep).
-+ **`cloudflare`** — uses Cloudflare Workers KV (no extra package;
+- **`bun`** — uses the built-in `Bun.redis` (no extra package).
+- **`node`** — uses `ioredis` (now an optional peer dep).
+- **`cloudflare`** — uses Cloudflare Workers KV (no extra package;
   ideal for the Workers / Pages runtime).
-+ **`memory`** — in-process map (for tests and single-process dev).
+- **`memory`** — in-process map (for tests and single-process dev).
 
 Auto-detected from the runtime. Same `RedisClient` API across
 all four adapters, so any module that needs a key/value store
@@ -365,27 +433,27 @@ Internationalization / localization for the Bun-native stack.
 Modeled on `@adonisjs/i18n`. Zero external dependencies — uses
 Node's built-in `Intl` API.
 
-+ **`I18nService`** — translate, format dates / numbers / currency.
-  + `t(key, args?, locale?)` / `tOr(key, fallback, args?, locale?)` /
+- **`I18nService`** — translate, format dates / numbers / currency.
+  - `t(key, args?, locale?)` / `tOr(key, fallback, args?, locale?)` /
     `tChoice(key, count, args?, locale?)`
-  + Interpolation: `:name` placeholders
-  + Pluralization: `|` separator with `Intl.PluralRules`
+  - Interpolation: `:name` placeholders
+  - Pluralization: `|` separator with `Intl.PluralRules`
     (1-segment → other; 2-segment → one|other; …; 6-segment →
     zero|one|two|few|many|other)
-  + Nested keys: `auth.welcome` resolves `{ auth: { welcome: "..." } }`
-  + Locale fallback chain: exact → region (`fr-CA` → `fr`) →
+  - Nested keys: `auth.welcome` resolves `{ auth: { welcome: "..." } }`
+  - Locale fallback chain: exact → region (`fr-CA` → `fr`) →
     default locale → raw key
-  + `formatDate`, `formatNumber`, `formatCurrency`, `compare`
+  - `formatDate`, `formatNumber`, `formatCurrency`, `compare`
     (locale-aware sort)
-  + `addMessages(locale, dict)` merges into the catalog at runtime
-+ **`I18nModule.forRoot(config)`** — wires the service into the
+  - `addMessages(locale, dict)` merges into the catalog at runtime
+- **`I18nModule.forRoot(config)`** — wires the service into the
   DI container. Optionally loads `*.json` files from a directory
   (Node only).
-+ **`i18nMiddleware(service)`** — Hono middleware. Detection
+- **`i18nMiddleware(service)`** — Hono middleware. Detection
   priority: `?lang=` → `lang` cookie → `Accept-Language` (with
   quality scores) → default. Attaches `c.var.locale` and
   `c.var.i18n`.
-+ **`@CurrentLocale()`** — controller parameter decorator that
+- **`@CurrentLocale()`** — controller parameter decorator that
   injects the active locale string.
 
 ### Added · `nexusjs/ws`
@@ -413,20 +481,20 @@ The framework gained **6 new modules** in v0.4:
 `nexusjs/tracing` is a thin, ergonomic wrapper around the OpenTelemetry
 API. Designed for Bun-native apps:
 
-+ **Lazy SDK loading.** `@opentelemetry/api` is the only required
+- **Lazy SDK loading.** `@opentelemetry/api` is the only required
   dep (~7kb). The SDK packages (`sdk-node`, `exporter-trace-otlp-http`,
   `resources`, `semantic-conventions`) are optional peer deps,
   dynamic-imported by `TracingModule.forRoot()`.
-+ **`@Trace()` decorator** — wraps a method in a span. Detects
+- **`@Trace()` decorator** — wraps a method in a span. Detects
   `AsyncFunction` so sync methods stay sync.
-+ **`withSpan()` / `withSpanSync()`** — manual span helpers.
-+ **W3C + B3 propagation** — `parseTraceParent`, `formatTraceParent`,
+- **`withSpan()` / `withSpanSync()`** — manual span helpers.
+- **W3C + B3 propagation** — `parseTraceParent`, `formatTraceParent`,
   `extractB3Context`. `extractContext()` / `injectContext()` helpers.
-+ **Hono auto-instrumentation** — extracts the incoming
+- **Hono auto-instrumentation** — extracts the incoming
   `traceparent`, starts a `SERVER` span with `http.method` /
   `http.route` / `http.target` / `http.user_agent` /
   `http.client_ip` / `http.status_code` attributes.
-+ **No-op by default.** Without `forRoot()`, `TracingService` uses
+- **No-op by default.** Without `forRoot()`, `TracingService` uses
   OTel's no-op tracer; `@Trace()` is a transparent pass-through.
 
 ### Added · Metrics
@@ -434,24 +502,24 @@ API. Designed for Bun-native apps:
 `nexusjs/metrics` is a Prometheus-compatible metrics collection library
 with **zero external dependencies** (~5kb gzipped).
 
-+ **Four metric types** — `Counter`, `Gauge`, `Histogram`, `Summary`.
-+ **Labels** — per-metric `labelNames`, validated at observation time.
-+ **Default buckets** — Prometheus standard `[0.005, 0.01, 0.025,
+- **Four metric types** — `Counter`, `Gauge`, `Histogram`, `Summary`.
+- **Labels** — per-metric `labelNames`, validated at observation time.
+- **Default buckets** — Prometheus standard `[0.005, 0.01, 0.025,
   0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]`.
-+ **Default percentiles** — `[0.5, 0.9, 0.99]` for `Summary`.
-+ **`/metrics` endpoint** — auto-mounted by `MetricsModule.forRoot()`.
+- **Default percentiles** — `[0.5, 0.9, 0.99]` for `Summary`.
+- **`/metrics` endpoint** — auto-mounted by `MetricsModule.forRoot()`.
   Content negotiation via `Accept` header
   (`text/plain; version=0.0.4` for Prometheus,
   `application/openmetrics-text; version=1.0.0` for OpenMetrics).
-+ **Default Node.js process metrics** — `process_start_time_seconds`,
+- **Default Node.js process metrics** — `process_start_time_seconds`,
   `process_resident_memory_bytes`, `nodejs_heap_size_used_bytes`,
   `nodejs_eventloop_lag_seconds`, etc. (10 gauges total, with
   `collect()` callbacks that run at scrape time).
-+ **Global labels** — `service`, `region`, etc. prepended to
+- **Global labels** — `service`, `region`, etc. prepended to
   every metric.
-+ **`@Counted()` / `@Timed()` decorators** — auto-record on method
+- **`@Counted()` / `@Timed()` decorators** — auto-record on method
   calls. Sync methods stay sync.
-+ **`getOrCreate*` helpers** — for decorator use, to avoid
+- **`getOrCreate*` helpers** — for decorator use, to avoid
   "metric already registered" errors when the same metric is
   observed from multiple methods with different label sets.
 
@@ -492,16 +560,16 @@ function audit() {
 `nexusjs/openapi` generates an OpenAPI 3.1 spec and serves it via the
 modern Scalar UI.
 
-+ **Auto-derivation from `@Validate({body,query,params,headers})`**
+- **Auto-derivation from `@Validate({body,query,params,headers})`**
   Zod schemas — no need to declare schemas twice.
-+ **Zero-dep zod-to-JSON-schema converter** — handles zod 3.25+
+- **Zero-dep zod-to-JSON-schema converter** — handles zod 3.25+
   internal `_def` structure (literal `value`, enum `values`,
   function-style `shape()`).
-+ **Decorators** — `@ApiTags`, `@ApiOperation`, `@ApiResponse`,
+- **Decorators** — `@ApiTags`, `@ApiOperation`, `@ApiResponse`,
   `@ApiBody`, `@ApiParam`, `@ApiQuery`, `@ApiSecurity`,
   `@ApiExclude`, `@ApiProperty`, `@ApiSchema`.
-+ **Scalar UI** — loaded from jsDelivr CDN (no asset bundling).
-+ **`GET /openapi.json` + `GET /docs`** — the spec and the UI.
+- **Scalar UI** — loaded from jsDelivr CDN (no asset bundling).
+- **`GET /openapi.json` + `GET /docs`** — the spec and the UI.
 
 ### Added · Upload
 
@@ -509,14 +577,14 @@ modern Scalar UI.
 top of Hono's `c.req.parseBody()`. Accepts both Bun's `Blob` and
 Node's `File` types transparently.
 
-+ **`@Upload('field', opts)`** — route-level config.
-+ **`@UploadedFile('field')` / `@UploadedFiles('field')`** —
+- **`@Upload('field', opts)`** — route-level config.
+- **`@UploadedFile('field')` / `@UploadedFiles('field')`** —
   parameter injection.
-+ **Validation** — `maxFileSize` (10MB default), `maxFiles`
+- **Validation** — `maxFileSize` (10MB default), `maxFiles`
   (5 default), `allowedMimeTypes` (with wildcards like `image/*`).
-+ **Errors** — `FILE_TOO_LARGE`, `MIME_NOT_ALLOWED`,
+- **Errors** — `FILE_TOO_LARGE`, `MIME_NOT_ALLOWED`,
   `MISSING_FIELD`, `TOO_MANY_FILES` (all return 400).
-+ **Optional `nexusjs/drive` integration** — `driveToken` + `drivePrefix`
+- **Optional `nexusjs/drive` integration** — `driveToken` + `drivePrefix`
   pipe uploads straight to a `DriveService` bucket.
 
 ### Added · SSE
@@ -524,12 +592,12 @@ Node's `File` types transparently.
 `nexusjs/sse` provides a `SseStream` wrapper around Hono's
 `SSEStreamingApi` with guaranteed delivery semantics.
 
-+ **`sse(c, handler)` helper** — Hono context is the first arg.
-+ **Pending-write tracking** — `SseStream.send()` tracks the
+- **`sse(c, handler)` helper** — Hono context is the first arg.
+- **Pending-write tracking** — `SseStream.send()` tracks the
   `api.writeSSE()` promise; `close()` awaits `Promise.allSettled()`
   so every `send()` before `close()` reaches the client.
-+ **`getLastEventId(c)`** — for reconnection support.
-+ **`onClose(cb)`** — for cleanup (fires on explicit close or
+- **`getLastEventId(c)`** — for reconnection support.
+- **`onClose(cb)`** — for cleanup (fires on explicit close or
   client disconnect via Hono's `onAbort`).
 
 ### Changed · Removal of deprecated items
@@ -548,49 +616,49 @@ is **removed in v0.4**; only the v0.2 names are exported now.
 
 ### Changed · Build
 
-+ Bundle count: 17 → 22 entry points. 34 → 44 runtime files.
-+ New bundle entry points: `./openapi`, `./upload`, `./sse`,
+- Bundle count: 17 → 22 entry points. 34 → 44 runtime files.
+- New bundle entry points: `./openapi`, `./upload`, `./sse`,
   `./tracing`, `./metrics`. (Request-scoped DI ships with `core`.)
-+ TypeScript: `strict: true`; experimental decorators enabled.
+- TypeScript: `strict: true`; experimental decorators enabled.
 
 ### Dependencies
 
-+ **Optional peer dep** `nexusjs/tracing`:
-  + `@opentelemetry/api` (always needed, ~7kb)
-  + `@opentelemetry/sdk-node`, `@opentelemetry/exporter-trace-otlp-http`,
+- **Optional peer dep** `nexusjs/tracing`:
+  - `@opentelemetry/api` (always needed, ~7kb)
+  - `@opentelemetry/sdk-node`, `@opentelemetry/exporter-trace-otlp-http`,
     `@opentelemetry/resources`, `@opentelemetry/semantic-conventions`
     (only when `TracingModule.forRoot()` is called)
-+ **No new required deps.** `nexusjs/metrics` has zero runtime deps.
+- **No new required deps.** `nexusjs/metrics` has zero runtime deps.
   `nexusjs/upload` / `nexusjs/openapi` / `nexusjs/sse` use only
   already-present `hono` and `zod`.
 
 ### Documentation
 
-+ New guides (English + Korean):
-  + `docs/user-guide/openapi.md`
-  + `docs/user-guide/upload.md`
-  + `docs/user-guide/sse.md`
-  + `docs/user-guide/tracing.md`
-  + `docs/user-guide/request-scope.md`
-  + `docs/user-guide/metrics.md`
-+ Updated:
-  + `docs/README.md` — module index now lists 22 entries.
-  + `docs/api-reference.md` — API surface for all 22 modules.
-  + `docs/user-guide/getting-started.md` — v0.4 quickstart.
-  + `docs/design/architecture.md` — v0.4 layer diagram.
-  + `docs/analysis/nestjs-comparison.md` — §4.3 (request-scoped DI),
+- New guides (English + Korean):
+  - `docs/user-guide/openapi.md`
+  - `docs/user-guide/upload.md`
+  - `docs/user-guide/sse.md`
+  - `docs/user-guide/tracing.md`
+  - `docs/user-guide/request-scope.md`
+  - `docs/user-guide/metrics.md`
+- Updated:
+  - `docs/README.md` — module index now lists 22 entries.
+  - `docs/api-reference.md` — API surface for all 22 modules.
+  - `docs/user-guide/getting-started.md` — v0.4 quickstart.
+  - `docs/design/architecture.md` — v0.4 layer diagram.
+  - `docs/analysis/nestjs-comparison.md` — §4.3 (request-scoped DI),
     §4.4 (OpenTelemetry), §4.5 (Prometheus metrics) all marked
     "closed in v0.4". "Closed in v0.3" table now has 18 rows
     (was 14).
-  + `docs/analysis/adonisjs-comparison.md` — re-baselined to v0.4.
+  - `docs/analysis/adonisjs-comparison.md` — re-baselined to v0.4.
 
 ### Verification (v0.4)
 
-+ **464 / 464 tests pass** in 2.67s (excluding pre-existing failures
+- **464 / 464 tests pass** in 2.67s (excluding pre-existing failures
   in `tests/validation`, `tests/e2e`, `tests/config` that predate
   v0.3). Up from 322 in v0.3 (+142 new tests).
-+ `tsc --noEmit` clean.
-+ 22 bundle entry points; 44 runtime files emitted to `dist/`.
+- `tsc --noEmit` clean.
+- 22 bundle entry points; 44 runtime files emitted to `dist/`.
 
 ### Migration from v0.3
 
@@ -657,28 +725,28 @@ share state through any Drizzle-compatible database.
 
 ### Added · CLI
 
-+ `nx make:model` and `nx make:migration` are now **dialect-aware**.
+- `nx make:model` and `nx make:migration` are now **dialect-aware**.
   Pass `--dialect postgres | mysql | sqlite | bun-sqlite | d1` to
   pick the right Drizzle import path and column types.
-+ **New command `nx migrate`** (`nx m`) — wraps `drizzle-kit
+- **New command `nx migrate`** (`nx m`) — wraps `drizzle-kit
   migrate`, with `--status`, `--generate "<name>"`, `--folder`,
   `--dialect`, `--config` flags.
-+ `nx init` now scaffolds a `drizzle.config.ts` automatically when
+- `nx init` now scaffolds a `drizzle.config.ts` automatically when
   `--orm drizzle` is selected.
-+ `nx info` prints the resolved `dialect` field.
+- `nx info` prints the resolved `dialect` field.
 
 ### Added · Lucid gap closure (AdonisJS comparison)
 
 `nexusjs/drizzle` closes the biggest AdonisJS gap (Lucid ORM) with:
 
-+ `DrizzleModel` base class + `@Table` / `@Column` / `@PrimaryKey`
+- `DrizzleModel` base class + `@Table` / `@Column` / `@PrimaryKey`
   decorators.
-+ `DrizzleRepository<TTable, TRow>` with `findAll / findOne /
+- `DrizzleRepository<TTable, TRow>` with `findAll / findOne /
   create / update / delete / transaction`.
-+ `db.migrate(folder)` for automatic migrations, including
+- `db.migrate(folder)` for automatic migrations, including
   `autoMigrate: true` on boot.
-+ `db.transaction(fn)` for ACID transactions.
-+ `db.raw\`SELECT * FROM users WHERE id = ${id}\`` for
+- `db.transaction(fn)` for ACID transactions.
+- `db.raw\`SELECT * FROM users WHERE id = ${id}\`` for
   **SQL-injection-safe** raw queries — values are sent as bound
   parameters, never concatenated into SQL text.
 
@@ -693,37 +761,37 @@ SQL.
 
 ### Changed
 
-+ Package version bumped to `0.3.0`.
-+ `NxConfig` now has an optional `dialect` field.
-+ `MemoryStore` (cache) gained a `tag -> Set<key>` index for
+- Package version bumped to `0.3.0`.
+- `NxConfig` now has an optional `dialect` field.
+- `MemoryStore` (cache) gained a `tag -> Set<key>` index for
   `invalidateByTag`. The MemoryStore's `invalidateByTag()` is no
   longer a no-op.
-+ `CacheStore` interface gained optional `invalidateByTag()` and
+- `CacheStore` interface gained optional `invalidateByTag()` and
   `gc()` methods. Existing backends without them continue to work.
-+ `SessionStorage.name` now accepts `'database'` as a valid value.
+- `SessionStorage.name` now accepts `'database'` as a valid value.
 
 ### Dependencies
 
-+ **Required peer dep**: `drizzle-orm` (the entire `nexusjs/drizzle`
+- **Required peer dep**: `drizzle-orm` (the entire `nexusjs/drizzle`
   module is meaningless without it).
-+ **Optional peer deps** (installed only when the corresponding
+- **Optional peer deps** (installed only when the corresponding
   dialect is used): `pg`, `postgres`, `mysql2`, `better-sqlite3`.
-+ `pino` and `pino-pretty` added to dependencies for `nexusjs/logger`.
+- `pino` and `pino-pretty` added to dependencies for `nexusjs/logger`.
 
 ### Documentation
 
-+ New `docs/user-guide/production-basics.md` — health, config, logger, static.
-+ New `docs/user-guide/cross-cutting-features.md` — limiter, shield, cache, drive, mail.
-+ New `docs/user-guide/drizzle.md` — comprehensive Drizzle guide with Lucid-compatibility table.
-+ New `docs/analysis/nestjs-comparison.md` and `docs/analysis/adonisjs-comparison.md` — gap analyses.
-+ All user guides now have Korean (`.ko.md`) translations.
+- New `docs/user-guide/production-basics.md` — health, config, logger, static.
+- New `docs/user-guide/cross-cutting-features.md` — limiter, shield, cache, drive, mail.
+- New `docs/user-guide/drizzle.md` — comprehensive Drizzle guide with Lucid-compatibility table.
+- New `docs/analysis/nestjs-comparison.md` and `docs/analysis/adonisjs-comparison.md` — gap analyses.
+- All user guides now have Korean (`.ko.md`) translations.
 
 ### Verification (v0.3)
 
-+ 322 / 322 tests pass (excluding pre-existing failures in
+- 322 / 322 tests pass (excluding pre-existing failures in
   `tests/validation`, `tests/e2e`, `tests/config` that predate v0.3).
-+ `tsc --noEmit` clean.
-+ 17 bundle entry points; 34 runtime files emitted to `dist/`.
+- `tsc --noEmit` clean.
+- 17 bundle entry points; 34 runtime files emitted to `dist/`.
 
 ---
 
@@ -734,33 +802,33 @@ promised" modules.
 
 ### Added
 
-+ **`nexusjs/auth`** — better-auth integration. `AuthService`,
+- **`nexusjs/auth`** — better-auth integration. `AuthService`,
   `AuthController`, `authMiddleware`, `@CurrentUser()` decorator.
-+ **`nexusjs/queue`** — BullMQ + Cloudflare Queues + memory backends.
+- **`nexusjs/queue`** — BullMQ + Cloudflare Queues + memory backends.
   `@OnQueueReady` decorator, `QueueService.add/process`, retry
   policy, `nx make:queue` scaffold.
-+ **`nexusjs/schedule`** — In-tree cron parser (no `croner` /
+- **`nexusjs/schedule`** — In-tree cron parser (no `croner` /
   `node-cron` deps). `@Cron` / `@Interval` / `@Timeout`
   decorators. `nx make:schedule` scaffold.
-+ **`nexusjs/events`** — `NexusEventEmitter` with wildcards
+- **`nexusjs/events`** — `NexusEventEmitter` with wildcards
   (`*` / `**`), priorities, guards. `@OnEvent` decorator.
-+ **`nexusjs/session`** — Cookie (HMAC) + memory backends. Session
+- **`nexusjs/session`** — Cookie (HMAC) + memory backends. Session
   rotation, sliding expiry, `nx make:session` scaffold.
-+ **`nx` CLI** — 12 commands: `new`, `init`, `make:crud`,
+- **`nx` CLI** — 12 commands: `new`, `init`, `make:crud`,
   `make:controller`, `make:service`, `make:module`, `make:model`,
   `make:migration`, `make:middleware`, `make:validator`, `info`,
   `route:list`.
 
 ### Changed
 
-+ `@CurrentSession` → `@Session` (current alias kept for
+- `@CurrentSession` → `@Session` (current alias kept for
   migration).
-+ Package version bumped to `0.2.0`.
+- Package version bumped to `0.2.0`.
 
 ### Verification (v0.2)
 
-+ 117 / 117 tests pass.
-+ 7 bundle entry points; clean typecheck.
+- 117 / 117 tests pass.
+- 7 bundle entry points; clean typecheck.
 
 ---
 
@@ -770,38 +838,38 @@ Initial release. **feature-complete MVP core.**
 
 ### Added
 
-+ **Core MVC**:
-  + `@Controller`, `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`,
+- **Core MVC**:
+  - `@Controller`, `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`,
     `@Options`, `@Head` HTTP method decorators.
-  + `@Req`, `@Res`, `@Next`, `@Body`, `@Query`, `@Param`,
+  - `@Req`, `@Res`, `@Next`, `@Body`, `@Query`, `@Param`,
     `@Headers`, `@Ctx`, `@User` parameter decorators.
-  + Three routing styles: **Nest** (class decorators),
+  - Three routing styles: **Nest** (class decorators),
     **Adonis** (router table), **Functional** (Hono-native).
-+ **DI container** — class-based injection with `@Injectable`,
+- **DI container** — class-based injection with `@Injectable`,
   `@Inject`, `Symbol.for("nexus:X")` tokens, `useExisting`,
   `useFactory`, `useValue` providers, request-scoped lifecycle.
-+ **Validation pipeline** — Zod schemas via `@Validate` decorator.
-+ **View engines**:
-  + **Rendu** (Bun-native, default).
-  + **Edge** (Adonis-style).
-  + **Inertia.js adapter** — full SPA UX without an API.
+- **Validation pipeline** — Zod schemas via `@Validate` decorator.
+- **View engines**:
+  - **Rendu** (Bun-native, default).
+  - **Edge** (Adonis-style).
+  - **Inertia.js adapter** — full SPA UX without an API.
     Asset versioning, lazy-evaluation helpers, merge props.
-+ **Runtime**:
-  + Bun (default).
-  + Node (≥ 18) supported via Hono.
-  + Cloudflare Workers (Hono adapter).
-+ **CLI bootstrap** — minimal scaffold tool.
+- **Runtime**:
+  - Bun (default).
+  - Node (≥ 18) supported via Hono.
+  - Cloudflare Workers (Hono adapter).
+- **CLI bootstrap** — minimal scaffold tool.
 
 ### Verification (v0.1)
 
-+ 24 / 24 tests pass.
-+ Single bundle entry point; clean typecheck.
+- 24 / 24 tests pass.
+- Single bundle entry point; clean typecheck.
 
 ---
 
+[0.6.1]: https://github.com/kabyeon/nexusjs/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/kabyeon/nexusjs/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/kabyeon/nexusjs/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/kabyeon/nexusjs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kabyeon/nexusjs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kabyeon/nexusjs/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kabyeon/nexusjs/releases/tag/v0.1.0

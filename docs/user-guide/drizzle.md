@@ -1,4 +1,4 @@
-# nexus/drizzle — Drizzle ORM integration (default ORM)
+# nexusjs/drizzle — Drizzle ORM integration (default ORM)
 
 > 한국어 버전: [`drizzle.ko.md`](./drizzle.ko.md)
 

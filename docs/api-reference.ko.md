@@ -524,6 +524,48 @@ class AuditService {
 
 ---
 
+## `nexusjs/grpc` (v0.6)
+
+```ts
+import { GrpcModule, GrpcService, GrpcService as GrpcServiceDecorator, GrpcMethod, GRPC_SERVICE_TOKEN } from "nexusjs/grpc";
+import { Inject, Injectable, Module } from "nexusjs";
+
+@Injectable()
+@GrpcServiceDecorator("UserService")
+class UserServiceImpl {
+  @GrpcMethod("FindById")
+  async findById(req: { id: number }) { return { name: "Alice", email: "a@x.io" }; }
+}
+
+@Module({
+  imports: [GrpcModule.forRoot({
+    protoPath: "./proto/user.proto",
+    services: [UserServiceImpl],
+    port: 50051,
+  })],
+})
+class AppModule {}
+
+const app = new Application(AppModule);
+const grpc = app.container.resolve(GrpcService);
+grpc.setResolver((t) => app.container.resolve(t as any));
+await grpc.start();   // 0.0.0.0:50051에 bind
+
+// Typed client (camelCase: FindById → findById)
+type UserClient = { findById(req: { id: number }): Promise<{ name: string; email: string }> };
+const users = grpc.client<UserClient>("UserService", { url: "internal:50051" });
+const u = await users.findById({ id: 1 });
+
+await grpc.stop();  // graceful shutdown (1s timeout, then force)
+```
+
+Optional peer deps: `@grpc/grpc-js` (^1.10), `@grpc/proto-loader` (^0.7).
+gRPC 모듈을 실제로 사용할 때만 설치.
+
+자세한 내용: [user-guide/grpc.ko.md](./user-guide/grpc.ko.md).
+
+---
+
 ## 참고
 
 - [시작하기](./user-guide/getting-started.ko.md)

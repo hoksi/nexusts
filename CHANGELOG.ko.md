@@ -9,7 +9,70 @@ NexusJS의 모든 주요 변경 사항이 이 파일에 기록됩니다.
 
 ---
 
-## [0.6.0] — 2026-06-24
+## [0.6.1] — 2026-06-25
+
+v0.6.1은 **patch release**. 새 기능 없음; 모든 consumer-facing 표면에
+ 영향을 주는 rename 하나, 그리고 빌드 파이프라인 수정.
+
+### 변경 · 패키지명 `nexus` → `nexusjs`
+
+출판된 npm 패키지는 항상 `nexusjs`였음 (`nexus`라는 이름은 무관한
+프로젝트가 npm에 등록하고 있음). v0.6.1은 모든 내부 참조를 출판된
+이름에 맞춤:
+
+- `src/`와 `tests/`의 모든 import 경로가 `nexusjs` / `nexusjs/X`를 사용.
+- CLI 템플릿(`src/cli/templates/**`)이 생성하는 파일에 `nexusjs` import 사용.
+- `nx new`가 스캐폴딩하는 새 앱의 `package.json`에
+  `"nexusjs": "*"`이, 모든 생성 파일에 `from 'nexusjs'`가 들어감.
+- `docs/**`의 모든 import 예제 업데이트.
+- JSDoc에서 백틱으로 인용된 module 경로 (예: `` `nexusjs/grpc` ``)도
+  출판된 이름으로 업데이트.
+
+191 파일, 1281회 치환. `Symbol.for("nexus:...")` DI 토큰과
+`"nexus-csrf"` 기본 쿠키 이름은 의도적으로 그대로 둠 (내부 구현
+디테일 / 런타임 동작이지 패키지 참조가 아님).
+
+### 수정 · 빌드 파이프라인
+
+- **Consumer `package.json`에 `bin` 필드 누락.** `bin: { nx: "./cli/index.js" }`
+  추가하여 `bunx nx` / `npx nx`가 install 후 정상 동작.
+- **`dist/src/*` → `dist/*` 평탄화.** `bun.build()`와 `tsc`가
+  source path를 보존해서 `dist/src/<name>/...`로 emit하던 문제 해결.
+  post-build `moveRecursive()` 단계로 `exports` 필드와 일치하는
+  publish 레이아웃 생성.
+
+### 문서
+
+- 신규: [`docs/user-guide/grpc.md`](./docs/user-guide/grpc.md) 및
+  한국어 번역 [`docs/user-guide/grpc.ko.md`](./docs/user-guide/grpc.ko.md)
+  — 전체 gRPC 가이드.
+- 신규: [`docs/user-guide/testing-published-package.md`](./docs/user-guide/testing-published-package.md)
+  및 한국어 번역
+  [`docs/user-guide/testing-published-package.ko.md`](./docs/user-guide/testing-published-package.ko.md)
+  — `dist/`를 로컬에서 테스트하는 3가지 방법 (`bun link` / `file:` / `npm pack`).
+- `docs/` 트리 전체의 모든 import 예제가 `nexusjs`로 업데이트됨.
+- `docs/README.md` 모듈 표에 `nexusjs/grpc` 추가, v0.6 라인의 26개 모듈 반영.
+
+### 검증 (v0.6.1)
+
+- `nexusjs/grpc`: 10 / 10 테스트 통과.
+- 전체 suite: 635 / 639 테스트 통과 (4개 실패는 v0.5부터 알려진
+  `tests/validation` 이슈, 이 release와 무관).
+- `bun run build` 결과: 26개 모듈의 깨끗한 `dist/` 생성, `exports`
+  필드가 end-to-end로 정상 resolve (`bun add ../nexusjs/dist` →
+  `bunx nx` 동작).
+- `bunx tsc --noEmit` `src/` 클린.
+- `nx new my-app`이 새 sandbox에서 `package.json`에
+  `"nexusjs": "*"`, 모든 생성 파일에 `from 'nexusjs'`를 정상 생성.
+
+### v0.6.0에서의 마이그레이션
+
+이미 `nexusjs` import를 쓰고 있었다면 (출판된 이름이 그 것이므로
+그랬을 것) 코드 변경 불필요. 소스 파일에 아직 `from "nexus"` 또는
+`from "nexus/X"`가 남아있다면 `nexusjs` / `nexusjs/X`로 업데이트 —
+출판된 패키지에서는 어차피 resolve 안 됐을 것임.
+
+---
 
 v0.6는 **gRPC + 툴링** 마일스톤. 프레임워크가 reflection 기반
 proto 로딩과 typed client API를 갖춘 gRPC 통합을 획득. 빌드
@@ -534,6 +597,9 @@ Feature-complete MVP. 프레임워크가 "v0.2 약속" 모듈을 모두 획득.
 
 ---
 
+[0.6.1]: https://github.com/kabyeon/nexusjs/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/kabyeon/nexusjs/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/kabyeon/nexusjs/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/kabyeon/nexusjs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kabyeon/nexusjs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kabyeon/nexusjs/compare/v0.1.0...v0.2.0

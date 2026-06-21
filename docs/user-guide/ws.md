@@ -286,7 +286,7 @@ export class WebSocketDurableObject implements DurableObject {
   }
 
   handleConnection(ws: WebSocket) {
-    // Bridge WebSocketDurableObject's native WS to nexus/ws's lifecycle.
+    // Bridge WebSocketDurableObject's native WS to nexusjs/ws's lifecycle.
     const client = new WebSocketClientImpl(adaptDurableObjectWs(ws));
     this.service.register(client);
     // ... wire @OnWebSocketMessage / @OnWebSocketClose

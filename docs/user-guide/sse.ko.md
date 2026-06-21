@@ -1,4 +1,4 @@
-# nexus/sse — Server-Sent Events
+# nexusjs/sse — Server-Sent Events
 
 > English version: [`sse.md`](./sse.md)
 > **v0.4**에서 추가됨 (NestJS / AdonisJS 분석의 Tier 2 격차).

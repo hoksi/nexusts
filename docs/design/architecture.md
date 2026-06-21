@@ -1,6 +1,6 @@
 # Architecture Overview
 
-> Last updated: v0.4 (observability & DX)
+> Last updated: v0.6.1 (gRPC + build pipeline)
 > 한국어 버전: [`architecture.ko.md`](./architecture.ko.md)
 
 ## 1. Goals
@@ -18,13 +18,13 @@ guiding principles:
 4. **Edge-first** — every adapter is designed to fit inside a Workers
    request budget. No blocking I/O on the hot path.
 
-In v0.4 the framework has grown to **22 independent modules** —
+In v0.6.1 the framework has grown to **26 independent modules** —
 each a separate bundle entry point. The user picks only what they
 need; the core stays small.
 
 ---
 
-## 2. Layer diagram (v0.4)
+## 2. Layer diagram (v0.6.1)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -34,7 +34,7 @@ need; the core stays small.
 │                       User code                              │
 │   Modules · Controllers · Services · Repositories · DTOs     │
 ├──────────────────────────────────────────────────────────────┤
-│                  Optional Modules (v0.4)                     │
+│                  Optional Modules (v0.6.1)                   │
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐  │
 │  │ auth      │ │ queue      │ │ schedule   │ │ events     │  │
 │  │ session   │ │ health     │ │ config     │ │ logger     │  │
@@ -241,7 +241,7 @@ version bump.
 
 ---
 
-## 9. Modules shipped in v0.4
+## 9. Modules shipped in v0.6.1
 
 The framework is **17 independent modules**. Each is its own bundle
 entry point — install only what you need.
@@ -281,7 +281,7 @@ cache state through any Drizzle-compatible database.
 
 ---
 
-## 10. What's planned for v0.4+
+## 10. What's planned for v0.6+
 
 - **Observability**: `nexusjs/tracing` (OpenTelemetry), `nexusjs/metrics`
   (Prometheus).

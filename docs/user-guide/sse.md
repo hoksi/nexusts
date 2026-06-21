@@ -1,4 +1,4 @@
-# nexus/sse — Server-Sent Events
+# nexusjs/sse — Server-Sent Events
 
 > 한국어 버전: [`sse.ko.md`](./sse.ko.md)
 > Added in **v0.4** (Tier 2 gap from the NestJS / AdonisJS analyses).

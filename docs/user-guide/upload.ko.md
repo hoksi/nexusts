@@ -1,4 +1,4 @@
-# nexus/upload — 파일 업로드 헬퍼
+# nexusjs/upload — 파일 업로드 헬퍼
 
 > English version: [`upload.md`](./upload.md)
 > **v0.4**에서 추가됨 (NestJS / AdonisJS 분석의 Tier 1 격차).

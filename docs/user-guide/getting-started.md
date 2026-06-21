@@ -30,9 +30,9 @@ bun add nexus reflect-metadata zod hono
 bun add -d @types/bun typescript vitest
 
 # Pick the modules you need. v0.4 ships 22 independent modules.
-bun add nexus/drizzle            # the default ORM
-bun add nexus/auth               # if you need auth
-bun add nexus/queue              # if you need background jobs
+bun add nexusjs/drizzle            # the default ORM
+bun add nexusjs/auth               # if you need auth
+bun add nexusjs/queue              # if you need background jobs
 # ... etc.
 ```
 

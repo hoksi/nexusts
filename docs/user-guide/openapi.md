@@ -1,4 +1,4 @@
-# nexus/openapi — OpenAPI 3.1 + Scalar UI
+# nexusjs/openapi — OpenAPI 3.1 + Scalar UI
 
 > 한국어 버전: [`openapi.ko.md`](./openapi.ko.md)
 > Added in **v0.4** (Tier 1 gap from NestJS / AdonisJS analyses).
@@ -20,7 +20,7 @@ GET /docs           →  Scalar UI (CDN-loaded)
 ## 1. Quick start
 
 ```bash
-bun add nexus/openapi
+bun add nexusjs/openapi
 ```
 
 ```ts

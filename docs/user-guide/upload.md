@@ -1,4 +1,4 @@
-# nexus/upload — file upload helper
+# nexusjs/upload — file upload helper
 
 > 한국어 버전: [`upload.ko.md`](./upload.ko.md)
 > Added in **v0.4** (Tier 1 gap from the NestJS / AdonisJS analyses).

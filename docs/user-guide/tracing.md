@@ -201,7 +201,7 @@ interface TracingConfig {
   endpoint?: string;             // default: http://localhost:4318
   sampleRatio?: number;          // 0..1, default 1.0
   enableHttpInstrumentation?: boolean;  // default true
-  enableDbInstrumentation?: boolean;    // default true (nexus/drizzle hook)
+  enableDbInstrumentation?: boolean;    // default true (nexusjs/drizzle hook)
   resourceAttributes?: Record<string, string>;
   throwOnError?: boolean;        // default false
 }

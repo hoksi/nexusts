@@ -1,7 +1,7 @@
 # NexusJS vs NestJS — Feature Gap Analysis
 
 > 한국어 버전: [`nestjs-comparison.ko.md`](./nestjs-comparison.ko.md)
-> 분석 일자: 2026-06-23 · 기준: NexusJS **v0.5.0**
+> 분석 일자: 2026-06-25 · 기준: NexusJS **v0.6.1**
 
 This document compares NexusJS v0.5 against [NestJS](https://nestjs.com)
 to identify which production-grade backend features are **present**,

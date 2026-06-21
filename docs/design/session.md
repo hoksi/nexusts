@@ -43,7 +43,7 @@ sits *alongside* `nexusjs/auth`. Users who don't need it pay no cost
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              nexus/session  (separate entry point)           │
+│              nexusjs/session  (separate entry point)           │
 │                                                              │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐ │
 │  │  SessionService  │  │ @Session  │  │  cookieName  │ │
@@ -70,7 +70,7 @@ sits *alongside* `nexusjs/auth`. Users who don't need it pay no cost
                               │
                               ▼
                    ┌──────────────────────┐
-                   │  nexus/auth (better-auth) │
+                   │  nexusjs/auth (better-auth) │
                    │  user identity + DB sessions │
                    └──────────────────────┘
 ```

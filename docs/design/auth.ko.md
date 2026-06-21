@@ -31,7 +31,7 @@ better-auth는 Hono 통합 문서, TypeScript 네이티브 API, 그리고 우리
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────┐
-│            nexus/auth  (별도 진입점)                          │
+│            nexusjs/auth  (별도 진입점)                          │
 │                                                              │
 │  ┌────────────────┐  ┌────────────────┐  ┌───────────────┐  │
 │  │ AuthService    │  │ AuthController │  │ authMiddleware│  │

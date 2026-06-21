@@ -36,7 +36,7 @@ either backend directly.
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              nexus/schedule  (separate entry point)          │
+│              nexusjs/schedule  (separate entry point)          │
 │                                                              │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐ │
 │  │ ScheduleService  │  │ @Cron            │  │ scanFor-     │ │

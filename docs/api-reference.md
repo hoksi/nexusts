@@ -854,6 +854,7 @@ class AppModule {}
 ```
 
 Three runtime adapters:
+
 - `bun` — uses `Bun.redis` (built-in, no extra dep)
 - `node` — uses `ioredis` (optional peer dep)
 - `cloudflare` — uses Workers KV (no dep; for Cloudflare Workers)
@@ -968,6 +969,48 @@ server.on("upgrade", (req, socket, head) => handleUpgrade(req, socket, head));
 ```
 
 See [user-guide/ws.md](./user-guide/ws.md).
+
+---
+
+## `nexusjs/grpc` (v0.6)
+
+```ts
+import { GrpcModule, GrpcService, GrpcService as GrpcServiceDecorator, GrpcMethod, GRPC_SERVICE_TOKEN } from "nexusjs/grpc";
+import { Inject, Injectable, Module } from "nexusjs";
+
+@Injectable()
+@GrpcServiceDecorator("UserService")
+class UserServiceImpl {
+  @GrpcMethod("FindById")
+  async findById(req: { id: number }) { return { name: "Alice", email: "a@x.io" }; }
+}
+
+@Module({
+  imports: [GrpcModule.forRoot({
+    protoPath: "./proto/user.proto",
+    services: [UserServiceImpl],
+    port: 50051,
+  })],
+})
+class AppModule {}
+
+const app = new Application(AppModule);
+const grpc = app.container.resolve(GrpcService);
+grpc.setResolver((t) => app.container.resolve(t as any));
+await grpc.start();   // binds to 0.0.0.0:50051
+
+// Typed client (camelCase: FindById → findById)
+type UserClient = { findById(req: { id: number }): Promise<{ name: string; email: string }> };
+const users = grpc.client<UserClient>("UserService", { url: "internal:50051" });
+const u = await users.findById({ id: 1 });
+
+await grpc.stop();  // graceful shutdown (1s timeout, then force)
+```
+
+Optional peer deps: `@grpc/grpc-js` (^1.10), `@grpc/proto-loader` (^0.7).
+Install only if you use the gRPC module.
+
+See [user-guide/grpc.md](./user-guide/grpc.md).
 
 ---
 
@@ -1143,4 +1186,6 @@ const rows = await db.raw`SELECT * FROM users WHERE email = ${email}`.all();
 - [Cross-cutting features (limiter / shield / cache / drive / mail)](./user-guide/cross-cutting-features.md)
 - [Drizzle ORM (default)](./user-guide/drizzle.md)
 - [CLI (`nx` command runner)](./user-guide/cli.md)
+- [gRPC (server + typed client)](./user-guide/grpc.md)
+- [Testing the published package](./user-guide/testing-published-package.md)
 - [Changelog](../CHANGELOG.md)

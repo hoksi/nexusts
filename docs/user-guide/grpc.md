@@ -1,4 +1,4 @@
-# nexus/grpc — gRPC integration
+# nexusjs/grpc — gRPC integration
 
 `nexusjs/grpc` lets you define gRPC services using TypeScript classes with
 decorators, and serve them alongside your Hono HTTP routes. The same
@@ -49,8 +49,8 @@ message ListResponse { repeated UserResponse users = 1; }
 
 ```ts
 // src/user/user.grpc.ts
-import { Injectable, Inject } from "@nexus/core";
-import { GrpcService, GrpcMethod } from "@nexus/grpc";
+import { Injectable, Inject } from "@nexusjs/core";
+import { GrpcService, GrpcMethod } from "@nexusjs/grpc";
 
 @Injectable()
 @GrpcService("UserService")
@@ -78,8 +78,8 @@ export class UserServiceImpl {
 
 ```ts
 // src/app.module.ts
-import { Module } from "@nexus/core";
-import { GrpcModule } from "@nexus/grpc";
+import { Module } from "@nexusjs/core";
+import { GrpcModule } from "@nexusjs/grpc";
 import { UserServiceImpl } from "./user/user.grpc";
 
 @Module({
@@ -98,8 +98,8 @@ export class AppModule {}
 
 ```ts
 // src/main.ts
-import { Application } from "@nexus/core";
-import { GrpcService } from "@nexus/grpc";
+import { Application } from "@nexusjs/core";
+import { GrpcService } from "@nexusjs/grpc";
 import { AppModule } from "./app.module";
 
 const app = new Application(AppModule);

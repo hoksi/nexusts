@@ -36,7 +36,7 @@
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              nexus/session  (별도 진입점)                    │
+│              nexusjs/session  (별도 진입점)                    │
 │                                                              │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐ │
 │  │  SessionService  │  │ @Session  │  │  cookieName  │ │
@@ -63,7 +63,7 @@
                               │
                               ▼
                    ┌──────────────────────┐
-                   │  nexus/auth (better-auth) │
+                   │  nexusjs/auth (better-auth) │
                    │  user identity + DB 세션 │
                    └──────────────────────┘
 ```

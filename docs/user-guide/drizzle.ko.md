@@ -1,4 +1,4 @@
-# nexus/drizzle — Drizzle ORM 통합 (기본 ORM)
+# nexusjs/drizzle — Drizzle ORM 통합 (기본 ORM)
 
 > English version: [`drizzle.md`](./drizzle.md)
 
