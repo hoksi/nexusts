@@ -1,0 +1,41 @@
+import "reflect-metadata";
+import { Application, Module, Controller, Get, Injectable } from "@kabyeon/nexusjs";
+import { HealthModule, HealthIndicator } from "@kabyeon/nexusjs/health";
+
+/**
+ * 26-health — liveness + readiness endpoints with a custom indicator.
+ *
+ *   Run: bun main.ts
+ *   Try: curl http://localhost:3000/health
+ */
+
+@Injectable()
+class MemoryIndicator extends HealthIndicator {
+  readonly name = "memory";
+  async check() {
+    const used = process.memoryUsage().heapUsed / 1024 / 1024;
+    return {
+      status: (used < 512 ? "up" : "down") as "up" | "down",
+      data: { heapMB: Math.round(used) },
+    };
+  }
+}
+
+@Injectable()
+@Controller("/")
+class RootController {
+  @Get("/")
+  home() { return { service: "demo" }; }
+}
+
+@Module({
+  imports: [
+    HealthModule.forRoot(),
+  ],
+  controllers: [RootController],
+  providers: [MemoryIndicator],
+})
+class AppModule {}
+
+const app = new Application(AppModule);
+await app.listen(3000);

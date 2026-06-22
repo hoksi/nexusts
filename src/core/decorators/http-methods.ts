@@ -25,7 +25,7 @@ function defineRoute(method: HttpMethod, path: string): MethodDecorator {
 	return (
 		target: object,
 		propertyKey: string | symbol,
-		descriptor: PropertyDescriptor,
+		descriptor: TypedPropertyDescriptor<any>,
 	) => {
 		const routes: RouteMetadata[] =
 			Reflect.getMetadata(METADATA_KEY.ROUTES, target.constructor) ?? [];

@@ -1,0 +1,4 @@
+/* 25-static-files/public/style.css */
+body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2em auto; }
+h1 { color: #06c; }
+code { background: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; }
