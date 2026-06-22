@@ -2,17 +2,19 @@
 
 **Bun Native Fullstack Framework** — NestJS structure × Adonis productivity × Hono edge performance.
 
-> **v0.6.6 — env-aware config + db:generate.** All 27 modules ship. Tier 1 and
-> Tier 2 gaps from the NestJS / AdonisJS gap analyses are now fully
-> closed. The view engine has moved to `@kabyeon/nexusjs/view` as its own bundle
-> entry point, with Rendu (default), Edge, and Eta adapters. See
-> [CHANGELOG.md](./CHANGELOG.md) for the full v0.6 release notes.
+> **v0.7.0 — GraphQL + Resilience.** The framework now ships **30
+> independent modules**. Tier 1 and Tier 2 gaps from the NestJS /
+> AdonisJS gap analyses are now fully closed. v0.7 adds
+> `@kabyeon/nexusjs/graphql` (SDL-first GraphQL with peer-dep
+> `graphql`) and `@kabyeon/nexusjs/resilience` (retry + circuit
+> breaker + bulkhead in a single DI singleton). See
+> [CHANGELOG.md](./CHANGELOG.md) for the full v0.7 release notes.
 
 ---
 
-## What's in v0.6
+## What's in v0.7
 
-The framework now ships **27 independent modules** — every one is
+The framework ships **30 independent modules** — every one is
 its own bundle entry point, so you install only what you use. Tier 1
 and Tier 2 gaps from the NestJS / AdonisJS gap analyses are now
 fully closed.
@@ -47,15 +49,19 @@ fully closed.
 | `@kabyeon/nexusjs/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
 | `@kabyeon/nexusjs/redis` | Runtime-aware Redis client (Bun / Node / Workers KV). Powers `redis` / `cloudflare-kv` session & cache backends |
 | `@kabyeon/nexusjs/grpc` | Reflection-based gRPC server + typed client. Loads `.proto` files at runtime via `@grpc/proto-loader`. Unary methods (streaming deferred to v2) |
-| **`@kabyeon/nexusjs/view`** *(extracted in v0.6.3)* | View engine with 3 adapters: Rendu (default, every runtime), Edge (Adonis-style `.edge`), Eta (EJS-style `.eta`). Auto-detects adapter by file extension. `setViewPaths()` for file-based templates |
+| `@kabyeon/nexusjs/graphql` *(v0.7)* | SDL-first GraphQL endpoint. `POST/GET /graphql`, `/graphql/schema`, in-bundle GraphiQL playground. `context()` factory for per-request state. `@Resolver` / `@Query` / `@Mutation` decorators (alpha). Requires the `graphql` peer-dep |
+| `@kabyeon/nexusjs/resilience` *(v0.7)* | Retry + Circuit Breaker + Bulkhead in a single DI singleton. `retry()` with 4 backoff strategies. `CircuitBreaker` with closed/open/half-open state machine. `Bulkhead` with FIFO queue. `@Retry` / `@CircuitBreaker` / `@Bulkhead` / `@Resilient` decorators. **Zero new dependencies.** |
+| `@kabyeon/nexusjs/view` | View engine with 3 adapters: Rendu (default, every runtime), Edge (Adonis-style `.edge`), Eta (EJS-style `.eta`). Auto-detects adapter by file extension. `setViewPaths()` for file-based templates, `Application.tryLoadNxConfig()` auto-loads from `nx.config.ts` |
 
-See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
-Drizzle integration guide, [docs/user-guide/tracing.md](./docs/user-guide/tracing.md)
-for OpenTelemetry, [docs/user-guide/metrics.md](./docs/user-guide/metrics.md)
-for Prometheus, and [CHANGELOG.md](./CHANGELOG.md) for the detailed
-v0.4 release notes.
+See [`docs/user-guide/drizzle.md`](./docs/user-guide/drizzle.md) for the
+Drizzle integration guide, [`docs/user-guide/graphql.md`](./docs/user-guide/graphql.md)
+for GraphQL, [`docs/user-guide/resilience.md`](./docs/user-guide/resilience.md)
+for retry/circuit/bulkhead, and [CHANGELOG.md](./CHANGELOG.md)
+for the detailed v0.7 release notes.
 
-> The module table now includes `@kabyeon/nexusjs/grpc` and `@kabyeon/nexusjs/view`,
+> 27 working examples under `examples/` — one per major module —
+> double as living documentation and as the smoke-test suite. See
+> [`docs/user-guide/testing-examples.md`](./docs/user-guide/testing-examples.md).
 
 ---
 
@@ -73,9 +79,13 @@ v0.4 release notes.
 | Three view engines (Rendu/Edge/Inertia) | ❌ |   ✅   |   ❌   |    ✅     |
 | **Default ORM (Drizzle, 5 dialects)** |   △   | Lucid  |   ❌   |    ✅     |
 | **Multi-pod session, cache, limiter via Drizzle** |  △ | ✅ | ❌ | **✅** |
-| **26 independent bundle entry points** |   ❌   |   △   |   ❌   |    ✅     |
+| **30 independent bundle entry points** |   ❌   |   △   |   ❌   |    ✅     |
 | **SQL-injection-safe raw queries by construction** |   △   |   △   |   ❌   |    ✅     |
 | **Migrations + autoMigrate on boot** |   △   |   ✅   |   ❌   |    ✅     |
+| **First-party GraphQL** *(v0.7)*  |   ✅   |   △    |   ❌   |    ✅     |
+| **First-party retry / circuit / bulkhead** *(v0.7)* |   △   |   ❌   |   ❌   |    ✅     |
+| **First-party gRPC server + client** |   ✅   |   ❌   |   ❌   |    ✅     |
+| **Inertia.js v2 server-side**    |   ❌   |   ✅   |   ❌   |    ✅     |
 
 ---
 
@@ -105,15 +115,27 @@ npx @kabyeon/nexusjs init
 Add the modules you need:
 
 ```bash
+# Core stack — pick one or more
 bun add @kabyeon/nexusjs/drizzle            # the default ORM
-bun add @kabyeon/nexusjs/auth               # authentication
+bun add @kabyeon/nexusjs/auth               # authentication (better-auth)
 bun add @kabyeon/nexusjs/queue              # background jobs
+bun add @kabyeon/nexusjs/session            # cookie/memory/drizzle sessions
+bun add @kabyeon/nexusjs/grpc               # gRPC server + typed client (v0.5+)
+bun add @kabyeon/nexusjs/graphql            # GraphQL endpoint (v0.7+)
+bun add @kabyeon/nexusjs/resilience         # retry/circuit/bulkhead (v0.7+)
+
+# DX + observability
 bun add @kabyeon/nexusjs/openapi            # OpenAPI docs
-# ... see the module table above for all 27 modules
+bun add @kabyeon/nexusjs/tracing            # OpenTelemetry
+bun add @kabyeon/nexusjs/metrics            # Prometheus
 ```
 
 Every module is its own bundle entry point — install only what you
 use. The CLI (`nx`) is included with `@kabyeon/nexusjs`.
+
+For GraphQL, the `graphql` package is an optional peer-dep that
+you install once with `bun add graphql`. The first attempt to use
+the service without it throws a clear error.
 
 ---
 
@@ -121,17 +143,6 @@ use. The CLI (`nx`) is included with `@kabyeon/nexusjs`.
 
 A minimal app with the **default ORM (Drizzle)** and the most
 common modules:
-
-```ts
-// src/db/schema.ts
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-
-export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
-  email: text('email').notNull().unique(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
-```
 
 ```ts
 // app/app.module.ts
@@ -151,6 +162,8 @@ import { OpenAPIModule } from '@kabyeon/nexusjs/openapi';
 import { UploadModule } from '@kabyeon/nexusjs/upload';
 import { TracingModule } from '@kabyeon/nexusjs/tracing';
 import { MetricsModule } from '@kabyeon/nexusjs/metrics';
+import { ResilienceModule } from '@kabyeon/nexusjs/resilience';
+import { GraphQLModule } from '@kabyeon/nexusjs/graphql';
 import { UserModule } from './modules/user.module.js';
 import { configSchema } from './config/schema.js';
 
@@ -174,6 +187,11 @@ import { configSchema } from './config/schema.js';
     UploadModule.forRoot({ maxFileSize: 10 * 1024 * 1024 }),
     TracingModule.forRoot({ serviceName: 'my-app', exporter: 'otlp-http' }),
     MetricsModule.forRoot({ path: '/metrics' }),
+    ResilienceModule.forRoot(),
+    GraphQLModule.forRoot({
+      typeDefs: 'type Query { hello: String! }',
+      resolvers: { Query: { hello: () => "world" } },
+    }),
     UserModule,
   ],
 })
@@ -226,7 +244,7 @@ export class UserService {
 ```ts
 // app/modules/user/user.controller.ts
 import { z } from 'zod';
-import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Validate } from '@kabyeon/nexusjs';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Validate } from '@kabyeon/nexusjs';
 import { UserService } from './user.service.js';
 
 const CreateUserSchema = z.object({
@@ -256,6 +274,11 @@ $ curl -X POST http://localhost:3000/users \
        -H "Content-Type: application/json" \
        -d '{"email":"bob@example.com"}'
 {"id":2,"email":"bob@example.com"}
+
+$ curl -X POST http://localhost:3000/graphql \
+       -H "Content-Type: application/json" \
+       -d '{"query":"{ hello }"}'
+{"data":{"hello":"world"}}
 ```
 
 ### Generate the schema with the CLI
@@ -281,6 +304,9 @@ nx db:seed
 
 # Scaffold a new seed file
 nx db:seed --create users
+
+# Create a new app from the CLI scaffolder
+bunx create-nexusjs my-app
 ```
 
 See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
@@ -338,6 +364,7 @@ app.server.router.raw('POST', '/webhooks/stripe', async (c) => {
 | `@Res()`     | Hono response                                 |
 | `@Next()`    | next() callback (for middleware-style)       |
 | `@User()`    | Authenticated user (set by auth middleware)   |
+| `@Session()`  | Cookie session (set by sessionMiddleware)    |
 
 When a parameter has no key argument (e.g. `@Body()`), the full parsed
 object is injected. With a key (e.g. `@Param('id')`), only that property
@@ -402,6 +429,201 @@ class UserModule {}
 > emit `design:paramtypes` metadata. The framework falls back to
 > explicit `@Inject()` tokens for portability. If you build with `tsc`
 > first and run with `node` or `bun src/...`, the bare-type form works.
+
+---
+
+## Resilience: retry, circuit breaker, bulkhead *(v0.7)*
+
+`@kabyeon/nexusjs/resilience` ships the three classic
+distributed-systems primitives in a single DI singleton with
+**zero new dependencies**.
+
+```ts
+import {
+  ResilienceModule, ResilienceService,
+  retry, CircuitBreaker, Bulkhead,
+  CircuitOpenError, BulkheadFullError,
+} from '@kabyeon/nexusjs/resilience';
+
+@Module({ imports: [ResilienceModule.forRoot()], /* ... */ })
+class AppModule {}
+
+class OrderService {
+  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+
+  // Plain-function retry. 3 attempts, exponential-jitter backoff.
+  charge(order: Order) {
+    return this.r.retry(() => stripe.charge(order), {
+      attempts: 3, backoff: 'exponential-jitter',
+    });
+  }
+
+  // Shared named circuit. Every code path that calls Stripe uses the
+  // same instance — one outage opens it for all callers.
+  refund(order: Order) {
+    const cb = this.r.getOrCreateCircuit('stripe', {
+      threshold: 0.5, timeout: 30_000,
+    });
+    return cb.execute(() => stripe.refund(order));
+  }
+
+  // Limit concurrency for the slow dependency.
+  heavyReport() {
+    const bh = this.r.getOrCreateBulkhead('analytics', { maxConcurrent: 5 });
+    return bh.execute(() => analytics.run(...));
+  }
+}
+```
+
+The framework also exports `@Retry` / `@CircuitBreaker` /
+`@Bulkhead` / `@Resilient` method decorators (metadata-only;
+eager wrapping is reserved for v0.8). See
+[`docs/user-guide/resilience.md`](./docs/user-guide/resilience.md) for
+the full reference.
+
+---
+
+## GraphQL *(v0.7)*
+
+`@kabyeon/nexusjs/graphql` adds a `POST/GET /graphql` endpoint with
+an in-bundle GraphiQL playground. SDL-first, optional
+peer-dep `graphql`.
+
+```bash
+bun add graphql        # the only peer-dep
+```
+
+```ts
+import { GraphQLModule, GraphQLService } from '@kabyeon/nexusjs/graphql';
+
+@Module({
+  imports: [
+    GraphQLModule.forRoot({
+      typeDefs: `
+        type Query {
+          hello(name: String!): String!
+          whoami: String!
+        }
+      `,
+      resolvers: {
+        Query: {
+          hello: (_p, args) => `Hello, ${args.name}!`,
+          whoami: (_p, _a, ctx) => ctx.state.user,
+        },
+      },
+      context: () => ({ user: 'alice' }),
+    }),
+  ],
+})
+class AppModule {}
+
+const app = new Application(AppModule);
+const g = app.container.resolve(GraphQLService) as GraphQLService;
+await GraphQLModule.mount(app.server.app, g);
+await app.listen(3000);
+```
+
+```bash
+$ curl -X POST http://localhost:3000/graphql \
+       -H "Content-Type: application/json" \
+       -d '{"query":"{ hello(name: \"world\") }"}'
+{"data":{"hello":"Hello, world!"}}
+```
+
+Code-first via `@Resolver` / `@Query` / `@Mutation` decorators is
+exported but the SDL synthesis is alpha — the recommendation today
+is to write SDL. See
+[`docs/user-guide/graphql.md`](./docs/user-guide/graphql.md) for the
+full reference.
+
+---
+
+## gRPC *(v0.5)*
+
+`@kabyeon/nexusjs/grpc` ships a reflection-based gRPC server + typed
+client. No codegen — `.proto` files are loaded at runtime via
+`@grpc/proto-loader`. Unary methods only in v1; streaming
+(server / client / bidi) is on the v2 roadmap.
+
+```ts
+import { GrpcModule, GrpcService, GrpcMethod } from '@kabyeon/nexusjs/grpc';
+
+@Injectable()
+@GrpcService('GreeterService', { protoFile: './proto/greeter.proto' })
+class GreeterService {
+  @GrpcMethod('SayHello')
+  sayHello(request: { name: string }) {
+    return { message: `Hello, ${request.name}!` };
+  }
+}
+
+@Module({
+  imports: [GrpcModule.forRoot({
+    host: '0.0.0.0', port: 50051,
+    services: [GreeterService],
+  })],
+})
+class AppModule {}
+```
+
+See [`docs/user-guide/grpc.md`](./docs/user-guide/grpc.md) for the full
+reference.
+
+---
+
+## WebSockets *(v0.5)*
+
+`@kabyeon/nexusjs/ws` ships WebSockets on Bun (primary) and Node (via
+`ws`). Runtime auto-detected.
+
+```ts
+import { WebSocketService, WebSocketGateway, OnWebSocketMessage, OnWebSocketOpen, OnWebSocketClose } from '@kabyeon/nexusjs/ws';
+
+@Injectable()
+@WebSocketGateway('/chat')
+class ChatGateway {
+  constructor(@Inject(WebSocketService) private ws: WebSocketService) {}
+
+  @OnWebSocketOpen() onOpen(socket: any) { /* ... */ }
+
+  @OnWebSocketMessage('message')
+  onMessage(socket: any, payload: { user: string; text: string }) {
+    this.ws.broadcast('/chat', 'message', { ...payload, ts: Date.now() });
+  }
+
+  @OnWebSocketClose() onClose(socket: any) { /* ... */ }
+}
+```
+
+See [`docs/user-guide/ws.md`](./docs/user-guide/ws.md) for rooms, broadcast,
+and broadcast-to-room.
+
+---
+
+## Server-Sent Events *(v0.4)*
+
+`@kabyeon/nexusjs/sse` wraps Hono's `streamSSE` behind a type-safe
+`SseStream` with auto-serialization, idempotent `close()`, and
+`Last-Event-ID` reconnection support.
+
+```ts
+import { sse } from '@kabyeon/nexusjs/sse';
+
+@Controller('/events')
+class EventController {
+  @Get('/timeseries')
+  timeseries(c: any) {
+    return sse(c, async (stream) => {
+      let n = 0;
+      const id = setInterval(() => {
+        n += 1;
+        stream.send({ event: 'tick', data: { n, ts: Date.now() } });
+      }, 1000);
+      stream.onAbort(() => clearInterval(id));
+    });
+  }
+}
+```
 
 ---
 
@@ -524,36 +746,24 @@ app.inertia.share({ csrfToken: '...', currentUser: { id: 1 } });
 
 Shared props appear in every page response and survive partial reloads.
 
-### SSR
-
-Plug in a server-side renderer for React, Vue, Svelte, or Solid:
+### SSR (React / Vue / Svelte / Solid)
 
 ```ts
-import { reactSsr } from '@nexus/inertia-react';
+import { createReactAdapter, ComponentRegistry } from '@kabyeon/nexusjs/view/inertia/ssr';
 
-app.inertia.setSsrAdapter(reactSsr());
+const components = new ComponentRegistry()
+  .register('Home', HomePage)
+  .register('Users/Index', UsersIndexPage);
+
+app.inertia.setSsrAdapter(createReactAdapter({ components }));
 ```
 
 Without an adapter the framework falls back to a minimal HTML shell —
 the client hydrates from `data-page` after JS loads. (This is the
 recommended starting point.)
 
-### Protocol reference
-
-- **Response headers**
-  - `Vary: X-Inertia` — every response
-  - `X-Inertia: true` — JSON responses only
-  - `X-Inertia-Location: <url>` — on 409 (asset version mismatch) and
-    `inertia.location(...)`
-- **Request headers** (sent by the client)
-  - `X-Inertia: true` — marks an XHR visit
-  - `X-Inertia-Version: <string>` — for asset mismatch checks
-  - `X-Inertia-Partial-Component: <name>` — for partial reloads
-  - `X-Inertia-Partial-Data: a,b,c` — `only` filter
-  - `X-Inertia-Partial-Except: a,b,c` — `except` filter
-  - `X-Inertia-Reset: a,b,c` — client-discard markers
-
----
+Working examples under `examples/28-31` show React + Vue, SPA + SSR.
+`bun add @inertiajs/react` and `bun build` once, then run.
 
 ### Forms (`<Form>` server-side helper)
 
@@ -610,67 +820,12 @@ class UserController {
 | `redirect(url)`  | 303 redirect (PRG — prevents double-submit)                |
 | `back(to?)`      | 303 redirect to `back` (or a specific URL)                 |
 
-### Lazy props
-
-`lazy(fn, tag?)` wraps a callback so its result is computed **once
-per request** and shared across every key that points at the same
-tag. Useful for any expensive computation that doesn't need to wait
-for a partial reload but shouldn't repeat within the same response:
-
-```ts
-return this.inertia.render('Dashboard', {
-  a: lazy(() => this.computeA(), 'stats'),
-  b: lazy(() => this.computeB(), 'stats'),
-});
-```
-
-### SSR adapters
-
-The framework ships first-class adapters for React, Vue, Svelte,
-and Solid. Each lazy-imports its engine — install only what you
-use:
-
-```ts
-import { createReactAdapter, ComponentRegistry } from '@kabyeon/nexusjs/view/inertia/ssr';
-
-const components = new ComponentRegistry()
-  .register('Home', HomePage)
-  .register('Users/Index', UsersIndexPage);
-
-app.inertia.setSsrAdapter(createReactAdapter({ components }));
-```
-
-| Adapter                  | Engine    | SSR API                                        |
-| ------------------------ | --------- | ---------------------------------------------- |
-| `createReactAdapter`     | React 18+ | `react-dom/server.renderToString`              |
-| `createVueAdapter`       | Vue 3     | `vue/server-renderer.renderToString`           |
-| `createSvelteAdapter`    | Svelte 4/5| `svelte/server.render` or `Component.render`  |
-| `createSolidAdapter`     | Solid     | `solid-js/web.renderToString`                  |
-
-### Form middleware (CSRF)
-
-```ts
-import { inertiaFormMiddleware } from '@kabyeon/nexusjs/view/inertia';
-
-app.server.app.use('*', inertiaFormMiddleware({
-  validateCsrf: true,
-  csrfHeader: 'X-CSRF-Token',
-  csrfField: '_token',
-  csrfSharedKey: 'csrfToken',
-}));
-```
-
-Returns **419 Page Expired** on mismatch. The form helper still owns
-the per-field validation flow; this is the upstream CSRF gate.
-
----
-
 ---
 
 ## View engine — `@kabyeon/nexusjs/view`
 
-The view engine is available as `@kabyeon/nexusjs/view` — its own bundle entry
-point. It ships three adapters:
+The view engine is available as `@kabyeon/nexusjs/view` — its own bundle
+entry point. It ships three adapters:
 
 | Adapter | Extension | Style | Runtime support |
 |---------|-----------|-------|----------------|
@@ -689,8 +844,8 @@ framework picks the right adapter based on the file extension:
 
 ### File-based views
 
-The Application auto-loads `viewPaths` from `nx.config.ts` at boot,
-so no explicit call is needed:
+The Application auto-loads `viewPaths` from `nx.config.ts` at boot
+via `Application.tryLoadNxConfig()`, so no explicit call is needed:
 
 ```ts
 // nx.config.ts — all you need
@@ -718,18 +873,7 @@ index() {
 app.setViewAdapter(new EdgeAdapter());
 ```
 
-Or implement the `ViewAdapter` interface for a custom engine:
-
-```ts
-import type { ViewAdapter } from '@kabyeon/nexusjs/view';
-
-class MyEngine implements ViewAdapter {
-  readonly name = 'my-engine';
-  async render(template: string, data: Record<string, any>) { /* ... */ }
-}
-
-app.setViewAdapter(new MyEngine());
-```
+Or implement the `ViewAdapter` interface for a custom engine.
 
 ### Inline templates (no file system)
 
@@ -766,6 +910,9 @@ export default {
 };
 ```
 
+The `PORT` env var is read by default — use `process.env.PORT ?? 3000`
+in your `main.ts` for portability.
+
 ---
 
 ## Project layout (the framework source)
@@ -779,35 +926,65 @@ src/
 │   ├── decorators/         # @Module, @Controller, @Injectable, @Get, @Body, @Validate, ...
 │   ├── http/               # NexusServer (Hono), multi-style router, middleware
 │   ├── validation/         # Zod schema runner
-│   ├── view/               # Rendu / Edge / Inertia adapters
+│   ├── view/               # Rendu / Edge / Inertia adapters (v0.6+)
+│   │   └── inertia/         # Inertia v2 protocol + SSR adapters
 │   └── runtime/            # Bun / Node / Cloudflare Workers adapters
 ├── cli/                    # `nx` command runner (optional bundle)
-│   ├── commands/           # new, init, make:*, migrate, info
+│   ├── commands/           # new, init, make:*, migrate, info, db:*
 │   ├── templates/          # mustache-lite scaffolds
 │   └── core/               # arg parser, prompts, fs helpers
-├── auth/                   # `@kabyeon/nexusjs/auth` (better-auth wrapper)
-├── queue/                  # `@kabyeon/nexusjs/queue` (BullMQ / Cloudflare / memory)
-├── schedule/               # `@kabyeon/nexusjs/schedule` (custom cron parser)
-├── events/                 # `@kabyeon/nexusjs/events` (typed emitter)
-├── session/                # `@kabyeon/nexusjs/session` (cookie / memory / drizzle backends)
-├── health/                 # `@kabyeon/nexusjs/health` (live/ready/startup + indicators)
-├── config/                 # `@kabyeon/nexusjs/config` (Zod-validated env config)
-├── logger/                 # `@kabyeon/nexusjs/logger` (Pino transports)
-├── static/                 # `@kabyeon/nexusjs/static` (file serving)
-├── limiter/                # `@kabyeon/nexusjs/limiter` (rate limiting)
-├── shield/                 # `@kabyeon/nexusjs/shield` (CSRF + security headers)
-├── cache/                  # `@kabyeon/nexusjs/cache` (LRU + drizzle)
-├── drive/                  # `@kabyeon/nexusjs/drive` (storage abstraction)
-├── mail/                   # `@kabyeon/nexusjs/mail` (SMTP / File / Null)
-└── drizzle/                # `@kabyeon/nexusjs/drizzle` (default ORM)
-    ├── drivers/            # postgres / mysql / sqlite / bun-sqlite / d1
-    ├── repository/         # DrizzleRepository (Lucid-style)
-    ├── decorators/         # @Table / @Column / @PrimaryKey
-    ├── drizzle.service.ts  # Main entry point
-    └── drizzle.module.ts   # DI module
+├── auth/                   # better-auth wrapper
+├── queue/                  # BullMQ / Cloudflare / memory
+├── schedule/               # custom cron parser
+├── events/                 # typed emitter
+├── session/                # cookie / memory / drizzle backends
+├── health/                 # live/ready/startup + indicators
+├── config/                 # Zod-validated env config
+├── logger/                 # Pino transports
+├── static/                 # file serving
+├── limiter/                # rate limiting
+├── shield/                 # CSRF + security headers
+├── cache/                  # LRU + drizzle
+├── drive/                  # storage abstraction (Local / S3 / R2 / memory)
+├── mail/                   # SMTP / File / Null
+├── drizzle/                # default ORM
+├── openapi/                # OpenAPI 3.1 + Scalar UI
+├── upload/                 # multipart file upload
+├── sse/                    # Server-Sent Events
+├── tracing/                # OpenTelemetry
+├── metrics/                # Prometheus / OpenMetrics
+├── ws/                     # WebSockets
+├── crypto/                 # AES-256-GCM + HMAC + scrypt/argon2
+├── i18n/                   # locale-aware translations
+├── redis/                  # runtime-aware Redis client
+├── grpc/                   # reflection-based gRPC server + client
+├── graphql/                # SDL-first GraphQL (v0.7)
+└── resilience/             # retry / circuit / bulkhead (v0.7)
 ```
 
+### Examples
+
 ```
+examples/                                  # 33 working examples
+├── 01-basic-mvc/                          # one per module
+├── 02-routing-styles/
+├── 03-drizzle-crud/
+├── 04-session-auth/
+├── 05-openapi/
+├── 06-rendu-views/
+├── ...
+├── 28-inertia-react-spa/                  # Inertia v2 — React, client-side
+├── 29-inertia-react-ssr/                  # Inertia v2 — React, server-side
+├── 30-inertia-vue-spa/                    # Inertia v2 — Vue 3, client-side
+├── 31-inertia-vue-ssr/                    # Inertia v2 — Vue 3, server-side
+├── 32-graphql-hello/                      # GraphQL endpoint
+└── 33-resilience-calls/                  # retry / circuit / bulkhead
+```
+
+Every example is runnable as `cd examples/NN-name && bun main.ts`.
+The smoke test suite (`bun x vitest run tests/examples/`) boots
+each one in a subprocess, watches for a "listening" log line, and
+verifies a clean exit. 67 tests in ~2 seconds.
 
 ---
 
@@ -827,13 +1004,17 @@ v1.0, only major bumps will.
 - **v0.6** (2026-06-22) — gRPC + tooling: `@kabyeon/nexusjs/grpc` (reflection-based server + typed client) and a publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten).
 - **v0.6.1** (2026-06-22) — patch: `nexus` → `@kabyeon/nexusjs` rename across all sources (191 files), `bin` field fix, `dist/src/*` flatten, docs in sync with the published name. No new features.
 - **v0.6.3** (2026-06-22) — view engine extracted to `@kabyeon/nexusjs/view`, Eta adapter, file-based view paths, auto-detection by extension.
-- **v0.6.4** (2026-06-22) — default view engine to Rendu, CLI view options include eta, Application auto-loads viewPaths from nx.config.ts, static file path fix, scaffold deduplication.
-- **v0.6.6** (2026-06-22) — env-aware config, `nx db:generate`, built-in `sessionMiddleware()`, scaffold generates `.env`/`.env.local`/`.gitignore`, drizzle model import fix, `make:crud` repository fix.
+- **v0.6.4** (2026-06-22) — default view engine to Rendu, CLI view options include eta, Application auto-loads viewPaths from `nx.config.ts`, static file path fix, scaffold deduplication.
+- **v0.6.5** (2026-06-22) — env-aware config (`.env.{NODE_ENV}`), `nx db:generate`, built-in `sessionMiddleware()`, scaffold generates `.env`/`.env.local`/`.gitignore`, drizzle model import fix, `make:crud` repository fix.
+- **v0.6.6** (2026-06-22) — package renamed to `@kabyeon/nexusjs`, `router.getRoutes()` for OpenAPI spec generation.
+- **v0.6.7** (2026-06-22) — `create-nexusjs` scaffolder published as a separate npm package; 27 working examples under `examples/`.
+- **v0.6.8** (2026-06-22) — smoke test suite (`tests/examples/smoke.test.ts`) with 55 vitest tests, 67 examples by v0.6.8.
+- **v0.7.0** (2026-06-22) — **GraphQL** (`@kabyeon/nexusjs/graphql`, SDL-first, optional `graphql` peer-dep) and **Resilience** (`@kabyeon/nexusjs/resilience`, retry + circuit + bulkhead, zero new dependencies). 30 first-party modules, 33 examples, 102 vitest tests.
 
 ### Planned
 
-- **v0.7** — `@kabyeon/nexusjs/graphql` (code-first schema) and `@kabyeon/nexusjs/resilience` (circuit breaker, retry, bulkhead).
-- **v0.8** — `@kabyeon/nexusjs/feature-flag` (canary / A/B testing), runtime parity test suite, performance benchmarks across Bun / Node / Workers.
+- **v0.7.1** — Inertia `Form` + lazy props SDK stabilization, code-first GraphQL SDL synthesis (the `@Resolver` / `@Query` decorators are alpha today), eager `applyResilience()` wrapping at controller-mount time, `forceOpen` / `forceClose` admin API for the circuit breakers.
+- **v0.8** — `@kabyeon/nexusjs/feature-flag` (canary / A/B testing), runtime parity test suite, performance benchmarks across Bun / Node / Workers, cross-pod circuit breaker via Redis/Drizzle backing store.
 - **v1.0** — stable public API surface with semver guarantees, removal of all v0.1 deprecated aliases, long-term LTS support plan.
 
 Detailed release notes for every version live in
@@ -869,3 +1050,4 @@ Optional peer dependencies (each with its own license):
 - **@opentelemetry/*** — Apache-2.0
 - **ws** — MIT
 - **@grpc/grpc-js**, **@grpc/proto-loader** — Apache-2.0
+- **graphql** — MIT (peer-dep for `@kabyeon/nexusjs/graphql`)
