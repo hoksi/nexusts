@@ -72,7 +72,7 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 	},
 	"bun-sqlite": {
 		imports: ["sqliteTable", "integer", "text", "real"],
-		importPath: "drizzle-orm/bun-sqlite",
+		importPath: "drizzle-orm/sqlite-core",
 		tableFn: "sqliteTable",
 		idHelper: "integer",
 		idOpts: "{ autoIncrement: true }",
@@ -81,7 +81,7 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 	},
 	sqlite: {
 		imports: ["sqliteTable", "integer", "text", "real"],
-		importPath: "drizzle-orm/better-sqlite3",
+		importPath: "drizzle-orm/sqlite-core",
 		tableFn: "sqliteTable",
 		idHelper: "integer",
 		idOpts: "{ autoIncrement: true }",

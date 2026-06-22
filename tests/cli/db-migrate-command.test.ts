@@ -107,7 +107,7 @@ describe("make:model with --dialect", () => {
 			join(cwd, "src/app/models/item.model.ts"),
 			"utf-8",
 		);
-		expect(out).toContain("from 'drizzle-orm/bun-sqlite'");
+		expect(out).toContain("from 'drizzle-orm/sqlite-core'");
 		await rm(cwd, { recursive: true, force: true });
 	});
 

@@ -48,7 +48,7 @@ describe("renderDrizzleDialect", () => {
 			tableName: "notes",
 			columns: "  body: text('body'),",
 		});
-		expect(out).toContain("from 'drizzle-orm/bun-sqlite'");
+		expect(out).toContain("from 'drizzle-orm/sqlite-core'");
 		expect(out).toContain("sqliteTable");
 		expect(out).toContain("integer('id').primaryKey({ autoIncrement: true })");
 		expect(out).toContain("integer('created_at', { mode: 'timestamp' })");
@@ -73,7 +73,7 @@ describe("renderDrizzleDialect", () => {
 			tableName: "items",
 			columns: "  name: text('name'),",
 		});
-		expect(out).toContain("from 'drizzle-orm/better-sqlite3'");
+		expect(out).toContain("from 'drizzle-orm/sqlite-core'");
 	});
 });
 
