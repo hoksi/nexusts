@@ -23,14 +23,14 @@ export const newCommand: Command = {
 		"Generates a new project directory with nx.config.ts, tsconfig, package.json, and a starter app/main.ts.",
 	examples: [
 		"nx new my-app",
-		"nx new my-app --style nest --view inertia --orm drizzle --db bun-sqlite",
+		"nx new my-app --style nest --view rendu --orm drizzle --db bun-sqlite",
 	],
 	flags: [
 		{
 			name: "style",
 			description: "Routing style (nest|adonis|functional|mixed)",
 		},
-		{ name: "view", description: "View engine (rendu|edge|inertia|none)" },
+		{ name: "view", description: "View engine (rendu|edge|eta|inertia|none)" },
 		{ name: "orm", description: "ORM driver (drizzle|prisma|kysely|none)" },
 		{
 			name: "db",
@@ -68,9 +68,9 @@ export const newCommand: Command = {
 
 		const view =
 			(ctx.flags["view"] as string | undefined) ??
-			(await select("View engine", ["inertia", "rendu", "edge", "none"], {
+			(await select("View engine", ["rendu", "edge", "eta", "inertia", "none"], {
 				interactive,
-				default: "inertia",
+				default: "rendu",
 			}));
 
 		const orm =

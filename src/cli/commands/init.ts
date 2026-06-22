@@ -24,7 +24,7 @@
  * Flags:
  *   --target <dir>    Scaffold into <dir> instead of the cwd
  *   --style <name>    Routing style (nest|adonis|functional)
- *   --view <name>     View engine (rendu|edge|inertia|none)
+	*   --view <name>     View engine (rendu|edge|eta|inertia|none)
  *   --orm <name>      ORM driver (drizzle|prisma|kysely|none)
  *   --db <name>       Database driver (bun-sqlite|node-sqlite|libsql|postgres|mysql|none)
  *   --frontend <name> Inertia frontend (react|vue|svelte|solid)
@@ -65,7 +65,7 @@ export const initCommand: Command = {
 			name: "style",
 			description: "Routing style (nest|adonis|functional|mixed)",
 		},
-		{ name: "view", description: "View engine (rendu|edge|inertia|none)" },
+		{ name: "view", description: "View engine (rendu|edge|eta|inertia|none)" },
 		{ name: "orm", description: "ORM driver (drizzle|prisma|kysely|none)" },
 		{
 			name: "db",
@@ -105,9 +105,9 @@ export const initCommand: Command = {
 			}));
 		const view =
 			(ctx.flags["view"] as string | undefined) ??
-			(await select("View engine", ["inertia", "rendu", "edge", "none"], {
+			(await select("View engine", ["rendu", "edge", "eta", "inertia", "none"], {
 				interactive,
-				default: "inertia",
+				default: "rendu",
 			}));
 		const orm =
 			(ctx.flags["orm"] as string | undefined) ??
