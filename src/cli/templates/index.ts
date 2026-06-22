@@ -21,6 +21,7 @@ import modelPrisma from "./model/prisma.js";
 import module from "./module/module.js";
 import projectNxConfig from "./project/nx.config.js";
 import projectDrizzleConfig from "./project/drizzle.config.js";
+import repository from "./repository/repository.js";
 import service from "./service/service.js";
 import validator from "./validator/validator.js";
 
@@ -31,6 +32,7 @@ export const templates = {
 		functional: controllerFunctional,
 	},
 	service,
+	repository,
 	module,
 	validator,
 	middleware,

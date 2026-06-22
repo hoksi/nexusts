@@ -23,7 +23,8 @@
  * Use `--no-views` to skip view-aware parts even when `view === 'inertia'`.
  */
 
-import { resolve } from "node:path";
+import { mkdirSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
 import {
 	flagBool,
@@ -184,6 +185,27 @@ export const makeCrudCommand: Command = {
 					logger.success(`created ${out}`);
 					written.push(out);
 				}
+			}
+
+			// Repository
+			const repoCode = render(templates.repository, {
+				name: variants.pascal,
+				camel: variants.camel,
+				kebab: variants.kebab,
+				tableName,
+				repository,
+			});
+			const repoOut = resolve(
+				ctx.cwd,
+				`${ctx.config.paths.app}/repositories`,
+				`${variants.kebab}.repository.ts`,
+			);
+			mkdirSync(dirname(repoOut), { recursive: true });
+			if (!writeFile(repoOut, repoCode, { skipIfExists: true })) {
+				logger.warn(`skipped (exists): ${repoOut}`);
+			} else {
+				logger.success(`created ${repoOut}`);
+				written.push(repoOut);
 			}
 		}
 
