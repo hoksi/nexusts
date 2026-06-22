@@ -114,6 +114,7 @@ export const newCommand: Command = {
 		const code = render(templates.project["nx.config.ts"], {
 			routing,
 			view,
+			viewPaths: view === "none" ? "" : "resources/views",
 			orm,
 			dbDriver: db,
 			dbUrl: db === "bun-sqlite" || db === "node-sqlite" ? "app.db" : "",

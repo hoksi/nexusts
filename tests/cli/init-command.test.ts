@@ -175,6 +175,15 @@ describe("nx init — fresh install", () => {
 					hono: "^4.6.0",
 					zod: "^3.23.8",
 				},
+				type: "module",
+				private: true,
+				scripts: {
+					dev: "bun --hot app/main.ts",
+					build: "bun run build.ts",
+					start: "bun app/main.ts",
+					test: "vitest",
+					nx: "nx",
+				},
 			},
 			null,
 			2,
@@ -211,12 +220,14 @@ describe("nx init — fresh install", () => {
 		);
 		expect(code).toBe(0);
 
-		// hono preserved, nexusjs added
+		// hono preserved, nexusjs added, scripts added
 		const pkg = JSON.parse(
 			await readFile(join(target, "package.json"), "utf8"),
 		);
 		expect(pkg.dependencies.hono).toBe("^4.6.0");
 		expect(pkg.dependencies.nexusjs).toBe("*");
+		expect(pkg.scripts.dev).toBe("bun --hot app/main.ts");
+		expect(pkg.scripts.nx).toBe("nx");
 	});
 
 	it("handles package.json with trailing commas and block comments", async () => {

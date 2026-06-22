@@ -386,16 +386,50 @@ function defaultTsconfig(): string {
 function mergePackageJson(path: string, additions: Record<string, string>): void {
 	const raw = readFileSync(path, "utf8");
 	const pkg = parseJsonLoose<Record<string, unknown>>(raw);
-	const deps = (pkg["dependencies"] as Record<string, string> | undefined) ?? {};
 	let changed = false;
+
+	// Ensure type: "module"
+	if (!pkg["type"]) {
+		pkg["type"] = "module";
+		changed = true;
+	}
+
+	// Ensure private: true
+	if (!pkg["private"]) {
+		pkg["private"] = true;
+		changed = true;
+	}
+
+	// Merge scripts (only add missing ones, never overwrite)
+	const SCRIPTS: Record<string, string> = {
+		dev: "bun --hot app/main.ts",
+		build: "bun run build.ts",
+		start: "bun app/main.ts",
+		test: "vitest",
+		nx: "nx",
+	};
+	const existingScripts = (pkg["scripts"] as Record<string, string> | undefined) ?? {};
+	for (const [k, v] of Object.entries(SCRIPTS)) {
+		if (!(k in existingScripts)) {
+			existingScripts[k] = v;
+			changed = true;
+		}
+	}
+	if (Object.keys(existingScripts).length > 0) {
+		pkg["scripts"] = existingScripts;
+	}
+
+	// Merge dependencies
+	const deps = (pkg["dependencies"] as Record<string, string> | undefined) ?? {};
 	for (const [k, v] of Object.entries(additions)) {
 		if (!(k in deps)) {
 			deps[k] = v;
 			changed = true;
 		}
 	}
+	pkg["dependencies"] = deps;
+
 	if (changed) {
-		pkg["dependencies"] = deps;
 		writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n");
 	}
 }
