@@ -26,8 +26,10 @@ export const dbGenerateCommand: Command = {
 	summary: "Generate a new migration from schema changes",
 	description:
 		"Generates a new migration file by running drizzle-kit generate with the project's config. " +
+		"If no name is given, drizzle-kit auto-generates one. " +
 		"Run after editing your schema files, then apply with `nx db:migrate`.",
 	examples: [
+		"nx db:generate",
 		"nx db:generate add_users_table",
 		"nx db:generate add_posts --dialect postgres",
 	],
@@ -44,17 +46,15 @@ export const dbGenerateCommand: Command = {
 	],
 	async run(ctx: CommandContext): Promise<number> {
 		const name = ctx.positional[0];
-		if (!name) {
-			logger.error("Usage: nx db:generate <name>");
-			logger.info("Example: nx db:generate add_users_table");
-			return 1;
-		}
-
 		const dialect =
 			(ctx.flags["dialect"] as string | undefined) ?? ctx.config.dialect ?? "bun-sqlite";
 		const isSql = ctx.flags["sql"] === true;
 
 		if (isSql) {
+			if (!name) {
+				logger.error("Usage: nx db:generate <name> --sql");
+				return 1;
+			}
 			logger.info(`Generating raw SQL migration: ${name} (dialect=${dialect})`);
 			return runSqlTemplate(ctx.cwd, name, dialect);
 		}
