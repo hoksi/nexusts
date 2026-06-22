@@ -88,20 +88,21 @@ bun install
 bun run dev
 ```
 
-Or use it as a library in an existing project:
+Or install it in an existing project:
 
 ```bash
-bun add nexus reflect-metadata zod hono
+bun add @kabyeon/nexusjs reflect-metadata zod hono
 # Add the modules you need:
-bun add nexus/auth nexus/queue nexus/drizzle
+bun add @kabyeon/nexusjs/drizzle            # the default ORM
+bun add @kabyeon/nexusjs/auth               # authentication
+bun add @kabyeon/nexusjs/queue              # background jobs
+bun add @kabyeon/nexusjs/openapi            # OpenAPI docs
+# ... see the module table above for all 27 modules
 ```
 
 Every module is its own bundle entry point — install only what you
-use. The CLI (`nx`) is shipped as the `nx` bin and the `@kabyeon/nexusjs/cli`
-import:
+use. The CLI (`nx`) is included with `@kabyeon/nexusjs`:
 
-```bash
-bun add nexus/cli     # optional — for the `nx` command runner
 ```
 
 ---
