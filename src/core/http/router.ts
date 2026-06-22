@@ -46,6 +46,19 @@ export interface NexusRouter {
 	raw(method: HttpMethod, path: string, handler: HonoHandler): void;
 	/** Return the underlying Hono instance. */
 	getHono(): Hono;
+	/** Return all registered routes (for OpenAPI spec generation). */
+	getRoutes(): Array<{
+		method: string;
+		path: string;
+		target: any;
+		propertyKey: string | symbol;
+		validation?: {
+			body?: unknown;
+			query?: unknown;
+			params?: unknown;
+			headers?: unknown;
+		};
+	}>;
 }
 
 export type HonoHandler = (c: any, next?: any) => any | Promise<any>;
@@ -66,6 +79,19 @@ const HTTP_METHOD_TO_HONO: Record<
 class NexusRouterImpl implements NexusRouter {
 	private hono: Hono;
 	private root: ApplicationContainer;
+	/** Stored route metadata for OpenAPI spec generation. */
+	#routeList: Array<{
+		method: string;
+		path: string;
+		target: any;
+		propertyKey: string | symbol;
+		validation?: {
+			body?: unknown;
+			query?: unknown;
+			params?: unknown;
+			headers?: unknown;
+		};
+	}> = [];
 
 	constructor(hono: Hono, root: ApplicationContainer) {
 		this.hono = hono;
@@ -74,6 +100,22 @@ class NexusRouterImpl implements NexusRouter {
 
 	getHono(): Hono {
 		return this.hono;
+	}
+
+	/** Return all registered routes (for OpenAPI spec generation). */
+	getRoutes(): Array<{
+		method: string;
+		path: string;
+		target: any;
+		propertyKey: string | symbol;
+		validation?: {
+			body?: unknown;
+			query?: unknown;
+			params?: unknown;
+			headers?: unknown;
+		};
+	}> {
+		return this.#routeList;
 	}
 
 	registerController(controller: Type<any>, container?: DIContainer): void {
@@ -167,6 +209,15 @@ class NexusRouterImpl implements NexusRouter {
 	): void {
 		const validation = getValidationMetadata(controller, route.propertyKey);
 		const paramMeta = getParamMetadata(controller.prototype, route.propertyKey);
+
+		// Store for OpenAPI spec generation.
+		this.#routeList.push({
+			method: route.method,
+			path: fullPath,
+			target: controller.prototype,
+			propertyKey: route.propertyKey,
+			validation: validation ?? undefined,
+		});
 
 		const honoHandler = async (c: any) => {
 			try {
