@@ -17,7 +17,11 @@ NexusJS로 애플리케이션을 개발하기 위한 단계별 가이드.
 | **Event System** | [`events.md`](./events.md) | [`events.ko.md`](./events.ko.md) |
 | **Session (cookie / memory / Redis)** | [`session.md`](./session.md) | [`session.ko.md`](./session.ko.md) |
 | **Production basics (health / config / logger / static)** | [`production-basics.md`](./production-basics.md) | [`production-basics.ko.md`](./production-basics.ko.md) |
-| **Cross-cutting (limiter / shield / cache / drive / mail)** | [`cross-cutting-features.md`](./cross-cutting-features.md) | [`cross-cutting-features.ko.md`](./cross-cutting-features.ko.md) |
+| **Rate limiter** | [`limiter.md`](./limiter.md) | [`limiter.ko.md`](./limiter.ko.md) |
+| **Security middleware (shield)** | [`shield.md`](./shield.md) | [`shield.ko.md`](./shield.ko.md) |
+| **Application cache** | [`cache.md`](./cache.md) | [`cache.ko.md`](./cache.ko.md) |
+| **File storage (drive)** | [`drive.md`](./drive.md) | [`drive.ko.md`](./drive.ko.md) |
+| **Email (mail)** | [`mail.md`](./mail.md) | [`mail.ko.md`](./mail.ko.md) |
 | **Drizzle ORM (default ORM)** | [`drizzle.md`](./drizzle.md) | [`drizzle.ko.md`](./drizzle.ko.md) |
 | **OpenAPI 3.1 + Scalar UI (v0.4)** | [`openapi.md`](./openapi.md) | [`openapi.ko.md`](./openapi.ko.md) |
 | **File upload helper (v0.4)** | [`upload.md`](./upload.md) | [`upload.ko.md`](./upload.ko.md) |

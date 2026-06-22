@@ -2,391 +2,64 @@
 
 > 한국어 버전: [`cross-cutting-features.ko.md`](./cross-cutting-features.ko.md)
 
+> **This document is now an overview.** Each feature has its own
+> dedicated user guide and design document. Use the links below.
+
 The five modules shipped together in v0.3 — `@kabyeon/nexusjs/limiter`,
-`@kabyeon/nexusjs/shield`, `@kabyeon/nexusjs/cache`, `@kabyeon/nexusjs/drive`, `@kabyeon/nexusjs/mail` — round out
-the production stack. They are all independent bundles, all use the
-same `Module.forRoot({...})` DI pattern, and all are designed to work
-without forcing peer dependencies (Redis, AWS SDK, nodemailer, etc.)
-on projects that don't need them.
+`@kabyeon/nexusjs/shield`, `@kabyeon/nexusjs/cache`, `@kabyeon/nexusjs/drive`,
+`@kabyeon/nexusjs/mail` — round out the production stack. They are all
+independent bundles, all use the same `Module.forRoot({...})` DI pattern,
+and all are designed to work without forcing peer dependencies (Redis,
+AWS SDK, nodemailer, etc.) on projects that don't need them.
 
 ---
 
-## 1. `@kabyeon/nexusjs/limiter` — rate limiting
+## Per-package guides
 
-Three strategies: `fixed-window`, `sliding-window` (default),
-`token-bucket`. Pluggable storage backend (memory by default).
+| Module | User guide | Design doc | Entry point |
+| ------ | ---------- | ---------- | ----------- |
+| Rate limiter | [`limiter.md`](./limiter.md) | [`../design/limiter.md`](../design/limiter.md) | `@kabyeon/nexusjs/limiter` |
+| Security (Shield) | [`shield.md`](./shield.md) | [`../design/shield.md`](../design/shield.md) | `@kabyeon/nexusjs/shield` |
+| Application cache | [`cache.md`](./cache.md) | [`../design/cache.md`](../design/cache.md) | `@kabyeon/nexusjs/cache` |
+| File storage (Drive) | [`drive.md`](./drive.md) | [`../design/drive.md`](../design/drive.md) | `@kabyeon/nexusjs/drive` |
+| Email (Mail) | [`mail.md`](./mail.md) | [`../design/mail.md`](../design/mail.md) | `@kabyeon/nexusjs/mail` |
 
-### Global rules
+---
+
+## Common patterns
+
+All five modules follow the same conventions:
+
+### `Module.forRoot({...})` DI pattern
 
 ```ts
 @Module({
   imports: [
-    LimiterModule.forRoot({
-      rules: [
-        { path: '/api/*',  points: 100, duration: '1m' },
-        { path: '/login',  points: 5,   duration: '1m', methods: ['POST'] },
-        { path: '/search', points: 10,  duration: '1s', strategy: 'token-bucket' },
-      ],
-    }),
+    LimiterModule.forRoot({ rules: [...] }),
+    ShieldModule.forRoot({ csrf: { enabled: true } }),
+    CacheModule.forRoot({ defaultTtl: 60 }),
+    DriveModule.forRoot({ driver: new LocalDriver({ root: '/data' }) }),
+    MailModule.forRoot({ transport: new SmtpTransport({...}) }),
   ],
 })
+export class AppModule {}
 ```
 
-### Per-route decorator
+### Service injection via `TOKEN` Symbol
+
+Every module exports a `TOKEN` Symbol for DI compatibility:
 
 ```ts
-import { RateLimit } from '@kabyeon/nexusjs/limiter';
-
-@Controller('/auth')
-class AuthController {
-  @Post('/login')
-  @RateLimit({ points: 5, duration: '1m', key: (c) => c.req.header('x-api-key') })
-  login() {}
-}
+constructor(
+  @Inject(LimiterService.TOKEN) private limiter: LimiterService,
+  @Inject(ShieldService.TOKEN) private shield: ShieldService,
+  @Inject(CacheService.TOKEN) private cache: CacheService,
+  @Inject(DriveService.TOKEN) private drive: DriveService,
+  @Inject(MailService.TOKEN) private mail: MailService,
+) {}
 ```
 
-### Custom storage
-
-```ts
-import { LimiterService } from '@kabyeon/nexusjs/limiter';
-
-class RedisRateLimitStorage implements RateLimitStorage {
-  async consume(key, points, limit, durationMs, strategy) {
-    // Atomic Lua script: INCR + EXPIRE
-  }
-  async reset(key) { /* ... */ }
-}
-
-LimiterModule.forRoot({ storage: new RedisRateLimitStorage(redis), rules: [...] });
-```
-
-### Response headers
-
-On every limited request:
-
-- `X-RateLimit-Limit` — max points per window
-- `X-RateLimit-Remaining` — points left
-- `X-RateLimit-Reset` — unix-seconds when the window resets
-- `Retry-After` — only on 429
-
-### Reject behavior
-
-```ts
-{
-  path: '/login',
-  points: 5,
-  duration: '1m',
-  reject: (c, result) => c.json({ error: 'Slow down', retry: result.retryAfter }, 429),
-}
-```
-
----
-
-## 2. `@kabyeon/nexusjs/shield` — security middleware suite
-
-AdonisJS-Shield-shaped. CSRF, security headers (HSTS, X-Frame-Options,
-X-Content-Type-Options, Referrer-Policy, CSP).
-
-```ts
-import { ShieldModule } from '@kabyeon/nexusjs/shield';
-
-@Module({
-  imports: [
-    ShieldModule.forRoot({
-      csrf: {
-        enabled: true,
-        cookie: { secure: true, sameSite: 'Strict' },
-        secret: process.env.SHIELD_SECRET!,
-      },
-      hsts: { maxAge: 31_536_000, includeSubDomains: true, preload: true },
-      csp: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", 'cdn.example.com'],
-          imgSrc: ["'self'", 'data:'],
-        },
-        reportOnly: false,
-      },
-      xFrameOptions: 'DENY',
-      xContentTypeOptions: true,
-      referrerPolicy: 'strict-origin-when-cross-origin',
-    }),
-  ],
-})
-```
-
-### CSRF usage in forms
-
-```html
-<!-- in your form template -->
-<input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-<!-- or as a meta tag for SPAs -->
-<meta name="csrf-token" content="{{ csrfToken }}">
-```
-
-```ts
-// On every safe request, ShieldModule sets the `nexus-csrf` cookie.
-// Mutating requests must echo the signed token in `X-CSRF-Token`.
-```
-
-### Direct shield access in controllers
-
-```ts
-import { Inject } from '@kabyeon/nexusjs';
-import { ShieldService } from '@kabyeon/nexusjs/shield';
-
-class FormController {
-  constructor(@Inject(ShieldService.TOKEN) private shield: ShieldService) {}
-
-  @Get('/contact')
-  contactPage(@Res() res: Response) {
-    const t = this.shield.issueToken(res.headers);
-    return { csrfToken: t.token };
-  }
-}
-```
-
----
-
-## 3. `@kabyeon/nexusjs/cache` — application cache
-
-In-memory LRU with TTL by default. Optional `RedisStore` for
-multi-pod deployments.
-
-```ts
-@Module({
-  imports: [
-    CacheModule.forRoot({
-      defaultTtl: 300,             // 5 min
-      prefix: 'myapp',
-    }),
-  ],
-})
-```
-
-### Direct usage
-
-```ts
-import { CacheService } from '@kabyeon/nexusjs/cache';
-
-class UserService {
-  constructor(@Inject(CacheService.TOKEN) private cache: CacheService) {}
-
-  async findById(id: string) {
-    return this.cache.wrap(
-      `user:${id}`,
-      () => this.db.query('SELECT * FROM users WHERE id = $1', [id]),
-      60,                            // 60s TTL
-    );
-  }
-}
-```
-
-### Decorators
-
-```ts
-import { Cacheable, CacheInvalidate } from '@kabyeon/nexusjs/cache';
-
-class UserService {
-  @Cacheable('user', (id: string) => id, 60)
-  async findById(id: string) { /* ... */ }
-
-  @CacheInvalidate('user', (id: string) => id)
-  async deleteById(id: string) { /* ... */ }
-}
-```
-
-> Decorators store metadata; `cache.applyDecorators(instance)` is called
-> by the DI container when the service is wired.
-
-### Custom store
-
-For Redis / Workers KV, use the built-in `RedisCacheStore` from
-`@kabyeon/nexusjs/redis`. It implements `CacheStore` and supports
-tag-based invalidation:
-
-```ts
-import { CacheModule } from '@kabyeon/nexusjs/cache';
-import { RedisCacheStore, createRedisClient } from '@kabyeon/nexusjs/redis';
-
-CacheModule.forRoot({
-  store: new RedisCacheStore(
-    createRedisClient({ url: process.env.REDIS_URL! }),
-    { keyPrefix: 'cache:' },
-  ),
-});
-```
-
-For Cloudflare Workers, pass a `CloudflareKVAdapter`:
-
-```ts
-import { CacheModule } from '@kabyeon/nexusjs/cache';
-import { CloudflareKVAdapter } from '@kabyeon/nexusjs/redis';
-
-CacheModule.forRoot({
-  store: new RedisCacheStore(
-    new CloudflareKVAdapter({ kv: c.env.CACHE_KV }),
-    { keyPrefix: 'cache:' },
-  ),
-});
-```
-
-Custom stores (any non-Redis backend) implement the `CacheStore`
-interface:
-
-```ts
-import { CacheService, CacheStore } from '@kabyeon/nexusjs/cache';
-
-class MyStore implements CacheStore {
-  readonly kind = 'my-store';
-  async get<T>(key: string) { /* ... */ }
-  async set<T>(key: string, value: T, opts?: CacheSetOptions) { /* ... */ }
-  // ...
-}
-
-CacheModule.forRoot({ store: new MyStore() });
-```
-
----
-
-## 4. `@kabyeon/nexusjs/drive` — file storage abstraction
-
-`LocalDriver` (filesystem), `MemoryDriver` (in-process),
-`S3Driver` (AWS S3 / R2 / MinIO).
-
-```ts
-@Module({
-  imports: [
-    DriveModule.forRoot({
-      driver: new LocalDriver({ root: '/var/data', publicUrlPrefix: '/files' }),
-    }),
-  ],
-})
-
-// For S3:
-DriveModule.forRoot({
-  driver: new S3Driver({
-    bucket: 'my-bucket',
-    region: 'us-east-1',
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-  }),
-});
-```
-
-### Usage
-
-```ts
-@Injectable()
-class AvatarService {
-  constructor(@Inject(DriveService.TOKEN) private drive: DriveService) {}
-
-  async upload(userId: string, bytes: Buffer) {
-    const key = `avatars/${userId}.png`;
-    await this.drive.put(key, bytes, {
-      contentType: 'image/png',
-      cacheControl: 'public, max-age=86400',
-    });
-    return this.drive.getSignedUrl(key, { expiresIn: 3600 });
-  }
-
-  async getUrl(key: string) {
-    return this.drive.getSignedUrl(key);
-  }
-
-  async list(prefix: string) {
-    return this.drive.list({ prefix, limit: 100 });
-  }
-}
-```
-
-### Path safety (LocalDriver)
-
-Path traversal is rejected:
-
-```ts
-await drive.get('../etc/passwd'); // throws "Path traversal blocked"
-```
-
----
-
-## 5. `@kabyeon/nexusjs/mail` — outbound email
-
-`SmtpTransport` (nodemailer), `FileTransport` (.eml files for dev),
-`NullTransport` (tests).
-
-```ts
-@Module({
-  imports: [
-    MailModule.forRoot({
-      transport: new SmtpTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: { user: process.env.SMTP_USER!, pass: process.env.SMTP_PASS! },
-      }),
-      defaultFrom: 'no-reply@example.com',
-    }),
-  ],
-})
-```
-
-### Sending mail
-
-```ts
-@Injectable()
-class AuthMailer {
-  constructor(@Inject(MailService.TOKEN) private mail: MailService) {}
-
-  async sendWelcome(to: string, name: string) {
-    await this.mail.send({
-      to,
-      subject: 'Welcome!',
-      html: `<h1>Hi ${name}!</h1><p>Thanks for joining.</p>`,
-      text: `Hi ${name}! Thanks for joining.`,
-      attachments: [
-        { filename: 'logo.png', content: pngBuffer, cid: 'logo' },
-      ],
-    });
-  }
-}
-```
-
-### MJML templates
-
-```ts
-const html = await mail.renderMjml(`
-  <mjml>
-    <mj-body>
-      <mj-section>
-        <mj-column>
-          <mj-text>Hello {{name}}</mj-text>
-        </mj-column>
-      </mj-section>
-    </mj-body>
-  </mjml>
-`);
-```
-
-`mjml` is an **optional peer dep** — install only if you need it.
-
-### File transport (dev)
-
-```ts
-MailModule.forRoot({
-  transport: new FileTransport({ dir: './tmp/mail' }),
-});
-// All sent mail is written to ./tmp/mail/<id>.eml
-```
-
----
-
-## 6. Optional peer dependencies
-
-These modules are designed to **not force dependencies** on you:
+### Optional peer dependencies
 
 | Module | Optional peer dep | Install when… |
 | ------ | ----------------- | ------------- |
@@ -400,7 +73,7 @@ only need the memory/in-memory variants.
 
 ---
 
-## 7. Combined usage
+## Combined usage
 
 ```ts
 @Module({
@@ -434,9 +107,12 @@ export class AppModule {}
 
 ---
 
-## 8. See also
+## See also
 
+- [`./limiter.md`](./limiter.md) — rate limiting user guide
+- [`./shield.md`](./shield.md) — security middleware user guide
+- [`./cache.md`](./cache.md) — application cache user guide
+- [`./drive.md`](./drive.md) — file storage user guide
+- [`./mail.md`](./mail.md) — email user guide
 - [`./production-basics.md`](./production-basics.md) — health / config / logger / static
 - [`../design/architecture.md`](../design/architecture.md) — overall module design
-- [`../analysis/nestjs-comparison.md`](../analysis/nestjs-comparison.md) — gap analysis
-- [`../analysis/adonisjs-comparison.md`](../analysis/adonisjs-comparison.md) — gap analysis
