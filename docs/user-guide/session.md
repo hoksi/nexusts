@@ -225,31 +225,21 @@ Options:
 | `assert` | none | Throw 403 if `assert(session)` returns false |
 | `touch` | `false` | Refresh `lastSeenAt` on each access |
 
-The decorator reads from `c.var.nexus.user`. You must install a
-session middleware that decodes the cookie and populates this field:
+The decorator reads from `c.var.nexus.user`. The session package ships
+a built-in middleware that decodes the cookie and populates this field:
 
 ```ts
-// middleware/session.ts
-import type { MiddlewareHandler } from "hono";
-import { SessionService } from "nexusjs/session";
+// main.ts
+import { SessionService, sessionMiddleware } from "nexusjs/session";
 
-export function sessionMiddleware(sessions: SessionService): MiddlewareHandler {
-  return async (c, next) => {
-    const cookie = c.req.header("cookie") ?? "";
-    const match = cookie.match(/(?:^|;\s*)sid=([^;]+)/);
-    if (match) {
-      const record = sessions.decodeCookie(decodeURIComponent(match[1]));
-      if (record) c.set("nexus", { user: record });
-    }
-    await next();
-  };
-}
+const sessions = app.container.resolve(SessionService.TOKEN) as SessionService;
+app.server.app.use("*", sessionMiddleware(sessions));
 ```
 
+You can also customize the cookie name:
+
 ```ts
-// main.ts — wire the middleware
-const sessions = app.container.resolve(SessionService.TOKEN);
-app.server.app.use("*", sessionMiddleware(sessions));
+app.server.app.use("*", sessionMiddleware(sessions, { cookieName: "my_sid" }));
 ```
 
 ---

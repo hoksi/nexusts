@@ -53,3 +53,4 @@ export {
 	SessionForbiddenError,
 	type SessionOptions,
 } from "./decorators/current-session.js";
+export { sessionMiddleware, type SessionMiddlewareOptions } from "./session-middleware.js";

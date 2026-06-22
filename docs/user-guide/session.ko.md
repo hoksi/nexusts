@@ -213,30 +213,21 @@ admin(@Session({ required: true, role: 'admin' }) s) {
 | `assert` | 없음 | `assert(session)`이 false면 403 throw |
 | `touch` | `false` | 액세스마다 `lastSeenAt` 갱신 |
 
-데코레이터는 `c.var.nexus.user`를 읽습니다. 쿠키를 디코딩하여 이 필드를 채우는 세션 미들웨어를 설치해야 합니다:
+데코레이터는 `c.var.nexus.user`를 읽습니다. 세션 패키지에
+내장된 미들웨어가 쿠키를 디코딩하여 이 필드를 채웁니다:
 
 ```ts
-// middleware/session.ts
-import type { MiddlewareHandler } from "hono";
-import { SessionService } from "nexusjs/session";
+// main.ts
+import { SessionService, sessionMiddleware } from "nexusjs/session";
 
-export function sessionMiddleware(sessions: SessionService): MiddlewareHandler {
-  return async (c, next) => {
-    const cookie = c.req.header("cookie") ?? "";
-    const match = cookie.match(/(?:^|;\s*)sid=([^;]+)/);
-    if (match) {
-      const record = sessions.decodeCookie(decodeURIComponent(match[1]));
-      if (record) c.set("nexus", { user: record });
-    }
-    await next();
-  };
-}
+const sessions = app.container.resolve(SessionService.TOKEN) as SessionService;
+app.server.app.use("*", sessionMiddleware(sessions));
 ```
 
+쿠키 이름을 변경하려면:
+
 ```ts
-// main.ts — 미들웨어 연결
-const sessions = app.container.resolve(SessionService.TOKEN);
-app.server.app.use("*", sessionMiddleware(sessions));
+app.server.app.use("*", sessionMiddleware(sessions, { cookieName: "my_sid" }));
 ```
 
 ---
