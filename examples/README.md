@@ -47,6 +47,7 @@ bun add @kabyeon/nexusjs reflect-metadata zod hono
 | 29 | [`inertia-react-ssr`](./29-inertia-react-ssr) | `@kabyeon/nexusjs/view` + Inertia + React (SSR) | Advanced |
 | 30 | [`inertia-vue-spa`](./30-inertia-vue-spa) | `@kabyeon/nexusjs/view` + Inertia + Vue | Intermediate |
 | 31 | [`inertia-vue-ssr`](./31-inertia-vue-ssr) | `@kabyeon/nexusjs/view` + Inertia + Vue (SSR) | Advanced |
+| 32 | [`graphql-hello`](./32-graphql-hello) | `@kabyeon/nexusjs/graphql` | Intermediate |
 
 ---
 

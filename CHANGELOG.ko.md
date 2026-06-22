@@ -9,6 +9,32 @@ NexusJS의 모든 주요 변경 사항이 이 파일에 기록됩니다.
 
 ---
 
+## [0.6.9] — 2026-06-22
+
+### 추가
+
+- `@kabyeon/nexusjs/graphql` — SDL-first GraphQL 엔드포인트
+  (`GraphQLService` + `GraphQLModule`). `POST /graphql`,
+  `GET /graphql?query=...`, `GET /graphql/schema`, 그리고
+  의존성 없는 in-bundle GraphiQL playground를 연결. resolver에
+  요청별 state를 주입하는 `context()` 팩토리. `@Resolver` /
+  `@Query` / `@Mutation` / `@Subscription` / `@Arg` 데코레이터
+  export (code-first SDL 합성은 v0.8에서 예정).
+- `examples/32-graphql-hello` — 최소 hello-world 예제, 그리고
+  `tests/graphql/graphql.test.ts` 테스트 15개.
+- `docs/user-guide/graphql.md` + `.ko.md` — 사용자 가이드.
+- `docs/design/graphql.md` + `.ko.md` — 아키텍처 심층 문서
+  (resolver 생명주기, 스키마 빌드, peer-dep 근거).
+
+### 참고
+
+- `graphql` (peer-dep)는 번들되지 **않는다**. 모듈 사용 전에
+  `bun add graphql` 설치. dep 없이 첫 사용 시 명확한 에러.
+- code-first 데코레이터 API는 **alpha**: 타입과 메타데이터는
+  연결되어 있지만 SDL 합성과 resolver-map 자동 attach는 v0.8 예정.
+
+---
+
 ## [Unreleased]
 
 ### 추가

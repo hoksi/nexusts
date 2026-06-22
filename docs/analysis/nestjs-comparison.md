@@ -23,7 +23,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 
 | Category | NestJS | NexusJS v0.6.8 | Notes |
 |----------|--------|--------------|-------|
-| HTTP / routing | ✅ GraphQL, WebSockets, gRPC, SSE, Fastify | ⚠️ Hono + SSE + WS + gRPC, no GraphQL | REST + functional + Nest/Adonis styles |
+| HTTP / routing | ✅ GraphQL, WebSockets, gRPC, SSE, Fastify | ✅ Hono + SSE + WS + gRPC + GraphQL | REST + functional + Nest/Adonis styles |
 | DI | ✅ Request-scoped, circular auto-resolve | ✅ Singleton + transient + request | Request scope via `AsyncLocalStorage`; `@Injectable({ scope: 'request' })` |
 | Config | ✅ @nestjs/config, .env validation | ✅ `@kabyeon/nexusjs/config` | Zod-validated, layered loading |
 | Security | ✅ helmet, throttler, CSRF, CORS | ✅ `@kabyeon/nexusjs/shield` + `@kabyeon/nexusjs/limiter` | CSRF / HSTS / CSP / rate limit. CORS via Hono middleware |
@@ -44,7 +44,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `@kabyeon/nexusjs/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
 | Feature flags | ⚠️ DIY (no first-party) | ⚠️ DIY | Both lack first-party |
 | Resilience (circuit breaker, retry) | ⚠️ nestjs-recq | ⚠️ DIY | Both lack first-party |
-| GraphQL | ✅ @nestjs/graphql | ❌ None | Planned v0.7 |
+| GraphQL | ✅ @nestjs/graphql | ✅ `@kabyeon/nexusjs/graphql` | SDL-first; code-first via `@Resolver` (alpha) in v0.6.9 |
 | gRPC | ✅ @nestjs/microservices | ✅ `@kabyeon/nexusjs/grpc` | Reflection-based, unary methods (streaming planned v2) |
 
 **Headline**: NexusJS v0.6.8 closes **every Tier 1 and Tier 2 gap** from
@@ -147,14 +147,19 @@ None. v0.3 closed every original Tier 1 gap.
 ### 4.5 GraphQL (`@nestjs/graphql` equivalent)
 
 - **Use cases**: BFF patterns, mobile clients, schema-first dev.
-- **Status**: ❌ not yet shipped. Planned v0.6+.
-- **Proposed module**: `@kabyeon/nexusjs/graphql`
-- **Features**:
-  - `@Resolver()`, `@Query()`, `@Mutation()` decorators
-  - Code-first schema generation
-  - DataLoader integration (N+1 prevention)
-  - Federation support
-- **Note**: Lower priority than the others — most teams still ship REST.
+- **Status**: ✅ shipped in v0.6.9 as `@kabyeon/nexusjs/graphql`.
+- **What ships**:
+  - SDL-first schema via `GraphQLModule.forRoot({ typeDefs, resolvers })`.
+  - `POST /graphql`, `GET /graphql?query=...`, `GET /graphql/schema`,
+    plus an in-bundle GraphiQL playground at `GET /graphql`.
+  - `context(c)` factory — per-request state flows into every
+    resolver as `ctx.state`.
+  - `@Resolver` / `@Query` / `@Mutation` / `@Subscription` /
+    `@Arg` decorators exported (code-first SDL synthesis reserved
+    for v0.8).
+  - `graphql` is an optional peer-dep — install with `bun add graphql`.
+- See [`../../user-guide/graphql.md`](../../user-guide/graphql.md) and
+  [`../../design/graphql.md`](../../design/graphql.md).
 
 ---
 
@@ -275,7 +280,6 @@ use-cases.
 - Multi-runtime CI (Bun + Node + Cloudflare Workers)
 - Performance benchmarks + cross-runtime parity tests
 - Long-term LTS support plan
-- **GraphQL** (`@kabyeon/nexusjs/graphql`) — code-first schema
 - **Resilience** (`@kabyeon/nexusjs/resilience`) — circuit breaker / retry / bulkhead
 - **Feature flags** (`@kabyeon/nexusjs/feature-flag`)
 
@@ -315,17 +319,17 @@ services**:
 
 What's still missing for full "NestJS feature parity":
 
-- **GraphQL** — important for BFF / mobile-first teams.
+- **Code-first GraphQL decorators** (alpha in v0.6.9; full SDL synthesis in v0.8).
 - **Resilience primitives** — circuit breakers, retry, bulkhead.
 - **Feature flags** — useful for canary deploys.
 
 The path from v0.6.8 to v1.0 is roughly:
 
-- **v0.6.x** (current): gRPC, REPL, view engine extraction, env-aware
+- **v0.6.x** (shipped): gRPC, REPL, view engine extraction, env-aware
   config, built-in sessionMiddleware, `nx db:generate`,
   `@kabyeon/nexusjs` package rename, `create-nexusjs` scaffolder,
   `examples/` + smoke test suite, Inertia v2 examples (React + Vue,
-  SPA + SSR).
+  SPA + SSR), `GraphQL` module (v0.6.9).
 - **v0.7** (Q3 2026): Async RPC & DX — GraphQL, resilience, feature flags
 - **v0.8** (Q4 2026): Production hardening — stable public API,
   multi-runtime CI, performance benchmarks, LTS plan.

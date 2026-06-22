@@ -28,6 +28,7 @@
     "src/i18n/**/*.ts",
     "src/redis/**/*.ts",
     "src/grpc/**/*.ts",
+    "src/graphql/**/*.ts",
     "src/view/**/*.ts",
     "src/core/**/*.d.ts",
     "src/cli/**/*.d.ts",
@@ -54,7 +55,9 @@
     "src/ws/**/*.d.ts",
     "src/crypto/**/*.d.ts",
     "src/i18n/**/*.d.ts",
-    "src/redis/**/*.d.ts"
+		"src/grpc/**/*.d.ts",
+		"src/graphql/**/*.d.ts",
+		"src/view/**/*.d.ts"
   ],
   "compilerOptions": {
     "rootDir": "./src"

@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.9] — 2026-06-22
+
+### Added
+
+- `@kabyeon/nexusjs/graphql` — SDL-first GraphQL endpoint with
+  `GraphQLService` + `GraphQLModule`. Wires `POST /graphql`,
+  `GET /graphql?query=...`, `GET /graphql/schema`, and a no-deps
+  in-bundle GraphiQL playground. `context()` factory for injecting
+  per-request state into resolvers. `@Resolver` / `@Query` /
+  `@Mutation` / `@Subscription` / `@Arg` decorators exported
+  (code-first SDL synthesis is reserved for v0.8).
+- `examples/32-graphql-hello` — minimal hello-world example, plus
+  tests in `tests/graphql/graphql.test.ts` (15 tests).
+- `docs/user-guide/graphql.md` + `.ko.md` — user guide.
+- `docs/design/graphql.md` + `.ko.md` — architecture deep-dive
+  (resolver lifecycle, schema build, peer-dep rationale).
+
+### Notes
+
+- `graphql` (peer-dep) is **not** bundled. Install with
+  `bun add graphql` to use the module. The first attempt without
+  the dep throws a clear error.
+- The code-first decorator API is **alpha**: types and metadata
+  are wired, but SDL synthesis and resolver-map auto-attach are
+  scheduled for v0.8.
+
+---
+
 ## [Unreleased]
 
 ### Added
