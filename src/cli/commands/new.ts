@@ -170,13 +170,12 @@ export const newCommand: Command = {
 		);
 
 		const viewPathsArr = view === "none" ? "" : "resources/views";
-		const vpImport = viewPathsArr.length > 0 ? `import { setViewPaths } from "nexusjs/view";\n` : "";
-		const vpCall = viewPathsArr.length > 0 ? `\nsetViewPaths("${viewPathsArr}");\n` : "";
+		const vpCall = viewPathsArr.length > 0 ? `\napp.setViewPaths("${viewPathsArr}");\n` : "";
 
 		writeFileSync(
 			resolve(target, "app/main.ts"),
 			`import 'reflect-metadata';
-${vpImport}import { Application } from 'nexusjs';
+import { Application } from 'nexusjs';
 import { StaticModule } from 'nexusjs/static';
 import { AppModule } from './app.module.js';
 

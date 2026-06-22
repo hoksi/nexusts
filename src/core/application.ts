@@ -96,14 +96,14 @@ export class Application {
 	 *
 	 * Typical setup:
 	 *
-	 *   import { setViewPaths } from 'nexusjs/view';
-	 *   setViewPaths('views');
+	 *   const app = new Application(AppModule);
+	 *   app.setViewPaths('resources/views');
 	 *
 	 * or in `nx.config.ts`:
 	 *
 	 *   export default {
 	 *     view: 'rendu',
-	 *     viewPaths: 'views',
+	 *     viewPaths: 'resources/views',
 	 *   };
 	 *
 	 * After this, `@Get('/about') return { view: 'about.html', data }`

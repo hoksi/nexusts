@@ -314,8 +314,8 @@ Configure once at boot:
 
 ```ts
 // app/main.ts
-import { setViewPaths } from 'nexusjs/view';
-setViewPaths(['views', 'app/views']);
+const app = new Application(AppModule);
+app.setViewPaths('resources/views');
 ```
 
 Or in `nx.config.ts`:
@@ -323,7 +323,7 @@ Or in `nx.config.ts`:
 ```ts
 export default {
   view: 'rendu',
-  viewPaths: ['views', 'app/views'],
+  viewPaths: 'resources/views',
   // ...
 };
 ```

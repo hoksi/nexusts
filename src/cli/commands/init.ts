@@ -294,13 +294,10 @@ function renderContent(path: string, ctx: RenderCtx): string {
 			return `<h1>Welcome to ${ctx.targetName}</h1>\n<p>This is a sample Rendu template.</p>\n<p>Founded <?= year ?>.</p>\n`;
 		case "app/main.ts":
 			const vp = ctx.viewPaths ?? "";
-			const vpImport = vp.length > 0
-				? `import { setViewPaths } from "nexusjs/view";\n`
-				: "";
 			const vpCall = vp.length > 0
-				? `\nsetViewPaths("${vp}");\n`
+				? `\napp.setViewPaths("${vp}");\n`
 				: "";
-			return `${vpImport}import 'reflect-metadata';
+			return `import 'reflect-metadata';
 import { Application } from 'nexusjs';
 import { StaticModule } from 'nexusjs/static';
 import { AppModule } from './app.module.js';

@@ -295,8 +295,8 @@ async about() {
 
 ```ts
 // app/main.ts
-import { setViewPaths } from 'nexusjs/view';
-setViewPaths(['views', 'app/views']);
+const app = new Application(AppModule);
+app.setViewPaths('resources/views');
 ```
 
 또는 `nx.config.ts`에서:
@@ -304,7 +304,7 @@ setViewPaths(['views', 'app/views']);
 ```ts
 export default {
   view: 'rendu',
-  viewPaths: ['views', 'app/views'],
+  viewPaths: 'resources/views',
   // ...
 };
 ```
