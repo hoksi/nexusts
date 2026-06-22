@@ -2,18 +2,17 @@
 
 **Bun Native Fullstack Framework** — NestJS structure × Adonis productivity × Hono edge performance.
 
-> **v0.4 — observability & DX.** All 22 modules ship. Tier 1 and
+> **v0.6.4 — view engine extracted.** All 27 modules ship. Tier 1 and
 > Tier 2 gaps from the NestJS / AdonisJS gap analyses are now fully
-> closed. New in v0.4: `nexusjs/openapi`, `nexusjs/upload`, `nexusjs/sse`,
-> `nexusjs/tracing`, `nexusjs/metrics`, and request-scoped DI in the
-> core. See [CHANGELOG.md](./CHANGELOG.md) for the v0.4 release
-> notes.
+> closed. The view engine has moved to `nexusjs/view` as its own bundle
+> entry point, with Rendu (default), Edge, and Eta adapters. See
+> [CHANGELOG.md](./CHANGELOG.md) for the full v0.6 release notes.
 
 ---
 
 ## What's in v0.6
 
-The framework now ships **26 independent modules** — every one is
+The framework now ships **27 independent modules** — every one is
 its own bundle entry point, so you install only what you use. Tier 1
 and Tier 2 gaps from the NestJS / AdonisJS gap analyses are now
 fully closed.
@@ -47,12 +46,16 @@ fully closed.
 | `nexusjs/crypto` | AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF, encrypted data |
 | `nexusjs/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
 | `nexusjs/redis` | Runtime-aware Redis client (Bun / Node / Workers KV). Powers `redis` / `cloudflare-kv` session & cache backends |
+| `nexusjs/grpc` | Reflection-based gRPC server + typed client. Loads `.proto` files at runtime via `@grpc/proto-loader`. Unary methods (streaming deferred to v2) |
+| **`nexusjs/view`** *(extracted in v0.6.3)* | View engine with 3 adapters: Rendu (default, every runtime), Edge (Adonis-style `.edge`), Eta (EJS-style `.eta`). Auto-detects adapter by file extension. `setViewPaths()` for file-based templates |
 
 See [docs/user-guide/drizzle.md](./docs/user-guide/drizzle.md) for the
 Drizzle integration guide, [docs/user-guide/tracing.md](./docs/user-guide/tracing.md)
 for OpenTelemetry, [docs/user-guide/metrics.md](./docs/user-guide/metrics.md)
 for Prometheus, and [CHANGELOG.md](./CHANGELOG.md) for the detailed
 v0.4 release notes.
+
+> The module table now includes `nexusjs/grpc` and `nexusjs/view`,
 
 ---
 
@@ -653,25 +656,58 @@ the per-field validation flow; this is the upstream CSRF gate.
 
 ---
 
-## View engine
+## View engine — `nexusjs/view`
 
-The framework ships with a Rendu adapter (PHP-style templates, fast on
-every runtime) and an Edge adapter (mustache-style, AdonisJS-compatible).
+The view engine is available as `nexusjs/view` — its own bundle entry
+point. It ships three adapters:
+
+| Adapter | Extension | Style | Runtime support |
+|---------|-----------|-------|----------------|
+| **Rendu** (default) | `.html`, `.rendu` | PHP-style `<?= expr ?>` | Bun / Node / Cloudflare Workers |
+| **Edge** | `.edge` | Mustache-style `{{ expr }}` | Bun / Node |
+| **Eta** | `.eta` | EJS-style `<%= expr %>` | Bun / Node / Deno / Workers |
+
+### Auto-detection by file extension
+
+When you return `{ view: 'about.html', data }` from a controller, the
+framework picks the right adapter based on the file extension:
+
+- `.html` / `.rendu` → RenduAdapter
+- `.edge` → EdgeAdapter
+- `.eta` → EtaAdapter
+
+### File-based views
+
+The Application auto-loads `viewPaths` from `nx.config.ts` at boot,
+so no explicit call is needed:
 
 ```ts
-import { RenduAdapter } from 'nexusjs/view';
-
-const rendu = new RenduAdapter();
-const html = await rendu.render(
-  `<h1>Hello, <?= name ?>!</h1>
-   <? for (const item of items) { ?>
-     <li><?= item ?></li>
-   <? } ?>`,
-  { name: 'Nexus', items: ['a', 'b', 'c'] }
-);
+// nx.config.ts — all you need
+export default {
+  view: 'rendu',
+  viewPaths: 'resources/views',
+};
 ```
 
-To use a different engine, implement the `ViewAdapter` interface:
+Then controllers reference view files directly:
+
+```ts
+@Get('/')
+index() {
+  return {
+    view: 'welcome.html',
+    data: { year: new Date().getFullYear() },
+  };
+}
+```
+
+### Override the adapter at runtime
+
+```ts
+app.setViewAdapter(new EdgeAdapter());
+```
+
+Or implement the `ViewAdapter` interface for a custom engine:
 
 ```ts
 import type { ViewAdapter } from 'nexusjs/view';
@@ -684,7 +720,10 @@ class MyEngine implements ViewAdapter {
 app.setViewAdapter(new MyEngine());
 ```
 
-Or use the controller-level shortcut:
+### Inline templates (no file system)
+
+When `viewPaths` is empty (the default), the `view` value is treated
+as an inline Rendu template:
 
 ```ts
 @Get('/users')
@@ -776,6 +815,8 @@ v1.0, only major bumps will.
 - **v0.5** (2026-06-23) — realtime + crypto + i18n + redis: `nexusjs/ws`, `nexusjs/crypto`, `nexusjs/i18n`, `nexusjs/redis`.
 - **v0.6** (2026-06-24) — gRPC + tooling: `nexusjs/grpc` (reflection-based server + typed client) and a publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten).
 - **v0.6.1** (2026-06-25) — patch: `nexus` → `nexusjs` rename across all sources (191 files), `bin` field fix, `dist/src/*` flatten, docs in sync with the published name. No new features.
+- **v0.6.3** (2026-06-26) — view engine extracted to `nexusjs/view`, Eta adapter, file-based view paths, auto-detection by extension.
+- **v0.6.4** (2026-06-22) — default view engine to Rendu, CLI view options include eta, Application auto-loads viewPaths from nx.config.ts, static file path fix, scaffold deduplication.
 
 ### Planned
 
