@@ -30,7 +30,7 @@ export const makeMigrationCommand: Command = {
 	aliases: ["mkm", "make-migration"],
 	summary: "Generate a migration file",
 	description:
-		"Generates a migration under src/app/database/migrations/. The template is chosen from nx.config.ts's `orm` field. Use --dialect for Drizzle migrations.",
+		"Generates a migration under app/database/migrations/. The template is chosen from nx.config.ts's `orm` field. Use --dialect for Drizzle migrations.",
 	examples: [
 		"nx make:migration create_users_table",
 		"nx make:migration add_email_to_users --orm drizzle --dialect postgres",

@@ -11,7 +11,7 @@ export const makeValidatorCommand: Command = {
 	name: "make:validator",
 	aliases: ["mv", "make-validator"],
 	summary: "Generate a Zod validation schema",
-	description: "Generates a Zod schema and inferred type under src/app/dto/.",
+	description: "Generates a Zod schema and inferred type under app/dto/.",
 	examples: ["nx make:validator User", "nx make:validator CreateOrder"],
 	async run(ctx: CommandContext): Promise<number> {
 		const name = ctx.positional[0];

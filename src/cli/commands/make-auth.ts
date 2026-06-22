@@ -179,7 +179,7 @@ export const makeAuthCommand: Command = {
 		if (passkeyEnabled) {
 			logger.info("4. Configure passkey RP ID + origin for your domain.");
 		}
-		logger.info("5. Run `bun --hot src/app/main.ts` to start the server.");
+		logger.info("5. Run `bun --hot app/main.ts` to start the server.");
 		logger.blank();
 
 		return 0;

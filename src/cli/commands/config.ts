@@ -39,7 +39,7 @@
  *   --no-interaction   Skip interactive prompts
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
 import { flagBool, logger, render, select } from "../core/index.js";
@@ -151,7 +151,7 @@ export const configCommand: Command = {
 		{ name: "view", description: "View engine (rendu|edge|inertia|none)" },
 		{
 			name: "view-paths",
-			description: "Comma-separated directories searched for view files (e.g. views,src/app/views)",
+			description: "Comma-separated directories searched for view files (e.g. resources/views)",
 		},
 		{ name: "orm", description: "ORM driver (drizzle|prisma|kysely|none)" },
 		{

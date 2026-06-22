@@ -5,7 +5,7 @@
  *
  *   nx make:crud Post
  *
- * Produces (under src/app/):
+ * Produces (under app/):
  *
  *   controllers/post.controller.ts   — RESTful routes (Nest/Adonis/Functional)
  *   services/post.service.ts        — business logic
@@ -257,7 +257,7 @@ export const makeCrudCommand: Command = {
 		logger.info(
 			`3. ${noRepo ? "" : `Run \`bunx drizzle-kit migrate\` (or your migration tool).`}`,
 		);
-		logger.info(`4. Start the dev server: \`bun --hot src/app/main.ts\`.`);
+		logger.info(`4. Start the dev server: \`bun --hot app/main.ts\`.`);
 		logger.blank();
 
 		return 0;

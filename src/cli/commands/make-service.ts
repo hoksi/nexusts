@@ -12,7 +12,7 @@ export const makeServiceCommand: Command = {
 	aliases: ["ms", "make-service"],
 	summary: "Generate a service class",
 	description:
-		"Generates an @Injectable() service under src/app/services/. If the project's ORM is configured, the service constructor takes a repository.",
+		"Generates an @Injectable() service under app/services/. If the project's ORM is configured, the service constructor takes a repository.",
 	examples: ["nx make:service User", "nx make:service Order --no-repo"],
 	flags: [
 		{

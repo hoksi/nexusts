@@ -13,7 +13,7 @@ import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
   dialect: "{{ dialect }}",
-  schema: "./src/app/models/*.model.ts",
+  schema: "./app/models/*.model.ts",
   out: "./drizzle",
   dbCredentials: {
     url: process.env.DATABASE_URL ?? "{{ dbUrl }}",

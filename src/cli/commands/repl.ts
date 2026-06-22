@@ -7,8 +7,8 @@
  * out queries without writing a throwaway script.
  *
  * Usage:
- *   nx repl                                  # default: ./src/app/app.module.ts
- *   nx repl --module src/app/app.module.ts
+ *   nx repl                                  # default: ./app/app.module.ts
+ *   nx repl --module app/app.module.ts
  *   nx repl --no-boot                        # vanilla REPL
  *   nx repl --history /tmp/nx-history        # custom history file
  *
@@ -89,7 +89,7 @@ export const replCommand: Command = {
 		"Boots the user's app module and drops into an interactive REPL. Useful for debugging, exploring data, and trying out queries. Multi-line input is supported. History is persisted to .nx-repl-history.",
 	examples: [
 		"nx repl",
-		"nx repl --module src/app/app.module.ts",
+		"nx repl --module app/app.module.ts",
 		"nx repl --no-boot",
 		"nx repl --history /tmp/nx-history",
 	],
@@ -97,7 +97,7 @@ export const replCommand: Command = {
 		{
 			name: "module",
 			description:
-				"Path to the AppModule (default: src/app/app.module.ts).",
+				"Path to the AppModule (default: app/app.module.ts).",
 		},
 		{
 			name: "no-boot",
@@ -121,7 +121,7 @@ export const replCommand: Command = {
 		if (!noBoot) {
 			const modPath = resolve(
 				ctx.cwd,
-				mod ?? "src/app/app.module.ts",
+				mod ?? "app/app.module.ts",
 			);
 			if (!existsSync(modPath)) {
 				logger.error(`module not found: ${modPath}`);

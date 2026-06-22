@@ -37,7 +37,7 @@ export const makeModelCommand: Command = {
 	aliases: ["mmodel", "make-model"],
 	summary: "Generate a model (table schema)",
 	description:
-		"Generates a model file under src/app/models/. The template is chosen from nx.config.ts's `orm` field (drizzle|prisma|kysely). For drizzle, use --dialect to pick the import path.",
+		"Generates a model file under app/models/. The template is chosen from nx.config.ts's `orm` field (drizzle|prisma|kysely). For drizzle, use --dialect to pick the import path.",
 	examples: [
 		"nx make:model User",
 		'nx make:model User --columns "name:text,email:text"',

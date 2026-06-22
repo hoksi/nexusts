@@ -124,9 +124,9 @@ describe("nx init — fresh install", () => {
 		// Created files
 		expect(await exists(join(target, "nx.config.ts"))).toBe(true);
 		expect(await exists(join(target, "tsconfig.json"))).toBe(true);
-		expect(await exists(join(target, "src/app/main.ts"))).toBe(true);
-		expect(await exists(join(target, "src/app/app.module.ts"))).toBe(true);
-		expect(await exists(join(target, "src/app/controllers/home.controller.ts"))).toBe(
+		expect(await exists(join(target, "app/main.ts"))).toBe(true);
+		expect(await exists(join(target, "app/app.module.ts"))).toBe(true);
+		expect(await exists(join(target, "app/controllers/home.controller.ts"))).toBe(
 			true,
 		);
 		expect(await exists(join(target, "README.md"))).toBe(true);
@@ -141,7 +141,7 @@ describe("nx init — fresh install", () => {
 		const ts = JSON.parse(await readFile(join(target, "tsconfig.json"), "utf8"));
 		expect(ts.compilerOptions.experimentalDecorators).toBe(true);
 		expect(ts.compilerOptions.emitDecoratorMetadata).toBe(true);
-		expect(ts.include).toContain("src/**/*.ts");
+		expect(ts.include).toContain("app/**/*.ts");
 		expect(ts.include).toContain("nx.config.ts");
 	});
 
@@ -285,8 +285,8 @@ describe("nx init — idempotent re-run", () => {
 	it("--force overwrites existing files", async () => {
 		await writeFile(join(target, "package.json"), JSON.stringify({ name: "x" }));
 		await writeFile(join(target, "nx.config.ts"), "// OLD");
-		await mkdir(join(target, "src/app"), { recursive: true });
-		await writeFile(join(target, "src/app/main.ts"), "// OLD");
+		await mkdir(join(target, "app"), { recursive: true });
+		await writeFile(join(target, "app/main.ts"), "// OLD");
 
 		await initCommand.run!(
 			makeCtx(target, {

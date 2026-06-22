@@ -2,7 +2,7 @@
  * `nx new <name>` — scaffold a new project.
  *
  * Creates a fresh directory with `nx.config.ts`, `package.json`,
- * `tsconfig.json`, `src/app/main.ts`, and a README. Useful as a
+ * `tsconfig.json`, `app/main.ts`, and a README. Useful as a
  * starting point for kicking off a new app without `bun create`.
  *
  * This is intentionally minimal — it does not run `bun install`. After
@@ -20,7 +20,7 @@ export const newCommand: Command = {
 	aliases: ["n"],
 	summary: "Create a new Nexus project",
 	description:
-		"Generates a new project directory with nx.config.ts, tsconfig, package.json, and a starter src/app/main.ts.",
+		"Generates a new project directory with nx.config.ts, tsconfig, package.json, and a starter app/main.ts.",
 	examples: [
 		"nx new my-app",
 		"nx new my-app --style nest --view inertia --orm drizzle --db bun-sqlite",
@@ -100,7 +100,7 @@ export const newCommand: Command = {
 
 		const ssr = !flagBool(ctx.flags, "no-ssr", false);
 
-		mkdirSync(resolve(target, "src/app"), { recursive: true });
+		mkdirSync(resolve(target, "app"), { recursive: true });
 		mkdirSync(resolve(target, "public"), { recursive: true });
 		mkdirSync(resolve(target, "resources/views"), { recursive: true });
 
@@ -131,9 +131,9 @@ export const newCommand: Command = {
 					version: "0.1.0",
 					type: "module",
 					scripts: {
-						dev: "bun --hot src/app/main.ts",
+						dev: "bun --hot app/main.ts",
 						build: "bun run build.ts",
-						start: "bun src/app/main.ts",
+						start: "bun app/main.ts",
 						test: "vitest",
 						nx: "nx",
 					},
@@ -163,7 +163,7 @@ export const newCommand: Command = {
     "skipLibCheck": true,
     "types": ["bun-types"]
   },
-  "include": ["src/**/*.ts", "nx.config.ts"]
+  "include": ["app/**/*.ts", "nx.config.ts"]
 }
 `,
 		);
@@ -173,7 +173,7 @@ export const newCommand: Command = {
 		const vpCall = viewPathsArr.length > 0 ? `\nsetViewPaths([\n  "${viewPathsArr[0]}",\n]);\n` : "";
 
 		writeFileSync(
-			resolve(target, "src/app/main.ts"),
+			resolve(target, "app/main.ts"),
 			`import 'reflect-metadata';
 ${vpImport}import { Application } from 'nexusjs';
 import { StaticModule } from 'nexusjs/static';
@@ -188,7 +188,7 @@ console.log('[nexusjs] Listening on http://localhost:3000');
 		);
 
 		writeFileSync(
-			resolve(target, "src/app/app.module.ts"),
+			resolve(target, "app/app.module.ts"),
 			`import { Module } from 'nexusjs';
 import { StaticModule } from 'nexusjs/static';
 import { HomeController } from './controllers/home.controller.js';
@@ -203,9 +203,9 @@ export class AppModule {}
 `,
 		);
 
-		mkdirSync(resolve(target, "src/app/controllers"), { recursive: true });
+		mkdirSync(resolve(target, "app/controllers"), { recursive: true });
 		writeFileSync(
-			resolve(target, "src/app/controllers/home.controller.ts"),
+			resolve(target, "app/controllers/home.controller.ts"),
 			`import { Controller, Get } from 'nexusjs';
 
 @Controller('/')

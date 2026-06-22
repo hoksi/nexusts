@@ -21,7 +21,7 @@ export const makeControllerCommand: Command = {
 	aliases: ["mc", "make-controller"],
 	summary: "Generate a controller class",
 	description:
-		"Generates a controller file under src/app/controllers/. The routing style is read from nx.config.ts.",
+		"Generates a controller file under app/controllers/. The routing style is read from nx.config.ts.",
 	examples: [
 		"nx make:controller User",
 		"nx make:controller Post --style nest",

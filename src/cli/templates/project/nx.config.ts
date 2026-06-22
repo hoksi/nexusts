@@ -22,7 +22,7 @@ export default {
   /**
    * Directories searched when a controller returns a view file name
    * (e.g. \`about.html\`). Empty array = inline templates only.
-   * Typical: \`['views', 'src/app/views']\`. On edge runtimes
+   * Typical: \`['resources/views']\`. On edge runtimes
    * (Cloudflare Workers), leave empty and pass inline strings.
    */
   viewPaths: {{ viewPaths }},
@@ -54,15 +54,15 @@ export default {
   // ---------------------------------------------------------------------------
 
   paths: {
-    app:         'src/app',
-    controllers: 'src/app/controllers',
-    services:    'src/app/services',
-    modules:     'src/app/modules',
-    models:      'src/app/models',
-    migrations:  'src/app/database/migrations',
+    app:         'app',
+    controllers: 'app/controllers',
+    services:    'app/services',
+    modules:     'app/modules',
+    models:      'app/models',
+    migrations:  'app/database/migrations',
     seeds:       'db/seeds',
-    middleware:  'src/app/middleware',
-    dto:         'src/app/dto',
+    middleware:  'app/middleware',
+    dto:         'app/dto',
   },
 };
 `;

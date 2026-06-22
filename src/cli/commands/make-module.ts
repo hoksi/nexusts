@@ -22,7 +22,7 @@ export const makeModuleCommand: Command = {
 	aliases: ["mm", "make-module"],
 	summary: "Generate a feature module",
 	description:
-		"Generates a @Module() class that wires a controller + service (+ optional repository) under src/app/modules/.",
+		"Generates a @Module() class that wires a controller + service (+ optional repository) under app/modules/.",
 	examples: ["nx make:module User", "nx make:module User --no-controller"],
 	flags: [
 		{

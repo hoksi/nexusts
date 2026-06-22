@@ -50,9 +50,9 @@ interface PlanEntry {
 export const initCommand: Command = {
 	name: "init",
 	aliases: ["i"],
-	summary: "Initialize nx.config.ts + src/app scaffold in the current directory",
+	summary: "Initialize nx.config.ts + app scaffold in the current directory",
 	description:
-		"Non-destructive scaffold: adds nx.config.ts, src/app/*, and merges NexusJS into the existing package.json and tsconfig.json. Skips files that already exist (unless --force).",
+		"Non-destructive scaffold: adds nx.config.ts, app/*, and merges NexusJS into the existing package.json and tsconfig.json. Skips files that already exist (unless --force).",
 	examples: [
 		"nx init",
 		"nx init ./my-existing-app",
@@ -140,9 +140,9 @@ export const initCommand: Command = {
 			{ path: "tsconfig.json", mode: "merge-tsconfig" },
 			{ path: "public/.gitkeep", mode: "write" },
 			{ path: "resources/views/welcome.html", mode: "write" },
-			{ path: "src/app/main.ts", mode: "write" },
-			{ path: "src/app/app.module.ts", mode: "write" },
-			{ path: "src/app/controllers/home.controller.ts", mode: "write" },
+			{ path: "app/main.ts", mode: "write" },
+			{ path: "app/app.module.ts", mode: "write" },
+			{ path: "app/controllers/home.controller.ts", mode: "write" },
 			{ path: "README.md", mode: "write" },
 		];
 
@@ -151,7 +151,7 @@ export const initCommand: Command = {
 		const merged: string[] = [];
 
 		// Ensure directories exist
-		mkdirSync(resolve(target, "src/app/controllers"), { recursive: true });
+		mkdirSync(resolve(target, "app/controllers"), { recursive: true });
 		mkdirSync(resolve(target, "public"), { recursive: true });
 		mkdirSync(resolve(target, "resources/views"), { recursive: true });
 
@@ -274,7 +274,7 @@ function renderContent(path: string, ctx: RenderCtx): string {
 			return "";
 		case "resources/views/welcome.html":
 			return `<h1>Welcome to ${ctx.targetName}</h1>\n<p>This is a sample Rendu template.</p>\n<p>Founded <?= year ?>.</p>\n`;
-		case "src/app/main.ts":
+		case "app/main.ts":
 			const vp = ctx.viewPaths?.filter(Boolean) ?? [];
 			const vpImport = vp.length > 0
 				? `import { setViewPaths } from "nexusjs/view";\n`
@@ -293,7 +293,7 @@ app.server.app.use('/static/*', StaticModule.mount({ root: './public', prefix: '
 await app.listen(3000);
 console.log('[nexusjs] Listening on http://localhost:3000');
 `;
-		case "src/app/app.module.ts":
+		case "app/app.module.ts":
 			return `import { Module } from 'nexusjs';
 import { StaticModule } from 'nexusjs/static';
 import { HomeController } from './controllers/home.controller.js';
@@ -306,7 +306,7 @@ import { HomeController } from './controllers/home.controller.js';
 })
 export class AppModule {}
 `;
-		case "src/app/controllers/home.controller.ts":
+		case "app/controllers/home.controller.ts":
 			return `import { Controller, Get } from 'nexusjs';
 
 @Controller('/')
@@ -356,7 +356,7 @@ function defaultTsconfig(): string {
     "skipLibCheck": true,
     "types": ["bun-types"]
   },
-  "include": ["src/**/*.ts", "nx.config.ts"]
+  "include": ["app/**/*.ts", "nx.config.ts"]
 }
 `;
 }
@@ -405,8 +405,8 @@ function mergeTsconfig(
 	}
 	// Also ensure src/**/*.ts and nx.config.ts are in `include`
 	const inc = (cfg.include ?? []) as string[];
-	if (!inc.includes("src/**/*.ts")) {
-		inc.push("src/**/*.ts");
+	if (!inc.includes("app/**/*.ts")) {
+		inc.push("app/**/*.ts");
 		changed = true;
 	}
 	if (!inc.includes("nx.config.ts")) {
