@@ -2,7 +2,7 @@
 
 **Bun Native Fullstack Framework** — NestJS structure × Adonis productivity × Hono edge performance.
 
-> **v0.6.5 — env-aware config + db:generate.** All 27 modules ship. Tier 1 and
+> **v0.6.6 — env-aware config + db:generate.** All 27 modules ship. Tier 1 and
 > Tier 2 gaps from the NestJS / AdonisJS gap analyses are now fully
 > closed. The view engine has moved to `@kabyeon/nexusjs/view` as its own bundle
 > entry point, with Rendu (default), Edge, and Eta adapters. See
@@ -818,7 +818,7 @@ v1.0, only major bumps will.
 - **v0.6.1** (2026-06-25) — patch: `nexus` → `@kabyeon/nexusjs` rename across all sources (191 files), `bin` field fix, `dist/src/*` flatten, docs in sync with the published name. No new features.
 - **v0.6.3** (2026-06-26) — view engine extracted to `@kabyeon/nexusjs/view`, Eta adapter, file-based view paths, auto-detection by extension.
 - **v0.6.4** (2026-06-22) — default view engine to Rendu, CLI view options include eta, Application auto-loads viewPaths from nx.config.ts, static file path fix, scaffold deduplication.
-- **v0.6.5** (2026-06-22) — env-aware config, `nx db:generate`, built-in `sessionMiddleware()`, scaffold generates `.env`/`.env.local`/`.gitignore`, drizzle model import fix, `make:crud` repository fix.
+- **v0.6.6** (2026-06-22) — env-aware config, `nx db:generate`, built-in `sessionMiddleware()`, scaffold generates `.env`/`.env.local`/`.gitignore`, drizzle model import fix, `make:crud` repository fix.
 
 ### Planned
 

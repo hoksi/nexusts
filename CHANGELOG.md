@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.6] — 2026-06-22
+
+### Changed
+
+- Package renamed to `@kabyeon/nexusjs` (npm publish)
+
+### Added
+
+- `router.getRoutes()` — exposes registered routes for OpenAPI spec generation
+- `nx db:generate` — generate migrations from schema changes (name optional)
+- Environment-aware `.env` loading (`.env.{NODE_ENV}` auto-detection)
+- Built-in `sessionMiddleware()` — no custom middleware needed for `@Session()`
+- Scaffold generates `.env`, `.env.local`, `.gitignore`
+- `PORT` read from env in generated `main.ts`
+- Database setup guide (`docs/user-guide/database.md` + `.ko.md`)
+
+### Fixed
+
+- Drizzle model import path: `drizzle-orm/bun-sqlite` → `drizzle-orm/sqlite-core`
+- `make:crud` now generates repository files with correct local imports
+- DrizzleService auto-opens for bun-sqlite (no manual `open()` call)
+- `nx db:migrate --status` works from published package
+- Session docs: `c.var.session` → `c.var.nexus.user`, added middleware example
+- Static file path resolution (leading `/` stripped from rel path)
+- `@kabyeon/@kabyeon` double prefix cleaned up in docs
+
+---
+
 ## [0.6.5] — 2026-06-22
 
 ### Added
