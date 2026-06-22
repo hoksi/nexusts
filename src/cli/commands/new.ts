@@ -101,6 +101,15 @@ export const newCommand: Command = {
 		const ssr = !flagBool(ctx.flags, "no-ssr", false);
 
 		mkdirSync(resolve(target, "src/app"), { recursive: true });
+		mkdirSync(resolve(target, "public"), { recursive: true });
+		mkdirSync(resolve(target, "resources/views"), { recursive: true });
+
+		writeFileSync(resolve(target, "public/.gitkeep"), "");
+
+		writeFileSync(
+			resolve(target, "resources/views/welcome.html"),
+			`<h1>Welcome to ${name}</h1>\n<p>This is a sample Rendu template.</p>\n<p>Founded <?= year ?>.</p>\n`,
+		);
 
 		const code = render(templates.project["nx.config.ts"], {
 			routing,
@@ -159,14 +168,20 @@ export const newCommand: Command = {
 `,
 		);
 
+		const viewPathsArr = view === "none" ? [] : ["resources/views"];
+		const vpImport = viewPathsArr.length > 0 ? `import { setViewPaths } from "nexusjs/view";\n` : "";
+		const vpCall = viewPathsArr.length > 0 ? `\nsetViewPaths([\n  "${viewPathsArr[0]}",\n]);\n` : "";
+
 		writeFileSync(
 			resolve(target, "src/app/main.ts"),
 			`import 'reflect-metadata';
-import { Application } from 'nexusjs';
+${vpImport}import { Application } from 'nexusjs';
+import { StaticModule } from 'nexusjs/static';
 import { AppModule } from './app.module.js';
 
 const app = new Application(AppModule);
-
+// Serve ./public files under /static/*
+app.server.app.use('/static/*', StaticModule.mount({ root: './public', prefix: '/static' }));${vpCall}
 await app.listen(3000);
 console.log('[nexusjs] Listening on http://localhost:3000');
 `,
@@ -175,9 +190,13 @@ console.log('[nexusjs] Listening on http://localhost:3000');
 		writeFileSync(
 			resolve(target, "src/app/app.module.ts"),
 			`import { Module } from 'nexusjs';
+import { StaticModule } from 'nexusjs/static';
 import { HomeController } from './controllers/home.controller.js';
 
 @Module({
+  imports: [
+    StaticModule.forRoot({ root: './public', prefix: '/static' }),
+  ],
   controllers: [HomeController],
 })
 export class AppModule {}
@@ -193,7 +212,10 @@ export class AppModule {}
 export class HomeController {
   @Get('/')
   index() {
-    return { message: 'Hello, ${name}!' };
+    return {
+      view: 'welcome.html',
+      data: { year: new Date().getFullYear() },
+    };
   }
 }
 `,

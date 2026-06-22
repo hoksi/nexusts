@@ -138,6 +138,8 @@ export const initCommand: Command = {
 			{ path: "nx.config.ts", mode: "write" },
 			{ path: "package.json", mode: "merge-pkg" },
 			{ path: "tsconfig.json", mode: "merge-tsconfig" },
+			{ path: "public/.gitkeep", mode: "write" },
+			{ path: "resources/views/welcome.html", mode: "write" },
 			{ path: "src/app/main.ts", mode: "write" },
 			{ path: "src/app/app.module.ts", mode: "write" },
 			{ path: "src/app/controllers/home.controller.ts", mode: "write" },
@@ -148,8 +150,10 @@ export const initCommand: Command = {
 		const skipped: string[] = [];
 		const merged: string[] = [];
 
-		// Ensure src/app and src/app/controllers exist
+		// Ensure directories exist
 		mkdirSync(resolve(target, "src/app/controllers"), { recursive: true });
+		mkdirSync(resolve(target, "public"), { recursive: true });
+		mkdirSync(resolve(target, "resources/views"), { recursive: true });
 
 		for (const entry of plan) {
 			const abs = resolve(target, entry.path);
@@ -204,7 +208,7 @@ export const initCommand: Command = {
 			const content = renderContent(entry.path, {
 				routing,
 				view,
-				viewPaths: ["views", "src/app/views"],
+				viewPaths: view === "none" ? [] : ["resources/views"],
 				orm,
 				dbDriver: db,
 				dbUrl: db === "bun-sqlite" || db === "node-sqlite" ? "app.db" : "",
@@ -266,6 +270,10 @@ function renderContent(path: string, ctx: RenderCtx): string {
 	switch (path) {
 		case "nx.config.ts":
 			return render(templates.project["nx.config.ts"], ctx);
+		case "public/.gitkeep":
+			return "";
+		case "resources/views/welcome.html":
+			return `<h1>Welcome to ${ctx.targetName}</h1>\n<p>This is a sample Rendu template.</p>\n<p>Founded <?= year ?>.</p>\n`;
 		case "src/app/main.ts":
 			const vp = ctx.viewPaths?.filter(Boolean) ?? [];
 			const vpImport = vp.length > 0
@@ -276,17 +284,24 @@ function renderContent(path: string, ctx: RenderCtx): string {
 				: "";
 			return `${vpImport}import 'reflect-metadata';
 import { Application } from 'nexusjs';
+import { StaticModule } from 'nexusjs/static';
 import { AppModule } from './app.module.js';
 
-const app = new Application(AppModule);${vpCall}
+const app = new Application(AppModule);
+// Serve ./public files under /static/*
+app.server.app.use('/static/*', StaticModule.mount({ root: './public', prefix: '/static' }));${vpCall}
 await app.listen(3000);
 console.log('[nexusjs] Listening on http://localhost:3000');
 `;
 		case "src/app/app.module.ts":
 			return `import { Module } from 'nexusjs';
+import { StaticModule } from 'nexusjs/static';
 import { HomeController } from './controllers/home.controller.js';
 
 @Module({
+  imports: [
+    StaticModule.forRoot({ root: './public', prefix: '/static' }),
+  ],
   controllers: [HomeController],
 })
 export class AppModule {}
@@ -298,7 +313,10 @@ export class AppModule {}
 export class HomeController {
   @Get('/')
   index() {
-    return { message: 'Hello, ${ctx.targetName}!' };
+    return {
+      view: 'welcome.html',
+      data: { year: new Date().getFullYear() },
+    };
   }
 }
 `;
