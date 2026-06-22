@@ -213,7 +213,31 @@ admin(@Session({ required: true, role: 'admin' }) s) {
 | `assert` | 없음 | `assert(session)`이 false면 403 throw |
 | `touch` | `false` | 액세스마다 `lastSeenAt` 갱신 |
 
-데코레이터는 먼저 `authMiddleware`가 `c.var.session`을 채웠거나 (또는 쿠키에서 직접 `SessionService.decodeCookie(c.req.header('cookie'))`를 통해 읽었거나) 해야 한다.
+데코레이터는 `c.var.nexus.user`를 읽습니다. 쿠키를 디코딩하여 이 필드를 채우는 세션 미들웨어를 설치해야 합니다:
+
+```ts
+// middleware/session.ts
+import type { MiddlewareHandler } from "hono";
+import { SessionService } from "nexusjs/session";
+
+export function sessionMiddleware(sessions: SessionService): MiddlewareHandler {
+  return async (c, next) => {
+    const cookie = c.req.header("cookie") ?? "";
+    const match = cookie.match(/(?:^|;\s*)sid=([^;]+)/);
+    if (match) {
+      const record = sessions.decodeCookie(decodeURIComponent(match[1]));
+      if (record) c.set("nexus", { user: record });
+    }
+    await next();
+  };
+}
+```
+
+```ts
+// main.ts — 미들웨어 연결
+const sessions = app.container.resolve(SessionService.TOKEN);
+app.server.app.use("*", sessionMiddleware(sessions));
+```
 
 ---
 
