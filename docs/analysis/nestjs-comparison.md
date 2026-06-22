@@ -25,27 +25,27 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 |----------|--------|--------------|-------|
 | HTTP / routing | ✅ GraphQL, WebSockets, gRPC, SSE, Fastify | ⚠️ Hono + SSE + WS + gRPC, no GraphQL | REST + functional + Nest/Adonis styles |
 | DI | ✅ Request-scoped, circular auto-resolve | ✅ Singleton + transient + request | Request scope via `AsyncLocalStorage`; `@Injectable({ scope: 'request' })` |
-| Config | ✅ @nestjs/config, .env validation | ✅ `@kabyeon/@kabyeon/nexusjs/config` | Zod-validated, layered loading |
-| Security | ✅ helmet, throttler, CSRF, CORS | ✅ `@kabyeon/@kabyeon/nexusjs/shield` + `@kabyeon/@kabyeon/nexusjs/limiter` | CSRF / HSTS / CSP / rate limit. CORS via Hono middleware |
-| Database | ✅ TypeORM, Prisma, Mongoose, Sequelize | ✅ `@kabyeon/@kabyeon/nexusjs/drizzle` (5 dialects) | Drizzle is the default ORM |
-| Cache | ✅ cache-manager (in-memory / Redis) | ✅ `@kabyeon/@kabyeon/nexusjs/cache` (memory / Drizzle) | Tag-based invalidation; Redis via custom store |
-| Logging | ✅ Built-in Logger (Winston / Pino adapters) | ✅ `@kabyeon/@kabyeon/nexusjs/logger` (Pino) | Pretty in dev, JSON in prod, request-scoped via ALS |
-| Realtime | ✅ WebSocket, SSE, gRPC streaming | ✅ WebSocket + SSE + gRPC | `@kabyeon/@kabyeon/nexusjs/ws` (Bun + Node) + `@kabyeon/@kabyeon/nexusjs/sse` + `@kabyeon/@kabyeon/nexusjs/grpc` |
-| Microservices | ✅ TCP, Redis, NATS, Kafka, MQTT | ⚠️ `@kabyeon/@kabyeon/nexusjs/queue` (BullMQ / Cloudflare) + gRPC | gRPC shipped; no service-mesh transports |
-| API docs | ✅ @nestjs/swagger | ✅ `@kabyeon/@kabyeon/nexusjs/openapi` | OpenAPI 3.1 from Zod + Scalar UI |
-| Health checks | ✅ @nestjs/terminus | ✅ `@kabyeon/@kabyeon/nexusjs/health` | Built-in indicators (memory/disk/http/db) |
-| Email | ✅ @nestjs/mailer | ✅ `@kabyeon/@kabyeon/nexusjs/mail` (SMTP / File / Null) | MJML via optional peer |
-| File upload | ✅ multer integration | ✅ `@kabyeon/@kabyeon/nexusjs/upload` | `@Upload` / `@UploadedFile` decorators, size + MIME validation |
-| File storage | ❌ DIY | ✅ `@kabyeon/@kabyeon/nexusjs/drive` (memory / Local / S3 / R2) | Nexus has a first-party `@kabyeon/@kabyeon/nexusjs/drive`; Nest doesn't |
-| i18n | ✅ nestjs-i18n | ✅ `@kabyeon/@kabyeon/nexusjs/i18n` | `Intl`-based, pluralization, JSON catalogs |
-| Tracing | ✅ OpenTelemetry integration | ✅ `@kabyeon/@kabyeon/nexusjs/tracing` | Lazy OTel SDK, W3C + B3 propagation |
-| Metrics | ✅ Prometheus integration | ✅ `@kabyeon/@kabyeon/nexusjs/metrics` | Counter / Gauge / Histogram / Summary |
-| Auth | ✅ @nestjs/passport + many strategies | ✅ `@kabyeon/@kabyeon/nexusjs/auth` (better-auth) | better-auth supports many strategies |
-| Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `@kabyeon/@kabyeon/nexusjs/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
+| Config | ✅ @nestjs/config, .env validation | ✅ `@kabyeon/nexusjs/config` | Zod-validated, layered loading |
+| Security | ✅ helmet, throttler, CSRF, CORS | ✅ `@kabyeon/nexusjs/shield` + `@kabyeon/nexusjs/limiter` | CSRF / HSTS / CSP / rate limit. CORS via Hono middleware |
+| Database | ✅ TypeORM, Prisma, Mongoose, Sequelize | ✅ `@kabyeon/nexusjs/drizzle` (5 dialects) | Drizzle is the default ORM |
+| Cache | ✅ cache-manager (in-memory / Redis) | ✅ `@kabyeon/nexusjs/cache` (memory / Drizzle) | Tag-based invalidation; Redis via custom store |
+| Logging | ✅ Built-in Logger (Winston / Pino adapters) | ✅ `@kabyeon/nexusjs/logger` (Pino) | Pretty in dev, JSON in prod, request-scoped via ALS |
+| Realtime | ✅ WebSocket, SSE, gRPC streaming | ✅ WebSocket + SSE + gRPC | `@kabyeon/nexusjs/ws` (Bun + Node) + `@kabyeon/nexusjs/sse` + `@kabyeon/nexusjs/grpc` |
+| Microservices | ✅ TCP, Redis, NATS, Kafka, MQTT | ⚠️ `@kabyeon/nexusjs/queue` (BullMQ / Cloudflare) + gRPC | gRPC shipped; no service-mesh transports |
+| API docs | ✅ @nestjs/swagger | ✅ `@kabyeon/nexusjs/openapi` | OpenAPI 3.1 from Zod + Scalar UI |
+| Health checks | ✅ @nestjs/terminus | ✅ `@kabyeon/nexusjs/health` | Built-in indicators (memory/disk/http/db) |
+| Email | ✅ @nestjs/mailer | ✅ `@kabyeon/nexusjs/mail` (SMTP / File / Null) | MJML via optional peer |
+| File upload | ✅ multer integration | ✅ `@kabyeon/nexusjs/upload` | `@Upload` / `@UploadedFile` decorators, size + MIME validation |
+| File storage | ❌ DIY | ✅ `@kabyeon/nexusjs/drive` (memory / Local / S3 / R2) | Nexus has a first-party `@kabyeon/nexusjs/drive`; Nest doesn't |
+| i18n | ✅ nestjs-i18n | ✅ `@kabyeon/nexusjs/i18n` | `Intl`-based, pluralization, JSON catalogs |
+| Tracing | ✅ OpenTelemetry integration | ✅ `@kabyeon/nexusjs/tracing` | Lazy OTel SDK, W3C + B3 propagation |
+| Metrics | ✅ Prometheus integration | ✅ `@kabyeon/nexusjs/metrics` | Counter / Gauge / Histogram / Summary |
+| Auth | ✅ @nestjs/passport + many strategies | ✅ `@kabyeon/nexusjs/auth` (better-auth) | better-auth supports many strategies |
+| Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `@kabyeon/nexusjs/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
 | Feature flags | ⚠️ DIY (no first-party) | ⚠️ DIY | Both lack first-party |
 | Resilience (circuit breaker, retry) | ⚠️ nestjs-recq | ⚠️ DIY | Both lack first-party |
 | GraphQL | ✅ @nestjs/graphql | ❌ None | Planned v0.7 |
-| gRPC | ✅ @nestjs/microservices | ✅ `@kabyeon/@kabyeon/nexusjs/grpc` | Reflection-based, unary methods (streaming planned v2) |
+| gRPC | ✅ @nestjs/microservices | ✅ `@kabyeon/nexusjs/grpc` | Reflection-based, unary methods (streaming planned v2) |
 
 **Headline**: NexusJS v0.6 closes **every Tier 1 and Tier 2 gap** from
 the v0.2 analysis. All **26** shipped modules are first-party.
@@ -56,30 +56,30 @@ the v0.2 analysis. All **26** shipped modules are first-party.
 
 | Was missing in v0.2 | Shipped | Module |
 | ------------------- | ------- | ------ |
-| Health checks (`@nestjs/terminus` equivalent) | v0.3 | `@kabyeon/@kabyeon/nexusjs/health` |
-| Rate limiting / throttling | v0.3 | `@kabyeon/@kabyeon/nexusjs/limiter` |
-| Security headers (helmet equivalent) | v0.3 | `@kabyeon/@kabyeon/nexusjs/shield` (CSRF + HSTS + CSP) |
-| Configuration management (`@nestjs/config` equivalent) | v0.3 | `@kabyeon/@kabyeon/nexusjs/config` |
-| Logging (Pino / Winston integration) | v0.3 | `@kabyeon/@kabyeon/nexusjs/logger` |
-| Cache (`cache-manager` equivalent) | v0.3 | `@kabyeon/@kabyeon/nexusjs/cache` |
-| Email integration (`@nestjs/mailer` equivalent) | v0.3 | `@kabyeon/@kabyeon/nexusjs/mail` |
-| File storage abstraction | v0.3 | `@kabyeon/@kabyeon/nexusjs/drive` (memory / Local / S3 / R2) |
-| Database integration | v0.3 | `@kabyeon/@kabyeon/nexusjs/drizzle` (default ORM) |
+| Health checks (`@nestjs/terminus` equivalent) | v0.3 | `@kabyeon/nexusjs/health` |
+| Rate limiting / throttling | v0.3 | `@kabyeon/nexusjs/limiter` |
+| Security headers (helmet equivalent) | v0.3 | `@kabyeon/nexusjs/shield` (CSRF + HSTS + CSP) |
+| Configuration management (`@nestjs/config` equivalent) | v0.3 | `@kabyeon/nexusjs/config` |
+| Logging (Pino / Winston integration) | v0.3 | `@kabyeon/nexusjs/logger` |
+| Cache (`cache-manager` equivalent) | v0.3 | `@kabyeon/nexusjs/cache` |
+| Email integration (`@nestjs/mailer` equivalent) | v0.3 | `@kabyeon/nexusjs/mail` |
+| File storage abstraction | v0.3 | `@kabyeon/nexusjs/drive` (memory / Local / S3 / R2) |
+| Database integration | v0.3 | `@kabyeon/nexusjs/drizzle` (default ORM) |
 | Database migrations | v0.3 | `nx db:migrate` + `nx db:migrate --generate` |
-| Static file serving | v0.3 | `@kabyeon/@kabyeon/nexusjs/static` |
-| Default ORM (Drizzle-style) | v0.3 | `@kabyeon/@kabyeon/nexusjs/drizzle` |
-| **OpenAPI / Swagger** | v0.4 | `@kabyeon/@kabyeon/nexusjs/openapi` |
-| **File upload helper** | v0.4 | `@kabyeon/@kabyeon/nexusjs/upload` |
+| Static file serving | v0.3 | `@kabyeon/nexusjs/static` |
+| Default ORM (Drizzle-style) | v0.3 | `@kabyeon/nexusjs/drizzle` |
+| **OpenAPI / Swagger** | v0.4 | `@kabyeon/nexusjs/openapi` |
+| **File upload helper** | v0.4 | `@kabyeon/nexusjs/upload` |
 | **Request-scoped DI** | v0.4 | core DI + ALS + Hono middleware |
-| **Server-Sent Events** | v0.4 | `@kabyeon/@kabyeon/nexusjs/sse` |
-| **Distributed tracing** | v0.4 | `@kabyeon/@kabyeon/nexusjs/tracing` |
-| **Prometheus metrics** | v0.4 | `@kabyeon/@kabyeon/nexusjs/metrics` |
-| **WebSockets** | v0.5 | `@kabyeon/@kabyeon/nexusjs/ws` (Bun primary, Node via `ws`) |
-| **Encryption + password hashing** | v0.5 | `@kabyeon/@kabyeon/nexusjs/crypto` (AES-256-GCM + HMAC + scrypt) |
-| **i18n** | v0.5 | `@kabyeon/@kabyeon/nexusjs/i18n` (Intl-based, pluralization) |
-| **gRPC** | v0.5 | `@kabyeon/@kabyeon/nexusjs/grpc` (reflection-based, unary) |
+| **Server-Sent Events** | v0.4 | `@kabyeon/nexusjs/sse` |
+| **Distributed tracing** | v0.4 | `@kabyeon/nexusjs/tracing` |
+| **Prometheus metrics** | v0.4 | `@kabyeon/nexusjs/metrics` |
+| **WebSockets** | v0.5 | `@kabyeon/nexusjs/ws` (Bun primary, Node via `ws`) |
+| **Encryption + password hashing** | v0.5 | `@kabyeon/nexusjs/crypto` (AES-256-GCM + HMAC + scrypt) |
+| **i18n** | v0.5 | `@kabyeon/nexusjs/i18n` (Intl-based, pluralization) |
+| **gRPC** | v0.5 | `@kabyeon/nexusjs/grpc` (reflection-based, unary) |
 | **nx repl** | v0.5 | Interactive REPL |
-| **View engine extracted** | v0.6 | `@kabyeon/@kabyeon/nexusjs/view` (separate bundle) |
+| **View engine extracted** | v0.6 | `@kabyeon/nexusjs/view` (separate bundle) |
 | **Auto-load viewPaths from nx.config.ts** | v0.6 | Application.tryLoadNxConfig() |
 
 Total: **24 Tier 1+2+3 gaps closed** since v0.2.
@@ -96,7 +96,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 4.1 WebSockets (`@nestjs/websockets` equivalent)
 
-- **Status**: ✅ closed in v0.5 by `@kabyeon/@kabyeon/nexusjs/ws`.
+- **Status**: ✅ closed in v0.5 by `@kabyeon/nexusjs/ws`.
 - **What ships**: `@WebSocketGateway(path)` + `@OnWebSocketMessage()`
   decorators. `WebSocketService` for connection tracking, rooms,
   broadcast. `BunWsAdapter` (uses `hono/bun`) and `NodeWsAdapter`
@@ -105,7 +105,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 4.2 Server-Sent Events (SSE)
 
-- **Status**: ✅ closed in v0.4 by `@kabyeon/@kabyeon/nexusjs/sse` (Hono's
+- **Status**: ✅ closed in v0.4 by `@kabyeon/nexusjs/sse` (Hono's
   `streamSSE` wrapped behind a type-safe `SseStream` with
   auto-serialization, idempotent `close()`, and `Last-Event-ID`
   reconnection support). See
@@ -124,7 +124,7 @@ None. v0.3 closed every original Tier 1 gap.
 ### 4.4 gRPC (`@nestjs/microservices` partial)
 
 - **Use cases**: service-to-service high-perf RPC.
-- **Status**: ✅ shipped in v0.5 as `@kabyeon/@kabyeon/nexusjs/grpc`.
+- **Status**: ✅ shipped in v0.5 as `@kabyeon/nexusjs/grpc`.
 - **What ships**:
   - `GrpcModule.forRoot()` — loads `.proto` files at runtime via
     `@grpc/proto-loader` (reflection-based, no codegen).
@@ -140,7 +140,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 - **Use cases**: BFF patterns, mobile clients, schema-first dev.
 - **Status**: ❌ not yet shipped. Planned v0.6+.
-- **Proposed module**: `@kabyeon/@kabyeon/nexusjs/graphql`
+- **Proposed module**: `@kabyeon/nexusjs/graphql`
 - **Features**:
   - `@Resolver()`, `@Query()`, `@Mutation()` decorators
   - Code-first schema generation
@@ -154,7 +154,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 5.1 i18n (`nestjs-i18n` equivalent)
 
-- **Status**: ✅ closed in v0.5 by `@kabyeon/@kabyeon/nexusjs/i18n`. `Intl`-based
+- **Status**: ✅ closed in v0.5 by `@kabyeon/nexusjs/i18n`. `Intl`-based
   pluralization with `|` separator, locale detection middleware
   (query → cookie → Accept-Language → default), JSON catalogs,
   `formatDate` / `formatNumber` / `formatCurrency` /
@@ -164,7 +164,7 @@ None. v0.3 closed every original Tier 1 gap.
 
 - **Use cases**: canary deploys, A/B tests, gradual rollouts.
 - **Status**: ❌ not yet shipped.
-- **Proposed module**: `@kabyeon/@kabyeon/nexusjs/feature-flag`
+- **Proposed module**: `@kabyeon/nexusjs/feature-flag`
 - **Features**:
   - `@FeatureFlag('new-dashboard')` decorator
   - Backends: in-memory / LaunchDarkly / Unleash
@@ -172,14 +172,14 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 5.3 Tracing (OpenTelemetry)
 
-- **Status**: ✅ closed in v0.4 by `@kabyeon/@kabyeon/nexusjs/tracing`. Lazy
+- **Status**: ✅ closed in v0.4 by `@kabyeon/nexusjs/tracing`. Lazy
   `@opentelemetry/sdk-node` load, W3C + B3 propagation, Hono
   auto-instrumentation middleware, `@Trace()` decorator.
   See [`../../user-guide/tracing.md`](../../user-guide/tracing.md).
 
 ### 5.4 Metrics (Prometheus)
 
-- **Status**: ✅ closed in v0.4 by `@kabyeon/@kabyeon/nexusjs/metrics`.
+- **Status**: ✅ closed in v0.4 by `@kabyeon/nexusjs/metrics`.
   Counter / Gauge / Histogram / Summary, `@Counted` / `@Timed`
   decorators, `/metrics` endpoint with content negotiation
   (Prometheus 0.0.4 / OpenMetrics 1.0.0). Default Node.js process
@@ -187,18 +187,18 @@ None. v0.3 closed every original Tier 1 gap.
 
 ### 5.5 Encryption + password hashing
 
-- **Status**: ✅ closed in v0.5 by `@kabyeon/@kabyeon/nexusjs/crypto`. AES-256-GCM
+- **Status**: ✅ closed in v0.5 by `@kabyeon/nexusjs/crypto`. AES-256-GCM
   authenticated encryption, HMAC-SHA256 sign/unsign, scrypt
   password hashing (default, built-in to Node), optional
   `@node-rs/argon2` peer. `EncryptionService` is also used
-  internally by `@kabyeon/@kabyeon/nexusjs/session` and `@kabyeon/@kabyeon/nexusjs/shield` for HMAC.
+  internally by `@kabyeon/nexusjs/session` and `@kabyeon/nexusjs/shield` for HMAC.
   See [`../../user-guide/crypto.md`](../../user-guide/crypto.md).
 
 ### 5.6 Resilience: circuit breakers + retry
 
 - **Use cases**: external API resilience.
 - **Status**: ❌ not yet shipped.
-- **Proposed module**: `@kabyeon/@kabyeon/nexusjs/resilience`
+- **Proposed module**: `@kabyeon/nexusjs/resilience`
 - **Features**:
   - `@Retry({ attempts: 3, backoff: 'exponential' })` decorator
   - `@CircuitBreaker({ threshold: 0.5 })` decorator
@@ -214,7 +214,7 @@ None. v0.3 closed every original Tier 1 gap.
 ### 5.8 Feature flags (advanced)
 
 - **Status**: ❌ not yet shipped.
-- **Proposed module**: `@kabyeon/@kabyeon/nexusjs/feature-flag`
+- **Proposed module**: `@kabyeon/nexusjs/feature-flag`
 - **Features**:
   - `@FeatureFlag('new-dashboard')` decorator
   - Backends: in-memory / LaunchDarkly / Unleash
@@ -228,9 +228,9 @@ None. v0.3 closed every original Tier 1 gap.
 |------|--------|--------|--------|
 | CORS abstraction | Low | Medium | Open (Hono's `cors()` works; a thin wrapper would give consistent config) |
 | Multi-runtime parity tests | Low | High | Open (Bun / Node / Workers) |
-| `@kabyeon/@kabyeon/nexusjs/cache` Redis store | Low | High | Open (one more backend implementing the `CacheStore` interface) |
-| Multipart body parser wrapper | Low | Medium | ✅ shipped as `@kabyeon/@kabyeon/nexusjs/upload` (v0.4) |
-| `helmet()` middleware | Very low | High | Open (some pieces ship in `@kabyeon/@kabyeon/nexusjs/shield`) |
+| `@kabyeon/nexusjs/cache` Redis store | Low | High | Open (one more backend implementing the `CacheStore` interface) |
+| Multipart body parser wrapper | Low | Medium | ✅ shipped as `@kabyeon/nexusjs/upload` (v0.4) |
+| `helmet()` middleware | Very low | High | Open (some pieces ship in `@kabyeon/nexusjs/shield`) |
 
 The biggest **single** leverage remaining is **GraphQL** — it
 unlocks BFF / mobile-first patterns that are now table-stakes for
@@ -244,9 +244,9 @@ consumer apps.
 
 Shipped in v0.5–v0.6:
 
-1. **`@kabyeon/@kabyeon/nexusjs/grpc`** — server + typed client (unary, reflection-based)
+1. **`@kabyeon/nexusjs/grpc`** — server + typed client (unary, reflection-based)
 2. **`nx repl`** — interactive REPL
-3. **`@kabyeon/@kabyeon/nexusjs/view`** — view engine extracted to separate bundle
+3. **`@kabyeon/nexusjs/view`** — view engine extracted to separate bundle
 4. **Auto-load viewPaths from nx.config.ts** — no explicit call needed
 
 Still planned for v0.6+: "missing infrastructure" list. After v0.6,
