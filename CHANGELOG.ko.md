@@ -9,6 +9,34 @@ NexusJS의 모든 주요 변경 사항이 이 파일에 기록됩니다.
 
 ---
 
+## [Unreleased]
+
+### 추가
+
+- `examples/` 아래 27개 동작 예제 추가 — 모듈당 하나, 기본 MVC부터
+  gRPC / tracing / request-scope까지. 각 예제는 자체 `README.md` 를
+  가지며 `cd examples/NN-name && bun main.ts` 로 실행 가능.
+- `tests/examples/smoke.test.ts` — 각 예제를 실제 Bun 서브프로세스로
+  실행하고 "listening" 마커를 기다린 뒤 정상 종료를 확인하는 vitest
+  슈트. 55개 테스트가 약 2초 안에 실행됨.
+- `docs/user-guide/testing-examples.md` + `.ko.md` — smoke test runner
+  가이드 (예제별 tsconfig stub, 순차 포트 할당, 환경 격리).
+
+### 수정
+
+- `01-basic-mvc`에 `@Module` 래퍼가 빠져있었음 — `Application(HelloController)`
+  가 scanner에서 거부됨.
+- `02-routing-styles`가 `app.container.resolve(AdonisStyle)` 를 호출했으나
+  `app.container` 는 root 모듈 providers만 봄. `new AdonisStyle()` 로
+  변경하고 코드 주석에 차이점 설명.
+- `04-session-auth`에 `SessionModule` import와 `AuthController`의
+  `@Controller("/")` decorator가 누락.
+- `07-events`와 `08-scheduler`가 잘못된 모듈 이름을 사용
+  (`EventService.forRoot()` / `ScheduleService.forRoot()` 대신
+  실제 export인 `EventsModule` / `ScheduleModule` 으로).
+
+---
+
 ## [0.6.5] — 2026-06-22
 
 ### 추가

@@ -31,6 +31,8 @@ NexusJS로 애플리케이션을 개발하기 위한 단계별 가이드.
 | **i18n (v0.5)** | [`i18n.md`](./i18n.md) | [`i18n.ko.md`](./i18n.ko.md) |
 | Runtime & deployment | [`runtime-deployment.md`](./runtime-deployment.md) | [`runtime-deployment.ko.md`](./runtime-deployment.ko.md) |
 | **CLI · `nx` command runner** | [`cli.md`](./cli.md) | [`cli.ko.md`](./cli.ko.md) |
+| **Testing the published package** | [`testing-published-package.md`](./testing-published-package.md) | [`testing-published-package.ko.md`](./testing-published-package.ko.md) |
+| **Testing the examples (smoke tests)** | [`testing-examples.md`](./testing-examples.md) | [`testing-examples.ko.md`](./testing-examples.ko.md) |
 
 ---
 

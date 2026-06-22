@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- 27 working examples under `examples/` — one per module, from basic MVC
+  to gRPC / tracing / request-scope. Each has its own `README.md` and is
+  runnable as `cd examples/NN-name && bun main.ts`.
+- `tests/examples/smoke.test.ts` — vitest suite that spawns every
+  example as a real Bun subprocess, waits for a "listening" marker,
+  and confirms a clean exit. 55 tests run in ~2 seconds.
+- `docs/user-guide/testing-examples.md` + `.ko.md` — guide for the
+  smoke test runner (per-example tsconfig stub, sequential port
+  assignment, environment isolation).
+
+### Fixed
+
+- `01-basic-mvc` was missing a `@Module` wrapper — `Application(HelloController)`
+  was rejected by the scanner.
+- `02-routing-styles` was calling `app.container.resolve(AdonisStyle)`,
+  but `app.container` only sees root-module providers. Switched to
+  `new AdonisStyle()` and explained the difference in code comments.
+- `04-session-auth` was missing the `SessionModule` import and the
+  `@Controller("/")` decorator on `AuthController`.
+- `07-events` and `08-scheduler` were using the wrong module name
+  (`EventService.forRoot()` / `ScheduleService.forRoot()` instead of
+  the actual `EventsModule` / `ScheduleModule`).
+
+---
+
 ## [0.6.6] — 2026-06-22
 
 ### Changed
