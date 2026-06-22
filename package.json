@@ -174,7 +174,9 @@
     "nx": "bun src/cli/index.ts",
     "make:controller": "bun scripts/make-controller.ts",
     "make:service": "bun scripts/make-service.ts",
-    "make:module": "bun scripts/make-module.ts"
+    "make:module": "bun scripts/make-module.ts",
+    "examples:smoke": "vitest run tests/examples/smoke.test.ts",
+    "examples:clean": "bash scripts/clean-examples.sh"
   },
   "keywords": [
     "framework",
