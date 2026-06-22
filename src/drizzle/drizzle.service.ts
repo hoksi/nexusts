@@ -35,6 +35,49 @@ export class DrizzleService {
 
 	constructor(@Inject("DRIZZLE_CONFIG") config: DrizzleConfig) {
 		this._config = config;
+		// Auto-open synchronously so the client getter works
+		// immediately. For bun-sqlite the Database constructor
+		// is synchronous; for other drivers the first request
+		// will fire the async open() and cache the result.
+		if (config.dialect === "bun-sqlite" || (config.connection as any)?.filename) {
+			// Synchronous path for bun-sqlite.
+			this.openSync();
+		}
+	}
+
+	/** Synchronous open for bun-sqlite. */
+	private openSync(): void {
+		try {
+			const conn = this._config.connection as any;
+			const { Database } = require("bun:sqlite" as any);
+			const sqlite = new Database((conn as any)?.filename ?? (this._config as any).url ?? "app.db");
+			const { drizzle } = require("drizzle-orm/bun-sqlite" as any);
+			this._client = drizzle(sqlite, { logger: this._config.logging });
+			this._rawExecutor = {
+				query: async (sql: string, params: unknown[] = []) => {
+					const stmt = sqlite.prepare(sql);
+					const isSelect = /^\s*(select|pragma|with)\b/i.test(sql);
+					if (isSelect) {
+						const rows = stmt.all(...params);
+						return { rows: rows as any[], affectedRows: 0 };
+					}
+					const r = stmt.run(...params);
+					return {
+						rows: [],
+						affectedRows: Number(r.changes ?? 0),
+						insertId: r.lastInsertRowid as number | string,
+					};
+				},
+				placeholder: () => "?",
+			};
+			this.driver = {
+				db: this._client,
+				dialect: "bun-sqlite",
+			} as any;
+			this._opened = true;
+		} catch {
+			// Fall through — the async open() will handle it.
+		}
 	}
 
 	/** Lazy-open the connection. */

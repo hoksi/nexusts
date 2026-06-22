@@ -92,7 +92,12 @@ export const dbMigrateCommand: Command = {
 		}
 
 		if (wantStatus) {
-			return await runStatus(ctx.cwd, folder, dialect);
+			return await runStatus(
+			ctx.cwd,
+			folder,
+			dialect,
+			(ctx.config.database as any)?.url ?? "",
+		);
 		}
 
 		// Default: apply pending migrations via drizzle-kit.
@@ -129,12 +134,13 @@ async function runStatus(
 	cwd: string,
 	folder: string,
 	dialect: string,
+	configUrl: string = "",
 ): Promise<number> {
 	if (!existsSync(folder)) {
 		logger.warn(`migrations folder not found: ${folder}`);
 		return 0;
 	}
-	const url = readEnvUrl(dialect);
+	const url = readEnvUrl(dialect) ?? configUrl;
 	if (!url) {
 		logger.error(
 			`could not read ${dialect} URL from environment. Set DATABASE_URL or NEXUS_DB_URL.`,
@@ -143,7 +149,7 @@ async function runStatus(
 	}
 	const script = `
 import 'reflect-metadata';
-import { DrizzleService } from '${relativeImport(cwd, "src/drizzle/index.js")}';
+import { DrizzleService } from 'nexusjs/drizzle';
 
 const url = ${JSON.stringify(url)};
 const dialect = ${JSON.stringify(dialect)};
@@ -192,13 +198,5 @@ function readEnvUrl(dialect: string): string | null {
 	return url ?? null;
 }
 
-function relativeImport(cwd: string, target: string): string {
-	const abs = resolve(cwd, target);
-	let rel = abs;
-	if (rel.startsWith(cwd)) rel = rel.slice(cwd.length);
-	if (rel.startsWith("/")) rel = rel.slice(1);
-	if (!rel.startsWith(".")) rel = "./" + rel;
-	return rel;
-}
 
 export default dbMigrateCommand;
