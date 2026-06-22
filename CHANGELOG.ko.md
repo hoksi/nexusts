@@ -9,6 +9,34 @@ NexusJS의 모든 주요 변경 사항이 이 파일에 기록됩니다.
 
 ---
 
+## [0.6.5] — 2026-06-22
+
+### 추가
+
+- `nx db:generate` — 스키마 변경으로 마이그레이션 생성
+- 환경별 `.env` 자동 로딩 (`.env`, `.env.local`, `.env.{NODE_ENV}`)
+- 내장 `sessionMiddleware()` — `@Session()` 사용 시 커스텀 미들웨어 불필요
+- 스캐폴드가 `.env`, `.env.local`, `.gitignore` 생성
+- `main.ts`가 `PORT`를 env에서 읽도록 개선
+- 데이터베이스 설정 가이드 (`docs/user-guide/database.md` + `.ko.md`)
+
+### 수정
+
+- Drizzle 모델 import 경로: `drizzle-orm/bun-sqlite` → `drizzle-orm/sqlite-core`
+- `make:crud`가 repository 파일을 올바른 로컬 import로 생성
+- DrizzleService가 bun-sqlite에서 자동 오픈 (수동 `open()` 호출 불필요)
+- `nx db:migrate --status`가 퍼블리시된 패키지에서 정상 작동
+- 세션 문서: `c.var.session` → `c.var.nexus.user`, 미들웨어 예제 추가
+
+### 변경
+
+- 기본 View engine: `inertia` → `rendu`
+- CLI `view` 옵션에 `eta` 추가
+- 스캐폴드에서 `StaticModule.forRoot()` 제거 (`main.ts`의 `mount()`만 유지)
+- 뷰 엔진 문서 `setViewPaths('string')` API로 업데이트
+
+---
+
 ## [0.6.4] — 2026-06-22
 
 ### 변경 · 기본 View engine을 Rendu로

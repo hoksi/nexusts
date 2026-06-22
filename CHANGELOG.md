@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.5] — 2026-06-22
+
+### Added
+
+- `nx db:generate` — generate migrations from schema changes
+- Environment-aware `.env` loading (`.env`, `.env.local`, `.env.{NODE_ENV}`)
+- Built-in `sessionMiddleware()` — no custom middleware needed for `@Session()`
+- Scaffold generates `.env`, `.env.local`, `.gitignore`
+- `PORT` read from env in generated `main.ts`
+- Database setup guide (`docs/user-guide/database.md` + `.ko.md`)
+
+### Fixed
+
+- Drizzle model import path: `drizzle-orm/bun-sqlite` → `drizzle-orm/sqlite-core`
+- `make:crud` now generates repository files with correct local imports
+- drizzleservice auto-opens for bun-sqlite (no manual `open()` call)
+- `nx db:migrate --status` works from published package
+- Session docs: `c.var.session` → `c.var.nexus.user`, added middleware example
+
+### Changed
+
+- Default view engine: `inertia` → `rendu`
+- CLI `view` options include `eta`
+- Scafold no longer includes `StaticModule.forRoot()` (only `mount()` in main.ts)
+- View engine docs updated for `setViewPaths('string')` API
+
+---
+
 ## [0.6.4] — 2026-06-22
 
 ### Changed · Default view engine to Rendu
