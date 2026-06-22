@@ -82,17 +82,23 @@ v0.4 release notes.
 ## Install
 
 ```bash
-bunx create-nexus my-app   # scaffold a new project
+# Scaffold a new project (requires Node.js ≥ 22 or Bun ≥ 1.3)
+npx @kabyeon/nexusjs new my-app
 cd my-app
 bun install
 bun run dev
 ```
 
-Or install it in an existing project:
+Or initialize NexusJS in an existing project:
 
 ```bash
 bun add @kabyeon/nexusjs reflect-metadata zod hono
-# Add the modules you need:
+npx @kabyeon/nexusjs init
+```
+
+Add the modules you need:
+
+```bash
 bun add @kabyeon/nexusjs/drizzle            # the default ORM
 bun add @kabyeon/nexusjs/auth               # authentication
 bun add @kabyeon/nexusjs/queue              # background jobs
@@ -101,9 +107,7 @@ bun add @kabyeon/nexusjs/openapi            # OpenAPI docs
 ```
 
 Every module is its own bundle entry point — install only what you
-use. The CLI (`nx`) is included with `@kabyeon/nexusjs`:
-
-```
+use. The CLI (`nx`) is included with `@kabyeon/nexusjs`.
 
 ---
 
@@ -813,10 +817,10 @@ v1.0, only major bumps will.
 - **v0.2** (2026-05-15) — `@kabyeon/nexusjs/auth`, `@kabyeon/nexusjs/queue`, `@kabyeon/nexusjs/schedule`, `@kabyeon/nexusjs/events`, `@kabyeon/nexusjs/session`, full `nx` CLI.
 - **v0.3** (2026-06-21) — production basics, cross-cutting features, `@kabyeon/nexusjs/drizzle` as the default ORM.
 - **v0.4** (2026-06-22) — observability + DX: `@kabyeon/nexusjs/openapi`, `@kabyeon/nexusjs/upload`, `@kabyeon/nexusjs/sse`, `@kabyeon/nexusjs/tracing`, `@kabyeon/nexusjs/metrics`, request-scoped DI in core.
-- **v0.5** (2026-06-23) — realtime + crypto + i18n + redis: `@kabyeon/nexusjs/ws`, `@kabyeon/nexusjs/crypto`, `@kabyeon/nexusjs/i18n`, `@kabyeon/nexusjs/redis`.
-- **v0.6** (2026-06-24) — gRPC + tooling: `@kabyeon/nexusjs/grpc` (reflection-based server + typed client) and a publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten).
-- **v0.6.1** (2026-06-25) — patch: `nexus` → `@kabyeon/nexusjs` rename across all sources (191 files), `bin` field fix, `dist/src/*` flatten, docs in sync with the published name. No new features.
-- **v0.6.3** (2026-06-26) — view engine extracted to `@kabyeon/nexusjs/view`, Eta adapter, file-based view paths, auto-detection by extension.
+- **v0.5** (2026-06-22) — realtime + crypto + i18n + redis: `@kabyeon/nexusjs/ws`, `@kabyeon/nexusjs/crypto`, `@kabyeon/nexusjs/i18n`, `@kabyeon/nexusjs/redis`.
+- **v0.6** (2026-06-22) — gRPC + tooling: `@kabyeon/nexusjs/grpc` (reflection-based server + typed client) and a publishable `dist/` pipeline (`bin` field, `dist/src/*` flatten).
+- **v0.6.1** (2026-06-22) — patch: `nexus` → `@kabyeon/nexusjs` rename across all sources (191 files), `bin` field fix, `dist/src/*` flatten, docs in sync with the published name. No new features.
+- **v0.6.3** (2026-06-22) — view engine extracted to `@kabyeon/nexusjs/view`, Eta adapter, file-based view paths, auto-detection by extension.
 - **v0.6.4** (2026-06-22) — default view engine to Rendu, CLI view options include eta, Application auto-loads viewPaths from nx.config.ts, static file path fix, scaffold deduplication.
 - **v0.6.6** (2026-06-22) — env-aware config, `nx db:generate`, built-in `sessionMiddleware()`, scaffold generates `.env`/`.env.local`/`.gitignore`, drizzle model import fix, `make:crud` repository fix.
 
