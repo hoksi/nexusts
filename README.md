@@ -120,7 +120,7 @@ export const users = pgTable('users', {
 ```
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { DrizzleModule } from 'nexusjs/drizzle';
 import { ConfigModule } from 'nexusjs/config';
@@ -167,7 +167,7 @@ export class AppModule {}
 ```
 
 ```ts
-// src/app/main.ts
+// app/main.ts
 import 'reflect-metadata';
 import { Application } from 'nexusjs';
 import { AppModule } from './app.module.js';
@@ -177,7 +177,7 @@ await app.listen(3000);
 ```
 
 ```ts
-// src/app/modules/user/user.module.ts
+// app/modules/user/user.module.ts
 import { Module } from 'nexusjs';
 import { UserController } from './user.controller.js';
 import { UserService } from './user.service.js';
@@ -191,7 +191,7 @@ export class UserModule {}
 ```
 
 ```ts
-// src/app/modules/user/user.service.ts
+// app/modules/user/user.service.ts
 import { Inject, Injectable } from 'nexusjs';
 import { DrizzleService } from 'nexusjs/drizzle';
 import { eq } from 'drizzle-orm';
@@ -210,7 +210,7 @@ export class UserService {
 ```
 
 ```ts
-// src/app/modules/user/user.controller.ts
+// app/modules/user/user.controller.ts
 import { z } from 'zod';
 import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Validate } from 'nexusjs';
 import { UserService } from './user.service.js';

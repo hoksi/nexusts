@@ -23,13 +23,13 @@ await app.listen(3000);
 Run:
 
 ```bash
-bun src/app/main.ts
+bun app/main.ts
 ```
 
 Hot reload:
 
 ```bash
-bun --hot src/app/main.ts
+bun --hot app/main.ts
 ```
 
 Bun is the **fastest** path — no build step, no transpilation step.
@@ -54,7 +54,7 @@ node dist/main.js       # or bun dist/main.js
 For a build-free workflow:
 
 ```bash
-npx tsx src/app/main.ts
+npx tsx app/main.ts
 ```
 
 Both `tsx` and `ts-node` respect `tsconfig.json` and emit
@@ -167,7 +167,7 @@ For multi-target builds (Bun + Node + Workers), add entries to
 
 ```ts
 entrypoints: [
-  'src/app/main.ts',         // Bun / Node entry
+  'app/main.ts',         // Bun / Node entry
   'src/worker.ts',           // Cloudflare entry
 ],
 ```

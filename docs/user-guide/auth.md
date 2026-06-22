@@ -51,7 +51,7 @@ This generates:
 Then wire it up:
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { AuthModule } from 'nexusjs/auth';
 
@@ -75,7 +75,7 @@ export class AppModule {}
 Run:
 
 ```bash
-bun --hot src/app/main.ts
+bun --hot app/main.ts
 ```
 
 That's it. The auth endpoints are now live at `/api/auth/*`.
@@ -422,7 +422,7 @@ import { SessionModule } from 'nexusjs/session';
 })
 class AppModule {}
 
-// src/app/main.ts
+// app/main.ts
 const app = new Application(AppModule);
 const auth = app.container.resolve(AuthService);
 const sessions = app.container.resolve(SessionService);

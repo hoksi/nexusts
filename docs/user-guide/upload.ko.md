@@ -25,7 +25,7 @@ multipart 파서 없이 동작.
 ## 1. 빠른 시작
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { UploadModule } from 'nexusjs/upload';
 

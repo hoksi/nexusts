@@ -75,7 +75,7 @@ my-app/
 ├── package.json
 ├── tsconfig.json
 ├── README.md
-└── src/app/
+└── app/
     ├── main.ts
     ├── app.module.ts
     └── controllers/
@@ -129,14 +129,14 @@ export default {
     version: '1.0.0',
   },
   paths: {
-    app:         'src/app',
-    controllers: 'src/app/controllers',
-    services:    'src/app/services',
-    modules:     'src/app/modules',
-    models:      'src/app/models',
-    migrations:  'src/app/database/migrations',
-    middleware:  'src/app/middleware',
-    dto:         'src/app/dto',
+    app:         'app',
+    controllers: 'app/controllers',
+    services:    'app/services',
+    modules:     'app/modules',
+    models:      'app/models',
+    migrations:  'app/database/migrations',
+    middleware:  'app/middleware',
+    dto:         'app/dto',
   },
 };
 ```
@@ -154,11 +154,11 @@ nx make:crud Post
 `Post` 모델에 대해 CLI가 생성하는 파일:
 
 ```
-src/app/controllers/post.controller.ts
-src/app/services/post.service.ts
-src/app/models/post.model.ts
-src/app/dto/post.dto.ts
-src/app/modules/post.module.ts
+app/controllers/post.controller.ts
+app/services/post.service.ts
+app/models/post.model.ts
+app/dto/post.dto.ts
+app/modules/post.module.ts
 tests/post.test.ts
 ```
 
@@ -190,7 +190,7 @@ nx make:crud User --no-views --style functional
 JSON 전용 functional API를 생성합니다.
 
 ```ts
-// src/app/controllers/user.controller.ts (functional 스타일)
+// app/controllers/user.controller.ts (functional 스타일)
 export const userRoutes = {
   list: async (c: Context) => c.json([]),
   show: async (c: Context) => c.json({ id: c.req.param('id') }),

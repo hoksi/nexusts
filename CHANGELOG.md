@@ -46,7 +46,7 @@ Inline templates (no extension) default to Rendu.
 
 ### Fixed · `nx init` now generates `setViewPaths()` call
 
-When `nx init` scaffolds a new project, the generated `src/app/main.ts`
+When `nx init` scaffolds a new project, the generated `app/main.ts`
 now includes a `setViewPaths()` call based on the `viewPaths` setting
 in `nx.config.ts`. This closes a DX gap where users had to manually
 add the call.
@@ -80,7 +80,7 @@ Behaviour:
 - `tsconfig.json` — merge; adds `experimentalDecorators` +
   `emitDecoratorMetadata` if missing; appends `src/**/*.ts` and
   `nx.config.ts` to `include` if missing.
-- `nx.config.ts`, `src/app/*`, `README.md` — skip if file
+- `nx.config.ts`, `app/*`, `README.md` — skip if file
   exists, otherwise create.
 - `--force` flag overwrites everything.
 

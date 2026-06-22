@@ -74,7 +74,7 @@ my-app/
 └── tsconfig.json
 ```
 
-### `src/app/main.ts`
+### `app/main.ts`
 
 ```ts
 import 'reflect-metadata';
@@ -87,7 +87,7 @@ await app.listen(3000);
 console.log('[nexus] http://localhost:3000 에서 수신 대기 중');
 ```
 
-### `src/app/app.module.ts`
+### `app/app.module.ts`
 
 ```ts
 import { Module } from 'nexusjs';
@@ -99,7 +99,7 @@ import { HomeController } from './controllers/home.controller.js';
 export class AppModule {}
 ```
 
-### `src/app/controllers/home.controller.ts`
+### `app/controllers/home.controller.ts`
 
 ```ts
 import { Controller, Get } from 'nexusjs';
@@ -118,7 +118,7 @@ export class HomeController {
 ## 5. 실행
 
 ```bash
-bun src/app/main.ts
+bun app/main.ts
 ```
 
 다음과 같이 표시됩니다.
@@ -140,7 +140,7 @@ $ curl http://localhost:3000/
 ## 6. 핫 리로드
 
 ```bash
-bun --hot src/app/main.ts
+bun --hot app/main.ts
 ```
 
 Bun의 `--hot` 플래그는 파일 변경 시 프로세스를 재시작합니다.

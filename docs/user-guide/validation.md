@@ -106,7 +106,7 @@ coercion helpers:
 Define schemas in a `dto/` directory and import them:
 
 ```
-src/app/
+app/
 ├── modules/
 │   └── user/
 │       ├── user.controller.ts

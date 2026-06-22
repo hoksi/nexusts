@@ -32,7 +32,7 @@ bun add nexus bullmq ioredis
 ## 2. Quick start
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { QueueModule } from 'nexusjs/queue';
 
@@ -270,7 +270,7 @@ class EmailWorker {
 on an instance. Pair with a bootstrap helper:
 
 ```ts
-// src/app/main.ts
+// app/main.ts
 const app = new Application(AppModule);
 await app.container.resolve(QueueService).start();
 

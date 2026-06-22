@@ -100,7 +100,7 @@ export class UserController {
 `dto/` 디렉터리에 스키마를 정의하고 가져옵니다.
 
 ```
-src/app/
+app/
 ├── modules/
 │   └── user/
 │       ├── user.controller.ts

@@ -19,7 +19,7 @@ interface.
 ### Quick start
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { HealthModule } from 'nexusjs/health';
 
@@ -108,7 +108,7 @@ export const configSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
 
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { ConfigModule } from 'nexusjs/config';
 import { configSchema } from './config/schema.js';

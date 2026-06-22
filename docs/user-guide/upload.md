@@ -25,7 +25,7 @@ hook for cloud storage. No third-party multipart parser required.
 ## 1. Quick start
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { UploadModule } from 'nexusjs/upload';
 

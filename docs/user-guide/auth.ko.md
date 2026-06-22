@@ -48,7 +48,7 @@ bunx nx make:auth --provider github --jwt
 그 다음 연결:
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { AuthModule } from 'nexusjs/auth';
 
@@ -72,7 +72,7 @@ export class AppModule {}
 실행:
 
 ```bash
-bun --hot src/app/main.ts
+bun --hot app/main.ts
 ```
 
 이것으로 끝입니다. auth 엔드포인트가 `/api/auth/*`에서 살아있습니다.

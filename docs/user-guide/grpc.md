@@ -77,7 +77,7 @@ export class UserServiceImpl {
 ### 3. Register the module
 
 ```ts
-// src/app.module.ts
+// app/app.module.ts
 import { Module } from "@nexusjs/core";
 import { GrpcModule } from "@nexusjs/grpc";
 import { UserServiceImpl } from "./user/user.grpc";

@@ -21,7 +21,7 @@ own bundle entry point.
 ## 1. Quick start
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { EventsModule } from 'nexusjs/events';
 
@@ -53,7 +53,7 @@ export class EmailListeners {
 ```
 
 ```ts
-// src/app/main.ts
+// app/main.ts
 import { Application } from 'nexusjs';
 import { EventService, scanForListeners } from 'nexusjs/events';
 import { AppModule } from './app.module.js';

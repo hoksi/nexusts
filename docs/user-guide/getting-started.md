@@ -93,7 +93,7 @@ my-app/
 └── tsconfig.json
 ```
 
-### `src/app/main.ts`
+### `app/main.ts`
 
 ```ts
 import 'reflect-metadata';
@@ -106,7 +106,7 @@ await app.listen(3000);
 console.log('[nexus] Listening on http://localhost:3000');
 ```
 
-### `src/app/db/schema.ts`
+### `app/db/schema.ts`
 
 ```ts
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
@@ -132,19 +132,19 @@ export default {
   },
   inertia: { frontend: 'react', ssr: false, version: '1.0.0' },
   paths: {
-    app: 'src/app',
-    controllers: 'src/app/controllers',
-    services: 'src/app/services',
-    modules: 'src/app/modules',
-    models: 'src/app/models',
-    migrations: 'src/app/database/migrations',
-    middleware: 'src/app/middleware',
-    dto: 'src/app/dto',
+    app: 'app',
+    controllers: 'app/controllers',
+    services: 'app/services',
+    modules: 'app/modules',
+    models: 'app/models',
+    migrations: 'app/database/migrations',
+    middleware: 'app/middleware',
+    dto: 'app/dto',
   },
 };
 ```
 
-### `src/app/app.module.ts`
+### `app/app.module.ts`
 
 ```ts
 import { Module } from 'nexusjs';
@@ -167,7 +167,7 @@ import { HomeController } from './controllers/home.controller.js';
 export class AppModule {}
 ```
 
-### `src/app/controllers/home.controller.ts`
+### `app/controllers/home.controller.ts`
 
 ```ts
 import { Controller, Get, Inject } from 'nexusjs';
@@ -188,7 +188,7 @@ export class HomeController {
 ## 5. Run it
 
 ```bash
-bun src/app/main.ts
+bun app/main.ts
 ```
 
 You should see:
@@ -210,7 +210,7 @@ $ curl http://localhost:3000/
 ## 6. Hot reload
 
 ```bash
-bun --hot src/app/main.ts
+bun --hot app/main.ts
 ```
 
 Bun's `--hot` flag restarts the process on file change.

@@ -29,7 +29,7 @@ bun add nexus bullmq ioredis
 ## 2. 빠른 시작
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { QueueModule } from 'nexusjs/queue';
 
@@ -260,7 +260,7 @@ class EmailWorker {
 `invokeQueueReadyHooks(instance)`는 인스턴스의 모든 `@OnQueueReady` 메서드를 실행한다. 부트스트랩 헬퍼와 페어링:
 
 ```ts
-// src/app/main.ts
+// app/main.ts
 const app = new Application(AppModule);
 await app.container.resolve(QueueService).start();
 

@@ -70,7 +70,7 @@ export const users = pgTable('users', {
 ```
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { DrizzleModule } from 'nexusjs/drizzle';
 import { users } from './db/schema';

@@ -21,7 +21,7 @@ its own bundle entry point.
 ## 1. Quick start
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { ScheduleModule } from 'nexusjs/schedule';
 
@@ -53,7 +53,7 @@ export class CleanupTask {
 ```
 
 ```ts
-// src/app/main.ts
+// app/main.ts
 import { Application } from 'nexusjs';
 import { ScheduleService, scanForSchedulers } from 'nexusjs/schedule';
 import { AppModule } from './app.module.js';

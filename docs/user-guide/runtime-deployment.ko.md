@@ -21,13 +21,13 @@ await app.listen(3000);
 실행:
 
 ```bash
-bun src/app/main.ts
+bun app/main.ts
 ```
 
 핫 리로드:
 
 ```bash
-bun --hot src/app/main.ts
+bun --hot app/main.ts
 ```
 
 Bun은 **가장 빠른** 경로입니다 — 빌드 단계 없음, 트랜스파일 단계 없음. `bun:sqlite` 모듈도 네이티브 SQLite로 사용 가능합니다.
@@ -50,7 +50,7 @@ node dist/main.js       # 또는 bun dist/main.js
 빌드 없는 워크플로우의 경우:
 
 ```bash
-npx tsx src/app/main.ts
+npx tsx app/main.ts
 ```
 
 `tsx`와 `ts-node` 모두 `tsconfig.json`을 존중하고 `design:paramtypes`를 emit하므로 bare-type 생성자 주입이 동작합니다.
@@ -154,7 +154,7 @@ if (!result.success) {
 
 ```ts
 entrypoints: [
-  'src/app/main.ts',         // Bun / Node 진입점
+  'app/main.ts',         // Bun / Node 진입점
   'src/worker.ts',           // Cloudflare 진입점
 ],
 ```

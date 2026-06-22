@@ -17,7 +17,7 @@ startup 엔드포인트. 균일한 `HealthIndicator` 인터페이스 기반.
 ### 빠른 시작
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { HealthModule } from 'nexusjs/health';
 
@@ -106,7 +106,7 @@ export const configSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
 
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { ConfigModule } from 'nexusjs/config';
 import { configSchema } from './config/schema.js';

@@ -24,7 +24,7 @@ bun add nexusjs/openapi
 ```
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { OpenAPIModule } from 'nexusjs/openapi';
 

@@ -15,7 +15,7 @@ session 모듈은 **`nexusjs/core`와 분리**되어 있고, **`nexusjs/auth`와
 ## 1. 빠른 시작
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { SessionModule } from 'nexusjs/session';
 
@@ -283,7 +283,7 @@ const AppSessionModule = SessionModule.forRoot({
 })
 class AppModule {}
 
-// src/app/main.ts
+// app/main.ts
 const app = new Application(AppModule);
 const auth = app.container.resolve(AuthService);
 const sessions = app.container.resolve(SessionService);

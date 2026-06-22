@@ -11,7 +11,7 @@ and resolved automatically at construction time.
 A service is just a class with `@Injectable()`:
 
 ```ts
-// src/app/services/user.service.ts
+// app/services/user.service.ts
 import { Inject, Injectable } from 'nexusjs';
 import type { UserRepository } from '../repositories/user.repository.js';
 
@@ -335,7 +335,7 @@ class AppModule {
 Set `NEXUS_DEBUG=1` to print the dependency graph at boot:
 
 ```bash
-NEXUS_DEBUG=1 bun src/app/main.ts
+NEXUS_DEBUG=1 bun app/main.ts
 ```
 
 Output:

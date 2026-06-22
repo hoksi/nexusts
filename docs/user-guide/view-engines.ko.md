@@ -294,9 +294,9 @@ async about() {
 부트 시 한 번 설정:
 
 ```ts
-// src/app/main.ts
+// app/main.ts
 import { setViewPaths } from 'nexusjs/view';
-setViewPaths(['views', 'src/app/views']);
+setViewPaths(['views', 'app/views']);
 ```
 
 또는 `nx.config.ts`에서:
@@ -304,7 +304,7 @@ setViewPaths(['views', 'src/app/views']);
 ```ts
 export default {
   view: 'rendu',
-  viewPaths: ['views', 'src/app/views'],
+  viewPaths: ['views', 'app/views'],
   // ...
 };
 ```

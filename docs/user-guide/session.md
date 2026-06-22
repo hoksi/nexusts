@@ -19,7 +19,7 @@ from `nexusjs/auth`** (better-auth manages its own sessions), but
 ## 1. Quick start
 
 ```ts
-// src/app/app.module.ts
+// app/app.module.ts
 import { Module } from 'nexusjs';
 import { SessionModule } from 'nexusjs/session';
 
@@ -303,7 +303,7 @@ const AppSessionModule = SessionModule.forRoot({
 })
 class AppModule {}
 
-// src/app/main.ts
+// app/main.ts
 const app = new Application(AppModule);
 const auth = app.container.resolve(AuthService);
 const sessions = app.container.resolve(SessionService);

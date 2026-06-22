@@ -78,7 +78,7 @@ export class UserServiceImpl {
 ### 3. 모듈 등록
 
 ```ts
-// src/app.module.ts
+// app/app.module.ts
 import { Module } from "nexusjs";
 import { GrpcModule } from "nexusjs/grpc";
 import { UserServiceImpl } from "./user/user.grpc";
