@@ -13,6 +13,7 @@ import { Hono } from "hono";
 import type { ApplicationContainer } from "../di/container.js";
 import { errorHandler, logger } from "./middleware.js";
 import { createRouter, type NexusRouter } from "./router.js";
+import { requestScopeMiddleware } from "../di/request-middleware.js";
 
 export interface NexusServerOptions {
 	/** Enable request logging (default: true). */
@@ -53,7 +54,6 @@ export class NexusServer {
 		// Request-scope middleware MUST come first so that everything
 		// downstream (logging, error handler, controllers) can read
 		// from the request scope.
-		const { requestScopeMiddleware } = require("../di/request-middleware.js") as typeof import("../di/request-middleware.js");
 		this.app.use("*", requestScopeMiddleware(this.container as any));
 		if (this.options.errorHandler) this.app.use("*", errorHandler());
 		if (this.options.logging) this.app.use("*", logger());
