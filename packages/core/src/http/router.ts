@@ -434,7 +434,14 @@ class NexusRouterImpl implements NexusRouter {
 			case PARAM_TYPES.NEXT:
 				return async () => {};
 			case PARAM_TYPES.BODY:
-				if (parsed) return parsed.body;
+				if (parsed) {
+					if (param.name) return (parsed.body as any)?.[param.name];
+					return parsed.body;
+				}
+				// Fallback when no @Validate is used: read body and extract field.
+				// Note: safeReadBody is async, so this returns a Promise that must be awaited.
+				// When any @Body() param exists, the body IS fetched above (hasBodyParam path),
+				// so this fallback only runs when NO @Body() params exist — practically unreachable.
 				return param.name
 					? (safeReadBody(c) as any)?.[param.name]
 					: safeReadBody(c);

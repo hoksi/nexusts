@@ -35,6 +35,20 @@ export interface ApplicationOptions extends NexusServerOptions {
 	viewAdapter?: ViewAdapter;
 	/** Inertia configuration. If supplied, `app.inertia` is initialized. */
 	inertia?: InertiaConfig;
+	/**
+	 * Global middleware handlers to register BEFORE controller routes.
+	 * Use this instead of `app.server.app.use()` because Hono processes
+	 * middleware in registration order — middleware added after routes
+	 * (via the `server.app` reference) will not execute before handlers.
+	 *
+	 * @example
+	 * ```ts
+	 * const app = new Application(AppModule, {
+	 *   middleware: [authMiddleware, logger],
+	 * });
+	 * ```
+	 */
+	middleware?: Array<(c: any, next: any) => any | Promise<any>>;
 }
 
 export class Application {
@@ -62,6 +76,15 @@ export class Application {
 
 		// Create the HTTP server around the same container.
 		this.server = new NexusServer(this.container, options);
+
+		// Register user-defined global middleware BEFORE controller routes
+		// so they execute before route handlers (Hono processes middleware
+		// in registration order — middleware added after routes won't run).
+		if (options.middleware) {
+			for (const mw of options.middleware) {
+				this.server.app.use("*", mw);
+			}
+		}
 
 		// Register all controllers from every scanned module.
 		for (const m of modules) {
@@ -163,16 +186,15 @@ export class Application {
 	}
 
 	/**
-	 * Bootstrap the application: run lifecycle hooks, then start the server.
+	 * Bootstrap the application: run lifecycle hooks.
 	 *
 	 * Flow:
 	 *   1. Call onModuleInit() on all providers that implement it.
 	 *   2. Call onApplicationInit() on all providers that implement it.
-	 *   3. Start the HTTP server.
 	 *
-	 * Returns the server handle (Bun.Server / Node http.Server / fetch handler).
+	 * Does NOT start the HTTP server — use listen() or server.start() for that.
 	 */
-	async bootstrap(): Promise<any> {
+	async bootstrap(): Promise<void> {
 		if (this.started) return;
 
 		// Phase 1: onModuleInit for all providers in the module tree.
@@ -185,18 +207,12 @@ export class Application {
 			await callOnApplicationInit(instance);
 		});
 
-		// Phase 3: start the HTTP server.
-		const server = await this.server.start();
 		this.started = true;
-
-		// Register graceful shutdown handlers.
 		this.registerShutdownHandlers();
-
-		return server;
 	}
 
 	/**
-	 * Convenience: bootstrap + listen (if port specified).
+	 * Bootstrap + start the HTTP server.
 	 */
 	async listen(port?: number): Promise<any> {
 		if (port) {
