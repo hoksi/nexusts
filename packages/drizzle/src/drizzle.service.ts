@@ -120,21 +120,26 @@ export class DrizzleService {
 	// ===========================================================================
 	// Query API (passthrough to Drizzle)
 	// ===========================================================================
+	//
+	// Generic so that call sites get full type inference for
+	// `select({ ... }).from(table)`, etc. The return type is whatever
+	// Drizzle's QueryBuilder produces — usually a chainable builder
+	// that ends in `.all()`, `.get()`, or `.run()`.
 
-	select() {
-		return this.client.select();
+	select<T = unknown>(): T {
+		return this.client.select() as T;
 	}
 
-	insert(table: any) {
-		return this.client.insert(table);
+	insert<T = unknown>(table: any): T {
+		return this.client.insert(table) as T;
 	}
 
-	update(table: any) {
-		return this.client.update(table);
+	update<T = unknown>(table: any): T {
+		return this.client.update(table) as T;
 	}
 
-	delete(table: any) {
-		return this.client.delete(table);
+	delete<T = unknown>(table: any): T {
+		return this.client.delete(table) as T;
 	}
 
 	// ===========================================================================

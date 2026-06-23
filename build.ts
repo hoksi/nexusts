@@ -13,6 +13,7 @@
  */
 import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 
 const PACKAGES_DIR = "packages";
 const ENTRY = "src/index.ts";
@@ -68,6 +69,60 @@ for (const pkg of packageDirs) {
 }
 
 console.log(`\n[build] done: ${totalOutputs} runtime files written`);
+
+// Phase 2: Generate .d.ts files for consumers.
+//
+// `Bun.build` does not emit TypeScript declaration files, so we
+// invoke `tsc --emitDeclarationOnly` for each package. This is a
+// best-effort step: if a package's types do not resolve cleanly
+// across the workspace (a known issue with the monorepo layout),
+// we log a warning and keep the runtime .js — the build is still
+// usable from a JavaScript consumer or via `// @ts-ignore`.
+console.log("[build] generating type declarations via tsc…");
+for (const pkg of packageDirs) {
+	const srcDir = join(PACKAGES_DIR, pkg, "src");
+	const outDir = join(PACKAGES_DIR, pkg, "dist");
+	const entry = join(srcDir, "index.ts");
+	if (!existsSync(entry)) continue;
+
+	const tsc = spawnSync(
+		"bun",
+		[
+			"x",
+			"tsc",
+			"--emitDeclarationOnly",
+			"--declaration",
+			"--target",
+			"ES2022",
+			"--module",
+			"ESNext",
+			"--moduleResolution",
+			"Bundler",
+			"--experimentalDecorators",
+			"--emitDecoratorMetadata",
+			"--useDefineForClassFields",
+			"false",
+			"--skipLibCheck",
+			"--noEmit",
+			"false",
+			"--rootDir",
+			srcDir,
+			"--outDir",
+			outDir,
+			entry,
+		],
+		{ stdio: "pipe" },
+	);
+	if (tsc.status === 0) {
+		console.log(`[build] ✓ @nexusts/${pkg} (.d.ts)`);
+	} else {
+		const stderr = (tsc.stderr ?? Buffer.from("")).toString();
+		// Only log first 3 lines of error to avoid spam
+		const firstLines = stderr.split("\n").slice(0, 3).join("\n");
+		console.warn(`[build] ⚠ @nexusts/${pkg} .d.ts failed: ${firstLines}`);
+	}
+}
+
 if (failed.length > 0) {
 	console.error(`[build] FAILED for ${failed.length} packages: ${failed.join(", ")}`);
 	process.exit(1);

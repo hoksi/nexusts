@@ -221,3 +221,62 @@ async function loadArgon2(): Promise<Argon2Module> {
 		);
 	}
 }
+
+// =====================================================================
+// Standalone helpers
+// =====================================================================
+//
+// These mirror the `HashService` API but do not require instantiating
+// the class. Useful for one-off hashing tasks (e.g. CLI scripts,
+// database seeders, smoke tests) where pulling the full DI container
+// is overkill.
+//
+// For production code with a controller or service, prefer the
+// `HashService` class via DI so the algorithm + cost parameters are
+// configured once at the module level.
+
+/**
+ * Standalone `hash` function — uses scrypt by default, argon2 if
+ * `@node-rs/argon2` is installed.
+ *
+ * @param password - The plaintext password to hash.
+ * @param options - Optional overrides for algorithm + cost params.
+ * @returns The encoded hash string (PHC-style).
+ */
+export async function hash(
+	password: string,
+	options: HashOptions = {},
+): Promise<string> {
+	const svc = new HashService();
+	return svc.hash(password, options);
+}
+
+/**
+ * Standalone `verify` function — verifies a plaintext password
+ * against a previously encoded hash.
+ */
+export async function verify(
+	hashed: HashedPassword,
+	password: string,
+): Promise<boolean> {
+	const svc = new HashService();
+	return svc.verify(hashed, password);
+}
+
+/**
+ * Convenience: scrypt-specific hash. Useful when you want to
+ * guarantee the algorithm regardless of installed peer deps.
+ */
+export async function scryptHash(password: string): Promise<string> {
+	return hash(password, { algorithm: "scrypt" });
+}
+
+/**
+ * Convenience: scrypt-specific verify.
+ */
+export async function scryptVerify(
+	hashed: string,
+	password: string,
+): Promise<boolean> {
+	return verify(hashed, password);
+}
