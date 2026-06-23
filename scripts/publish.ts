@@ -84,6 +84,21 @@ for (const pkg of publishOrder) {
 	}
 	const pkgJson = JSON.parse(readFileSync(pkgJsonPath, "utf8"));
 
+	// Skip if this exact version is already published on the registry.
+	// This makes the script idempotent — re-running a workflow after a
+	// partial publish only retries the missing packages.
+	const check = spawnSync(
+		"npm",
+		["view", `${pkgJson.name}@${pkgJson.version}`, "version"],
+		{ stdio: "pipe" },
+	);
+	if (check.status === 0) {
+		console.log(
+			`[publish] ↷ ${pkgJson.name}@${pkgJson.version} already published; skipping`,
+		);
+		continue;
+	}
+
 	console.log(`\n[publish] → ${pkgJson.name}@${pkgJson.version}`);
 
 	// Resolve npm auth token from the standard sources. GitHub Actions
@@ -103,15 +118,43 @@ for (const pkg of publishOrder) {
 	const npmrcPath = join(PACKAGES_DIR, pkg, ".npmrc");
 	writeFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${npmToken}\n`);
 
-	const result = spawnSync(
-		"npm",
-		["publish", "--access", "public", "--registry=https://registry.npmjs.org/"],
-		{
-			cwd: join(PACKAGES_DIR, pkg),
-			stdio: "inherit",
-			env: { ...process.env, NODE_AUTH_TOKEN: npmToken },
-		},
-	);
+	// Retry on 429 (Too Many Requests) with exponential backoff. The npm
+	// public registry rate-limits burst publishes; if we hit it, sleep
+	// and retry. Maximum 5 attempts per package, ~32s ceiling between
+	// attempts.
+	const maxAttempts = 5;
+	let attempt = 0;
+	let result: ReturnType<typeof spawnSync> | null = null;
+	while (attempt < maxAttempts) {
+		attempt++;
+		result = spawnSync(
+			"npm",
+			["publish", "--access", "public", "--registry=https://registry.npmjs.org/"],
+			{
+				cwd: join(PACKAGES_DIR, pkg),
+				stdio: "inherit",
+				env: { ...process.env, NODE_AUTH_TOKEN: npmToken },
+			},
+		);
+		if (result.status === 0) break;
+		const stderr = (result.stderr ?? Buffer.from("")).toString();
+		const isRateLimit =
+			result.status === 1 && /429|Too Many Requests|rate limit/i.test(stderr);
+		if (!isRateLimit) {
+			// Non-rate-limit error: bail out, no point retrying.
+			break;
+		}
+		// Exponential backoff: 5s, 10s, 20s, 40s
+		const sleepMs = Math.min(5_000 * 2 ** (attempt - 1), 60_000);
+		console.warn(
+			`[publish] ⚠ rate-limited (attempt ${attempt}/${maxAttempts}); sleeping ${sleepMs / 1000}s…`,
+		);
+		const start = Date.now();
+		while (Date.now() - start < sleepMs) {
+			// Keep the loop alive
+			await new Promise((r) => setTimeout(r, 1000));
+		}
+	}
 
 	// Clean up the temporary .npmrc
 	try {
@@ -120,12 +163,20 @@ for (const pkg of publishOrder) {
 		/* ignore */
 	}
 
-	if (result.status === 0) {
+	if (result && result.status === 0) {
 		published++;
 		console.log(`[publish] ✓ ${pkgJson.name}@${pkgJson.version}`);
 	} else {
 		failed++;
 		console.error(`[publish] ✖ ${pkgJson.name}@${pkgJson.version} failed`);
+	}
+
+	// Always wait between publishes to be a good citizen of the npm
+	// registry and avoid 429s on subsequent packages.
+	if (pkg !== publishOrder[publishOrder.length - 1]) {
+		const between = 3_000;
+		console.log(`[publish] waiting ${between / 1000}s before next package…`);
+		await new Promise((r) => setTimeout(r, between));
 	}
 }
 
