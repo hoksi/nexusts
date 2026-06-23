@@ -27,6 +27,7 @@ provided in `*.ko.md` files.
 | **User guide** (사용자 메뉴얼) | [`docs/user-guide/`](./user-guide/) | [`docs/user-guide/`](./user-guide/) (`*.ko.md`) |
 | **Analysis** (분석 · 비교) | [`docs/analysis/`](./analysis/) | [`docs/analysis/`](./analysis/) (`*.ko.md`) |
 | **API reference** (API 레퍼런스) | [`api-reference.md`](./api-reference.md) | [`api-reference.ko.md`](./api-reference.ko.md) |
+| **Publishing & deployment** (npm 배포 가이드) | [`publishing/`](./publishing/) | _(영어만 제공)_ |
 
 ---
 
@@ -53,17 +54,17 @@ Every module is its own bundle entry point. Install only what you use.
 | **Drive** | `@nexusts/drive` | `@nexusts/drive` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
 | **Mail** | `@nexusts/mail` | `@nexusts/mail` | [`user-guide/cross-cutting-features.md`](./user-guide/cross-cutting-features.md) |
 | **Drizzle** | `@nexusts/drizzle` | `@nexusts/drizzle` | [`user-guide/drizzle.md`](./user-guide/drizzle.md) |
-| **OpenAPI** *(v0.4)* | `@nexusts/openapi` | `@nexusts/openapi` | [`user-guide/openapi.md`](./user-guide/openapi.md) |
-| **Upload** *(v0.4)* | `@nexusts/upload` | `@nexusts/upload` | [`user-guide/upload.md`](./user-guide/upload.md) |
-| **SSE** *(v0.4)* | `@nexusts/sse` | `@nexusts/sse` | [`user-guide/sse.md`](./user-guide/sse.md) |
-| **Tracing** *(v0.4)* | `@nexusts/tracing` | `@nexusts/tracing` | [`user-guide/tracing.md`](./user-guide/tracing.md) |
-| **Metrics** *(v0.4)* | `@nexusts/metrics` | `@nexusts/metrics` | [`user-guide/metrics.md`](./user-guide/metrics.md) |
-| **Request-scoped DI** *(v0.4)* | `@nexusts/core` (core) | `@nexusts/core` | [`user-guide/request-scope.md`](./user-guide/request-scope.md) |
-| **WebSockets** *(v0.5)* | `@nexusts/ws` | `@nexusts/ws` | [`user-guide/ws.md`](./user-guide/ws.md) |
-| **Crypto** *(v0.5)* | `@nexusts/crypto` | `@nexusts/crypto` | [`user-guide/crypto.md`](./user-guide/crypto.md) |
-| **i18n** *(v0.5)* | `@nexusts/i18n` | `@nexusts/i18n` | [`user-guide/i18n.md`](./user-guide/i18n.md) |
-| **Redis client** *(v0.5)* | `@nexusts/redis` | `@nexusts/redis` | [`user-guide/redis.md`](./user-guide/redis.md) |
-| **gRPC** *(v0.6)* | `@nexusts/grpc` | `@nexusts/grpc` | [`user-guide/grpc.md`](./user-guide/grpc.md) |
+| **OpenAPI** _(v0.4)_ | `@nexusts/openapi` | `@nexusts/openapi` | [`user-guide/openapi.md`](./user-guide/openapi.md) |
+| **Upload** _(v0.4)_ | `@nexusts/upload` | `@nexusts/upload` | [`user-guide/upload.md`](./user-guide/upload.md) |
+| **SSE** _(v0.4)_ | `@nexusts/sse` | `@nexusts/sse` | [`user-guide/sse.md`](./user-guide/sse.md) |
+| **Tracing** _(v0.4)_ | `@nexusts/tracing` | `@nexusts/tracing` | [`user-guide/tracing.md`](./user-guide/tracing.md) |
+| **Metrics** _(v0.4)_ | `@nexusts/metrics` | `@nexusts/metrics` | [`user-guide/metrics.md`](./user-guide/metrics.md) |
+| **Request-scoped DI** _(v0.4)_ | `@nexusts/core` (core) | `@nexusts/core` | [`user-guide/request-scope.md`](./user-guide/request-scope.md) |
+| **WebSockets** _(v0.5)_ | `@nexusts/ws` | `@nexusts/ws` | [`user-guide/ws.md`](./user-guide/ws.md) |
+| **Crypto** _(v0.5)_ | `@nexusts/crypto` | `@nexusts/crypto` | [`user-guide/crypto.md`](./user-guide/crypto.md) |
+| **i18n** _(v0.5)_ | `@nexusts/i18n` | `@nexusts/i18n` | [`user-guide/i18n.md`](./user-guide/i18n.md) |
+| **Redis client** _(v0.5)_ | `@nexusts/redis` | `@nexusts/redis` | [`user-guide/redis.md`](./user-guide/redis.md) |
+| **gRPC** _(v0.6)_ | `@nexusts/grpc` | `@nexusts/grpc` | [`user-guide/grpc.md`](./user-guide/grpc.md) |
 
 ---
 
@@ -90,18 +91,18 @@ Step-by-step guides for building applications.
 | **Drizzle ORM (default ORM)** | [`user-guide/drizzle.md`](./user-guide/drizzle.md) | [`user-guide/drizzle.ko.md`](./user-guide/drizzle.ko.md) |
 | Runtime & deployment | [`user-guide/runtime-deployment.md`](./user-guide/runtime-deployment.md) | [`user-guide/runtime-deployment.ko.md`](./user-guide/runtime-deployment.ko.md) |
 | **CLI · `nx` command runner** | [`user-guide/cli.md`](./user-guide/cli.md) | [`user-guide/cli.ko.md`](./user-guide/cli.ko.md) |
-| **OpenAPI** *(v0.4)* | [`user-guide/openapi.md`](./user-guide/openapi.md) | [`user-guide/openapi.ko.md`](./user-guide/openapi.ko.md) |
-| **Upload** *(v0.4)* | [`user-guide/upload.md`](./user-guide/upload.md) | [`user-guide/upload.ko.md`](./user-guide/upload.ko.md) |
-| **SSE** *(v0.4)* | [`user-guide/sse.md`](./user-guide/sse.md) | [`user-guide/sse.ko.md`](./user-guide/sse.ko.md) |
-| **Tracing** *(v0.4)* | [`user-guide/tracing.md`](./user-guide/tracing.md) | [`user-guide/tracing.ko.md`](./user-guide/tracing.ko.md) |
-| **Metrics** *(v0.4)* | [`user-guide/metrics.md`](./user-guide/metrics.md) | [`user-guide/metrics.ko.md`](./user-guide/metrics.ko.md) |
-| **Request-scoped DI** *(v0.4)* | [`user-guide/request-scope.md`](./user-guide/request-scope.md) | [`user-guide/request-scope.ko.md`](./user-guide/request-scope.ko.md) |
-| **WebSockets** *(v0.5)* | [`user-guide/ws.md`](./user-guide/ws.md) | [`user-guide/ws.ko.md`](./user-guide/ws.ko.md) |
-| **Crypto** *(v0.5)* | [`user-guide/crypto.md`](./user-guide/crypto.md) | [`user-guide/crypto.ko.md`](./user-guide/crypto.ko.md) |
-| **i18n** *(v0.5)* | [`user-guide/i18n.md`](./user-guide/i18n.md) | [`user-guide/i18n.ko.md`](./user-guide/i18n.ko.md) |
-| **Redis client** *(v0.5)* | [`user-guide/redis.md`](./user-guide/redis.md) | [`user-guide/redis.ko.md`](./user-guide/redis.ko.md) |
-| **gRPC** *(v0.6)* | [`user-guide/grpc.md`](./user-guide/grpc.md) | [`user-guide/grpc.ko.md`](./user-guide/grpc.ko.md) |
-| **Testing the published package** *(dist/ 검증)* | [`user-guide/testing-published-package.md`](./user-guide/testing-published-package.md) | [`user-guide/testing-published-package.ko.md`](./user-guide/testing-published-package.ko.md) |
+| **OpenAPI** _(v0.4)_ | [`user-guide/openapi.md`](./user-guide/openapi.md) | [`user-guide/openapi.ko.md`](./user-guide/openapi.ko.md) |
+| **Upload** _(v0.4)_ | [`user-guide/upload.md`](./user-guide/upload.md) | [`user-guide/upload.ko.md`](./user-guide/upload.ko.md) |
+| **SSE** _(v0.4)_ | [`user-guide/sse.md`](./user-guide/sse.md) | [`user-guide/sse.ko.md`](./user-guide/sse.ko.md) |
+| **Tracing** _(v0.4)_ | [`user-guide/tracing.md`](./user-guide/tracing.md) | [`user-guide/tracing.ko.md`](./user-guide/tracing.ko.md) |
+| **Metrics** _(v0.4)_ | [`user-guide/metrics.md`](./user-guide/metrics.md) | [`user-guide/metrics.ko.md`](./user-guide/metrics.ko.md) |
+| **Request-scoped DI** _(v0.4)_ | [`user-guide/request-scope.md`](./user-guide/request-scope.md) | [`user-guide/request-scope.ko.md`](./user-guide/request-scope.ko.md) |
+| **WebSockets** _(v0.5)_ | [`user-guide/ws.md`](./user-guide/ws.md) | [`user-guide/ws.ko.md`](./user-guide/ws.ko.md) |
+| **Crypto** _(v0.5)_ | [`user-guide/crypto.md`](./user-guide/crypto.md) | [`user-guide/crypto.ko.md`](./user-guide/crypto.ko.md) |
+| **i18n** _(v0.5)_ | [`user-guide/i18n.md`](./user-guide/i18n.md) | [`user-guide/i18n.ko.md`](./user-guide/i18n.ko.md) |
+| **Redis client** _(v0.5)_ | [`user-guide/redis.md`](./user-guide/redis.md) | [`user-guide/redis.ko.md`](./user-guide/redis.ko.md) |
+| **gRPC** _(v0.6)_ | [`user-guide/grpc.md`](./user-guide/grpc.md) | [`user-guide/grpc.ko.md`](./user-guide/grpc.ko.md) |
+| **Testing the published package** _(dist/ 검증)_ | [`user-guide/testing-published-package.md`](./user-guide/testing-published-package.md) | [`user-guide/testing-published-package.ko.md`](./user-guide/testing-published-package.ko.md) |
 
 ---
 
@@ -128,6 +129,27 @@ Architectural deep-dives for contributors and advanced users.
 | ---------- | ------- | ------ |
 | NestJS feature gap | [`analysis/nestjs-comparison.md`](./analysis/nestjs-comparison.md) | [`analysis/nestjs-comparison.ko.md`](./analysis/nestjs-comparison.ko.md) |
 | AdonisJS feature gap | [`analysis/adonisjs-comparison.md`](./analysis/adonisjs-comparison.md) | [`analysis/adonisjs-comparison.ko.md`](./analysis/adonisjs-comparison.ko.md) |
+
+---
+
+## Publishing & deployment · npm 배포
+
+How the 30 NexusTS packages plus the `create-nexusts` scaffolder
+get published to the npm registry.
+
+> **Note:** currently English only. The
+> [first-time setup](./publishing/first-time-setup.md) and
+> [npm rate limit](./publishing/npm-rate-limit.md) docs cover the
+> details of the v0.7.0 release incident.
+
+| Document | What it covers |
+| -------- | --------------- |
+| [Publishing overview](./publishing/README.md) | Index of the publishing docs, plus a TL;DR for maintainers |
+| [GitHub Actions workflow](./publishing/workflow.md) | How the auto-publish workflow runs, its modes (`publish` / `publish-batch` / `dry-run` / `build`) |
+| [Local publish](./publishing/local-publish.md) | How to run `bun run publish:all` from your machine, including the npm 11 device flow |
+| [npm rate limit](./publishing/npm-rate-limit.md) | The 25/24h per-user publish limit we hit on the v0.7.0 release, and how to recover |
+| [Troubleshooting](./publishing/troubleshooting.md) | Common publish failures (E429, EOTP, E401, E404) and fixes |
+| [First-time setup](./publishing/first-time-setup.md) | One-time setup for a new maintainer: org, 2FA, Automation token, GitHub secret |
 
 ---
 
