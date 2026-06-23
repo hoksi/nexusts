@@ -118,11 +118,12 @@ for (const pkg of publishOrder) {
 	const npmrcPath = join(PACKAGES_DIR, pkg, ".npmrc");
 	writeFileSync(npmrcPath, `//registry.npmjs.org/:_authToken=${npmToken}\n`);
 
-	// Retry on 429 (Too Many Requests) with exponential backoff. The npm
-	// public registry rate-limits burst publishes; if we hit it, sleep
-	// and retry. Maximum 5 attempts per package, ~32s ceiling between
-	// attempts.
-	const maxAttempts = 5;
+	// Retry on 429 (Too Many Requests) with longer backoff. The npm
+	// public registry rate-limits burst publishes — once you hit 429,
+	// you need to wait 1-2 minutes before the next attempt has any
+	// chance of succeeding. We use a 3-attempt strategy with 60s/120s
+	// waits to stay under the workflow's 60-minute timeout.
+	const maxAttempts = 3;
 	let attempt = 0;
 	let result: ReturnType<typeof spawnSync> | null = null;
 	while (attempt < maxAttempts) {
@@ -139,21 +140,19 @@ for (const pkg of publishOrder) {
 		if (result.status === 0) break;
 		const stderr = (result.stderr ?? Buffer.from("")).toString();
 		const isRateLimit =
-			result.status === 1 && /429|Too Many Requests|rate limit/i.test(stderr);
+			/429|Too Many Requests|rate limit/i.test(stderr);
 		if (!isRateLimit) {
 			// Non-rate-limit error: bail out, no point retrying.
 			break;
 		}
-		// Exponential backoff: 5s, 10s, 20s, 40s
-		const sleepMs = Math.min(5_000 * 2 ** (attempt - 1), 60_000);
+		// Long backoff: 60s, 120s — npm rate limits are sticky and need
+		// a real wait before they reset. Going any shorter just wastes
+		// attempts.
+		const sleepSec = attempt === 1 ? 60 : 120;
 		console.warn(
-			`[publish] ⚠ rate-limited (attempt ${attempt}/${maxAttempts}); sleeping ${sleepMs / 1000}s…`,
+			`[publish] ⚠ rate-limited (attempt ${attempt}/${maxAttempts}); sleeping ${sleepSec}s before retry…`,
 		);
-		const start = Date.now();
-		while (Date.now() - start < sleepMs) {
-			// Keep the loop alive
-			await new Promise((r) => setTimeout(r, 1000));
-		}
+		await new Promise((r) => setTimeout(r, sleepSec * 1000));
 	}
 
 	// Clean up the temporary .npmrc
