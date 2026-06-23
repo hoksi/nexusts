@@ -21,6 +21,14 @@ import { RenduAdapter } from "@nexusts/view";
 import { setViewPaths as setViewPathsModule } from "@nexusts/view";
 import type { Type } from "./di/tokens.js";
 import { Inertia, type InertiaConfig } from "@nexusts/view";
+import {
+	callOnModuleInit,
+	callOnApplicationInit,
+	callOnModuleDestroy,
+	callBeforeApplicationDestroy,
+	callOnApplicationDestroy,
+} from "./lifecycle/index.js";
+import { DIContainer } from "./di/container.js";
 
 export interface ApplicationOptions extends NexusServerOptions {
 	/** Default view adapter. Defaults to Rendu. */
@@ -35,12 +43,22 @@ export class Application {
 	/** Inertia adapter (or `null` if not configured). Always defined after ctor. */
 	readonly inertia: Inertia | null;
 	private viewAdapter: ViewAdapter;
+	/** All scanned modules (stored for lifecycle hook iteration). */
+	private modules: { controllers: Type[]; providers: any[]; container: DIContainer }[] = [];
+	/** The root module scan result. */
+	private rootModuleResult: { controllers: Type[]; container: DIContainer } | null = null;
+	/** Track whether the app has started (for graceful shutdown). */
+	private started = false;
 
 	constructor(rootModule: Type<any>, options: ApplicationOptions = {}) {
 		// Build the DI container and scan the module tree.
 		this.container = new ApplicationContainer();
 		const scanner = new ModuleScanner(this.container);
 		const { root, modules } = scanner.scan(rootModule);
+
+		// Store scan results for lifecycle hook iteration.
+		this.rootModuleResult = root;
+		this.modules = modules;
 
 		// Create the HTTP server around the same container.
 		this.server = new NexusServer(this.container, options);
@@ -145,24 +163,143 @@ export class Application {
 	}
 
 	/**
-	 * Convenience: start the server using the auto-detected runtime adapter.
+	 * Bootstrap the application: run lifecycle hooks, then start the server.
+	 *
+	 * Flow:
+	 *   1. Call onModuleInit() on all providers that implement it.
+	 *   2. Call onApplicationInit() on all providers that implement it.
+	 *   3. Start the HTTP server.
+	 *
+	 * Returns the server handle (Bun.Server / Node http.Server / fetch handler).
+	 */
+	async bootstrap(): Promise<any> {
+		if (this.started) return;
+
+		// Phase 1: onModuleInit for all providers in the module tree.
+		await this.callLifecycleOnAll(async (instance) => {
+			await callOnModuleInit(instance);
+		});
+
+		// Phase 2: onApplicationInit for all providers.
+		await this.callLifecycleOnAll(async (instance) => {
+			await callOnApplicationInit(instance);
+		});
+
+		// Phase 3: start the HTTP server.
+		const server = await this.server.start();
+		this.started = true;
+
+		// Register graceful shutdown handlers.
+		this.registerShutdownHandlers();
+
+		return server;
+	}
+
+	/**
+	 * Convenience: bootstrap + listen (if port specified).
 	 */
 	async listen(port?: number): Promise<any> {
 		if (port) {
 			this.server.setPort(port);
 		}
+		await this.bootstrap();
 		return this.server.start();
 	}
 
 	/**
+	 * Graceful shutdown. Calls lifecycle hooks in reverse order.
+	 */
+	async shutdown(signal?: string): Promise<void> {
+		if (!this.started) return;
+
+		// Phase 1: beforeApplicationDestroy (pre-shutdown notifications).
+		await this.callLifecycleOnAll(async (instance) => {
+			await callBeforeApplicationDestroy(instance, signal);
+		});
+
+		// Phase 2: onModuleDestroy.
+		await this.callLifecycleOnAll(async (instance) => {
+			await callOnModuleDestroy(instance);
+		});
+
+		// Phase 3: onApplicationDestroy.
+		await this.callLifecycleOnAll(async (instance) => {
+			await callOnApplicationDestroy(instance, signal);
+		});
+
+		this.started = false;
+	}
+
+	/**
+	 * Iterate all providers across all modules and call a lifecycle fn.
+	 * We resolve each provider from its module's container to ensure
+	 * the instance is created (lazy instantiation).
+	 */
+	private async callLifecycleOnAll(
+		fn: (instance: unknown) => Promise<void>,
+	): Promise<void> {
+		const visited = new Set<unknown>();
+
+		// Root module providers.
+		if (this.rootModuleResult) {
+			const container = this.rootModuleResult.container;
+			for (const token of (container as any).providers?.keys() ?? []) {
+				try {
+					const instance = container.resolve(token);
+					if (!visited.has(instance)) {
+						visited.add(instance);
+						await fn(instance);
+					}
+				} catch {
+					// Skip providers that can't be resolved yet (lazy).
+				}
+			}
+		}
+
+		// All sub-module providers.
+		for (const mod of this.modules) {
+			const container = mod.container;
+			for (const token of (container as any).providers?.keys() ?? []) {
+				try {
+					const instance = container.resolve(token);
+					if (!visited.has(instance)) {
+						visited.add(instance);
+						await fn(instance);
+					}
+				} catch {
+					// Skip providers that can't be resolved yet.
+				}
+			}
+		}
+	}
+
+	/**
+	 * Register SIGTERM / SIGINT handlers for graceful shutdown.
+	 */
+	private registerShutdownHandlers(): void {
+		const handleSignal = async (signal: string) => {
+			console.log(`[nexus] Received ${signal}, shutting down gracefully...`);
+			await this.shutdown(signal);
+			process.exit(0);
+		};
+
+		process.on("SIGTERM", () => handleSignal("SIGTERM"));
+		process.on("SIGINT", () => handleSignal("SIGINT"));
+	}
+
+	/**
 	 * For Cloudflare / Workers: return the fetch handler.
+	 * Call bootstrap() first to initialize lifecycle hooks.
 	 */
 	get fetch() {
+		// Bootstrap must be called explicitly for Worker environments.
 		return this.server.fetch;
 	}
 
 	/**
 	 * Static factory that mirrors the typical `bootstrap()` pattern.
+	 * Run `await app.bootstrap()` after construction to trigger
+	 * lifecycle hooks.
 	 */
 	static bootstrap(
 		rootModule: Type<any>,

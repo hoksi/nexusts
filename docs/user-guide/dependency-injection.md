@@ -340,7 +340,80 @@ const app = Application.bootstrap(AppModule, {
 
 ---
 
-## 10. Common patterns
+## 10. Global Modules (@Global)
+
+A module decorated with `@Global()` exports its providers to **all**
+modules automatically, without explicit import.
+
+```ts
+import { Global, Module, Injectable } from '@nexusts/core';
+
+@Injectable()
+class DatabaseService {
+  query(sql: string) { /* ... */ }
+}
+
+@Global()
+@Module({
+  providers: [DatabaseService],
+  exports: [DatabaseService],
+})
+class DatabaseModule {}
+
+@Module({
+  imports: [DatabaseModule],
+  // DatabaseService is available here without importing DatabaseModule
+})
+class AppModule {}
+```
+
+Use `@Global()` for cross-cutting services (database, logger, config,
+metrics) that are used by many modules. For feature-specific services,
+prefer explicit imports.
+
+---
+
+## 11. Lifecycle Hooks
+
+Services can implement lifecycle interfaces to run code at startup or
+shutdown:
+
+```ts
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nexusts/core';
+
+@Injectable()
+class DatabaseService implements OnModuleInit, OnModuleDestroy {
+  async onModuleInit() {
+    // Connect to database, warm caches, subscribe to queues
+    await this.pool.connect();
+    console.log('Database connected');
+  }
+
+  async onModuleDestroy() {
+    // Close connections, flush logs, cleanup
+    await this.pool.end();
+    console.log('Database disconnected');
+  }
+}
+```
+
+Available hooks:
+
+| Interface | Called |
+|-----------|--------|
+| `OnModuleInit` | After all providers are instantiated, before the server starts |
+| `OnApplicationInit` | After all `onModuleInit` hooks complete, before the server starts |
+| `OnModuleDestroy` | After the server stops, during graceful shutdown |
+| `BeforeApplicationDestroy` | At the very start of shutdown (before server stops) |
+| `OnApplicationDestroy` | At the very end of shutdown (after server stops, after all `onModuleDestroy`) |
+
+The framework calls these hooks in order during `app.bootstrap()` and
+`app.shutdown()`. SIGTERM and SIGINT automatically trigger graceful
+shutdown with all destroy hooks.
+
+---
+
+## 12. Common patterns
 
 ### Database / ORM
 
@@ -391,7 +464,7 @@ class AppModule {
 
 ---
 
-## 11. Debugging
+## 13. Debugging
 
 Set `NEXUS_DEBUG=1` to print the dependency graph at boot:
 
@@ -410,7 +483,7 @@ Output:
 
 ---
 
-## 12. Common error patterns
+## 14. Common error patterns
 
 | Error | Cause | Fix |
 | --- | --- | --- |

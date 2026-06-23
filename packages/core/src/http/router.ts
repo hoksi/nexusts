@@ -25,11 +25,37 @@ import { getRoutes } from "../decorators/http-methods.js";
 import { getParamMetadata } from "../decorators/params.js";
 import { getValidationMetadata } from "../decorators/validate.js";
 import {
-	ValidationError,
-	formatValidationError,
 	validateRequest,
 } from "../validation/validator.js";
 import type { HttpMethod, RouteMetadata, Type } from "../di/tokens.js";
+
+// Guard, interceptor, and filter integration
+import {
+	type HttpGuard,
+	type HttpExecutionContext as GuardContext,
+	HttpExecutionContextImpl as GuardExecutionContextImpl,
+	executeHttpGuards,
+	getControllerGuards,
+	getRouteGuards,
+} from "../guards/index.js";
+
+import {
+	type Interceptor,
+	type ExecutionContext,
+	type ResolvedInterceptor,
+	HttpExecutionContextImpl as InterceptorContextImpl,
+	composeInterceptors,
+	getControllerInterceptors,
+	getRouteInterceptors,
+} from "../interceptors/index.js";
+
+import {
+	type HttpExecutionContext as FilterContext,
+	HttpExecutionContextImpl as FilterContextImpl,
+	executeExceptionFilters,
+	getControllerExceptionFilters,
+	getRouteExceptionFilters,
+} from "../exception-filters/index.js";
 
 export interface NexusRouter {
 	/** Register a controller class (Nest style). */
@@ -199,7 +225,11 @@ class NexusRouterImpl implements NexusRouter {
 
 	/**
 	 * Mount a single @Route-decorated method to Hono, including validation,
-	 * param resolution, and DI lookup of the controller instance.
+	 * param resolution, DI lookup, guards, interceptors, and exception filters.
+	 *
+	 * Execution order:
+	 *   middleware → guards → interceptors(handler) → response
+	 *   errors → exception filters
 	 */
 	private mountRoute(
 		controller: Type<any>,
@@ -210,6 +240,30 @@ class NexusRouterImpl implements NexusRouter {
 		const validation = getValidationMetadata(controller, route.propertyKey);
 		const paramMeta = getParamMetadata(controller.prototype, route.propertyKey);
 
+		// Read guard metadata (controller-level + route-level).
+		// Controller guards run first, then route guards.
+		const controllerGuards = getControllerGuards(controller);
+		const routeGuards = getRouteGuards(
+			controller.prototype,
+			route.propertyKey,
+		);
+
+		// Read interceptor metadata (controller-level + route-level).
+		// Controller interceptors wrap outermost.
+		const controllerInterceptors = getControllerInterceptors(controller);
+		const routeInterceptors = getRouteInterceptors(
+			controller.prototype,
+			route.propertyKey,
+		);
+
+		// Read exception filter metadata (controller-level + route-level).
+		// Route filters have highest priority (tried first).
+		const controllerFilters = getControllerExceptionFilters(controller);
+		const routeFilters = getRouteExceptionFilters(
+			controller.prototype,
+			route.propertyKey,
+		);
+
 		// Store for OpenAPI spec generation.
 		this.#routeList.push({
 			method: route.method,
@@ -219,21 +273,99 @@ class NexusRouterImpl implements NexusRouter {
 			validation: validation ?? undefined,
 		});
 
-		const honoHandler = async (c: any) => {
-			try {
-				// Lazy: resolve the controller from the container for each request.
-				// This is important for transient/request-scoped controllers.
-				const instance = container.resolve(controller);
-				const args = await this.buildArgs(c, paramMeta, validation);
-
-				const result = await Promise.resolve(
-					route.handler.call(instance, ...args),
-				);
-
-				return await this.serialize(c, result);
-			} catch (err) {
-				return this.handleError(c, err);
+		// Pre-resolve guard instances that are class constructors (no DI).
+		// Instance guards are reused directly.
+		const resolvedGuards: HttpGuard[] = [];
+		for (const g of [...controllerGuards, ...routeGuards]) {
+			if (typeof g === "function") {
+				resolvedGuards.push(new (g as new () => HttpGuard)());
+			} else {
+				resolvedGuards.push(g);
 			}
+		}
+
+		// Pre-resolve interceptors: function/class constructors → ResolvedInterceptor.
+		const resolvedInterceptors: ResolvedInterceptor[] = [];
+		const allInterceptorClasses = [
+			...controllerInterceptors,
+			...routeInterceptors,
+		];
+		for (const ic of allInterceptorClasses) {
+			if (typeof ic === "function") {
+				// Class constructor — instantiate once (no DI for now).
+				const instance = new (ic as new () => Interceptor)();
+				const fn = instance.intercept.bind(instance);
+				resolvedInterceptors.push(fn);
+			} else {
+				// Instance with intercept() method.
+				const fn = ic.intercept.bind(ic);
+				resolvedInterceptors.push(fn);
+			}
+		}
+
+		const handlerName = String(route.propertyKey);
+		const controllerName = controller.name;
+
+		const honoHandler = async (c: any) => {
+			// Build execution context for guards/interceptors/filters.
+			const req = c.req.raw ?? c.req;
+			const guardCtx: GuardContext = new GuardExecutionContextImpl(
+				req,
+				handlerName,
+				controllerName,
+			);
+			const interceptorCtx: ExecutionContext = new InterceptorContextImpl(
+				req,
+				handlerName,
+				controllerName,
+			);
+			const filterCtx: FilterContext = new FilterContextImpl(
+				req,
+				handlerName,
+				controllerName,
+			);
+
+			// 1. Execute guards (if any).
+			if (resolvedGuards.length > 0) {
+				const allowed = await executeHttpGuards(resolvedGuards, guardCtx);
+				if (!allowed) {
+					return c.json({ error: "Forbidden", statusCode: 403 }, 403);
+				}
+			}
+
+			// 2. Build the core handler invocation.
+			const coreHandler = async (): Promise<any> => {
+				try {
+					// Lazy: resolve the controller from the container for each request.
+					// This is important for transient/request-scoped controllers.
+					const instance = container.resolve(controller);
+					const args = await this.buildArgs(c, paramMeta, validation);
+
+					const result = await Promise.resolve(
+						route.handler.call(instance, ...args),
+					);
+
+					return await this.serialize(c, result);
+				} catch (err) {
+					// 4. Exception filters catch errors from the handler.
+					const mergedFilters = [...routeFilters, ...controllerFilters];
+					return executeExceptionFilters(mergedFilters, err, filterCtx);
+				}
+			};
+
+			// 3. Compose interceptors around the core handler.
+			let handlerWrapper: () => Promise<any>;
+			if (resolvedInterceptors.length > 0) {
+				handlerWrapper = composeInterceptors(
+					resolvedInterceptors,
+					interceptorCtx,
+					coreHandler,
+				);
+			} else {
+				handlerWrapper = coreHandler;
+			}
+
+			return handlerWrapper();
 		};
 
 		const fn = HTTP_METHOD_TO_HONO[route.method];
@@ -405,15 +537,6 @@ class NexusRouterImpl implements NexusRouter {
 	 */
 	private async serializeInertia(c: any, value: any): Promise<Response> {
 		return await value.toResponse(c);
-	}
-
-	private handleError(c: any, err: any): any {
-		if (err instanceof ValidationError) {
-			const { status, body } = formatValidationError(err);
-			return c.json(body, status as any);
-		}
-		// Re-throw; the user-provided error middleware (if any) will catch it.
-		throw err;
 	}
 
 	private resolveControllerContainer(controller: Type<any>): DIContainer {

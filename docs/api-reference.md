@@ -75,6 +75,101 @@ function Inject<T = any>(token: InjectionToken<T>): ParameterDecorator & Propert
 
 ---
 
+## `Global`
+
+```ts
+function Global(): ClassDecorator;
+```
+
+Marks a module as global. Its exported providers are available to all
+modules without explicit import. See [DI user guide](./user-guide/dependency-injection.md#10-global-modules-global).
+
+---
+
+## Lifecycle Hooks
+
+```ts
+interface OnModuleInit        { onModuleInit(): Promise<void> | void; }
+interface OnApplicationInit   { onApplicationInit(): Promise<void> | void; }
+interface OnModuleDestroy     { onModuleDestroy(): Promise<void> | void; }
+interface BeforeApplicationDestroy { beforeApplicationDestroy(signal?: string): Promise<void> | void; }
+interface OnApplicationDestroy { onApplicationDestroy(signal?: string): Promise<void> | void; }
+```
+
+See [DI user guide §11](./user-guide/dependency-injection.md#11-lifecycle-hooks).
+
+---
+
+## Guards
+
+```ts
+function UseGuards(...guards: (Function | HttpGuard)[]): ClassDecorator & MethodDecorator;
+
+class AuthGuard implements HttpGuard;
+class RolesGuard implements HttpGuard {
+  constructor(roles: string[], rolesExtractor?: (ctx: HttpExecutionContext) => string[]);
+}
+
+function createHttpGuard(
+  fn: (context: HttpExecutionContext) => boolean | Promise<boolean>
+): new () => HttpGuard;
+```
+
+See [Controllers user guide §12](./user-guide/controllers.md#12-guards-useguards).
+
+---
+
+## Interceptors
+
+```ts
+function UseInterceptors(...interceptors: (Function | Interceptor)[]): ClassDecorator & MethodDecorator;
+
+class LoggingInterceptor implements Interceptor;
+class TimeoutInterceptor implements Interceptor {
+  constructor(timeoutMs: number);
+}
+
+function createInterceptor(
+  fn: (ctx: ExecutionContext, next: () => Promise<unknown>) => Promise<unknown>
+): new () => Interceptor;
+```
+
+See [Controllers user guide §13](./user-guide/controllers.md#13-interceptors-useinterceptors).
+
+---
+
+## Exception Filters & HttpException
+
+```ts
+function UseFilters(...filters: ExceptionFilter[]): ClassDecorator & MethodDecorator;
+
+class HttpException extends Error {
+  readonly statusCode: number;
+  constructor(statusCode: number, message?: string);
+
+  // Static factories
+  static badRequest(msg?: string): HttpException;        // 400
+  static unauthorized(msg?: string): HttpException;      // 401
+  static forbidden(msg?: string): HttpException;         // 403
+  static notFound(msg?: string): HttpException;          // 404
+  static conflict(msg?: string): HttpException;          // 409
+  static unprocessable(msg?: string): HttpException;     // 422
+  static tooManyRequests(msg?: string): HttpException;   // 429
+  static internalServerError(msg?: string): HttpException; // 500
+  static serviceUnavailable(msg?: string): HttpException; // 503
+
+  toJSON(): Record<string, unknown>;
+}
+
+function createExceptionFilter(
+  fn: (error: unknown, ctx: HttpExecutionContext) => Response | Promise<Response>
+): ExceptionFilter;
+```
+
+See [Controllers user guide §14](./user-guide/controllers.md#14-exception-filters-usefilters).
+
+---
+
 ## Parameter decorators
 
 ```ts

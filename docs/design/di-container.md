@@ -218,10 +218,12 @@ All of the above are re-exported from the `@nexusts/core` entry point.
 
 ---
 
-## 10. Future work
+## 10. Current status & future work
 
-- **`request` scope** — bind instances to a single HTTP request via
-  AsyncLocalStorage. (v0.2)
-- **Conditional providers** — `{ provide: X, useFactory: ..., when: () => process.env.X }` for env-driven wiring.
-- **Multi-binding** — `forRoot({ providers: [...] })` static helper
-  for plugin-style modules.
+| Feature | Status |
+|---------|--------|
+| **request scope** — per-request instances via AsyncLocalStorage | ✅ v0.4 |
+| **Global modules** — `@Global()` decorator exports to all modules | ✅ v0.7 |
+| **Lifecycle hooks** — `OnModuleInit`, `OnModuleDestroy`, etc. | ✅ v0.7 |
+| **Conditional providers** — env-driven wiring | 🔲 Planned |
+| **Multi-binding** — `forRoot()` static helper for plugins | 🔲 Planned |

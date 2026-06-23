@@ -24,7 +24,7 @@ need; the core stays small.
 
 ---
 
-## 2. Layer diagram (v0.6.1)
+## 2. Layer diagram (v0.7)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -34,7 +34,7 @@ need; the core stays small.
 │                       User code                              │
 │   Modules · Controllers · Services · Repositories · DTOs     │
 ├──────────────────────────────────────────────────────────────┤
-│                  Optional Modules (v0.6.1)                   │
+│                  Optional Modules (v0.7)                    │
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐  │
 │  │ auth      │ │ queue      │ │ schedule   │ │ events     │  │
 │  │ session   │ │ health     │ │ config     │ │ logger     │  │
@@ -46,16 +46,18 @@ need; the core stays small.
 │  └─────────────────────────────────────────────────────────┘ │
 ├──────────────────────────────────────────────────────────────┤
 │                      Core (framework)                        │
-│  ┌────────┐ ┌────────┐ ┌────────────┐ ┌───────────────────┐  │
-│  │  DI    │ │  HTTP  │ │ Validation │ │     View          │  │
-│  │container│ │server │ │ (Zod)      │ │ Rendu / Edge /    │  │
-│  │scanner │ │router │ │            │ │ Inertia / SSR     │  │
-│  └────────┘ └────────┘ └────────────┘ └───────────────────┘  │
-│  ┌────────┐ ┌────────┐ ┌────────────────────────────────────┐ │
-│  │Runtime │ │  CLI   │ │           Decorators               │ │
-│  │Bun/Node│ │ nx ... │ │ @Controller @Injectable @Module    │ │
-│  │Cloudfl.│ │        │ │ @Get/@Post @Body/@Query @Validate  │ │
-│  └────────┘ └────────┘ └────────────────────────────────────┘ │
+│  ┌────────┐ ┌────────┐ ┌────────────┐ ┌─────────────────────────┐  │
+│  │  DI    │ │  HTTP  │ │ Validation │ │  Guards / Filters /     │  │
+│  │container│ │server │ │ (Zod)      │ │  Interceptors / Lifecycle│  │
+│  │scanner │ │router │ │            │ │  Hooks                  │  │
+│  └────────┘ └────────┘ └────────────┘ └─────────────────────────┘  │
+│  ┌────────┐ ┌────────┐ ┌──────────────────────────────────────┐ │
+│  │Runtime │ │  CLI   │ │           Decorators                 │ │
+│  │Bun/Node│ │ nx ... │ │ @Controller @Injectable @Module      │ │
+│  │Cloudfl.│ │        │ │ @Get/Post @Body/@Query @Validate     │ │
+│  │        │ │        │ │ @UseGuards @UseInterceptors          │ │
+│  │        │ │        │ │ @UseFilters @Global()                │ │
+│  └────────┘ └────────┘ └──────────────────────────────────────┘ │
 ├──────────────────────────────────────────────────────────────┤
 │                   Platform adapters                          │
 │            Hono · Drizzle · Zod · Pino · BullMQ             │
@@ -116,39 +118,53 @@ Hono fetch event
       ▼
 ┌────────────────────────────────────────────────────────────┐
 │ 2. Global middleware                                       │
-│    logger → errorHandler → formMiddleware → ...            │
+│    requestScope → logger → errorHandler → cors → ...       │
 └────────────────────────────────────────────────────────────┘
       │
       ▼
 ┌────────────────────────────────────────────────────────────┐
-│ 3. Router                                                  │
-│    - Adonis-style table lookup                             │
-│    - Decorator-driven controller dispatch                  │
-│    - Functional (raw Hono handler) passthrough             │
+│ 3. Router + Guards                                         │
+│    - Route matching (Nest / Adonis / Functional styles)     │
+│    - Guard execution (@UseGuards)                          │
+│    - Returns 403 Forbidden if any guard denies             │
 └────────────────────────────────────────────────────────────┘
       │
       ▼
 ┌────────────────────────────────────────────────────────────┐
-│ 4. Parameter extraction                                    │
+│ 4. Interceptors (onion chain)                              │
+│    - LoggingInterceptor, TimeoutInterceptor, custom        │
+│    - Controller-level wraps outermost, route-level inside   │
+└────────────────────────────────────────────────────────────┘
+      │
+      ▼
+┌────────────────────────────────────────────────────────────┐
+│ 5. Parameter extraction                                    │
 │    @Body / @Query / @Param / @Headers / @Req / @Res /...  │
 └────────────────────────────────────────────────────────────┘
       │
       ▼
 ┌────────────────────────────────────────────────────────────┐
-│ 5. Validation                                              │
+│ 6. Validation                                              │
 │    @Validate({ body, query, params })  ← Zod schemas       │
 └────────────────────────────────────────────────────────────┘
       │
       ▼
 ┌────────────────────────────────────────────────────────────┐
-│ 6. Controller method invocation                            │
+│ 7. Controller method invocation                            │
 │    Dependencies injected from the owning module's          │
 │    container.                                              │
 └────────────────────────────────────────────────────────────┘
       │
       ▼
 ┌────────────────────────────────────────────────────────────┐
-│ 7. Response serialization                                  │
+│ 8. Exception Filters (catch errors from handler)           │
+│    Route-level → Controller-level → Default filter         │
+│    Serializes HttpException or wraps as 500                │
+└────────────────────────────────────────────────────────────┘
+      │
+      ▼
+┌────────────────────────────────────────────────────────────┐
+│ 9. Response serialization                                  │
 │    - Plain JSON                                            │
 │    - View (Rendu / Edge)                                   │
 │    - InertiaResponse → HTML shell (first load) or JSON     │
@@ -241,14 +257,18 @@ version bump.
 
 ---
 
-## 9. Modules shipped in v0.6.1
+## 9. Modules shipped in v0.7
 
-The framework is **17 independent modules**. Each is its own bundle
+The framework ships **30 independent modules**. Each is its own bundle
 entry point — install only what you need.
+
+`@nexusts/core` now includes built-in **HTTP Guards**, **Interceptors**,
+**Exception Filters**, **Lifecycle Hooks**, and **@Global()** decorator —
+so you get NestJS-style AOP without installing extra packages.
 
 | Module | Bundle subpath | Replaces / supersedes |
 | ------ | -------------- | --------------------- |
-| `@nexusts/core` | `@nexusts/core` | core MVC + DI + validation + views |
+| `@nexusts/core` | `@nexusts/core` | core MVC + DI + validation + views + guards + interceptors + filters + lifecycle hooks |
 | `@nexusts/cli` | `nx` | Adonis ACE-style command runner |
 | `@nexusts/auth` | `@nexusts/auth` | session, JWT, OAuth, passkey (better-auth) |
 | `@nexusts/queue` | `@nexusts/queue` | BullMQ, Cloudflare Queues, memory |
@@ -292,7 +312,7 @@ cache state through any Drizzle-compatible database.
 
 ---
 
-## 10. Design principles · 설계 원칙 요약
+## 11. Design principles · 설계 원칙 요약
 
 | Principle | Implementation |
 | --------- | -------------- |

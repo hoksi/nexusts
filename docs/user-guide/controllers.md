@@ -275,22 +275,41 @@ async about() {
 
 ## 8. Error handling
 
-Throw standard errors — the framework converts them to JSON responses:
+Throw `HttpException` (or any `Error`) — the framework converts them to
+JSON responses:
 
 ```ts
+import { HttpException } from '@nexusts/core';
+
 @Get('/:id')
 show(@Param('id') id: string) {
   const user = this.users.findOne(Number(id));
   if (!user) {
-    throw new HttpError(404, 'User not found');
+    throw HttpException.notFound('User not found');
   }
   return user;
 }
 ```
 
-`HttpError` (and any subclass) is rendered as `{ status, message }`.
-A future release will add NestJS-style exception filters
-(`@Catch(HttpError)`) for fine-grained control.
+`HttpException` is rendered as `{ error, statusCode }`. In development
+(`NODE_ENV !== 'production'`), a `stack` field is also included for
+debugging.
+
+Use the static factory methods for common cases:
+
+| Factory | Status |
+|---------|--------|
+| `HttpException.badRequest(msg?)` | 400 |
+| `HttpException.unauthorized(msg?)` | 401 |
+| `HttpException.forbidden(msg?)` | 403 |
+| `HttpException.notFound(msg?)` | 404 |
+| `HttpException.conflict(msg?)` | 409 |
+| `HttpException.unprocessable(msg?)` | 422 |
+| `HttpException.tooManyRequests(msg?)` | 429 |
+| `HttpException.internalServerError(msg?)` | 500 |
+| `HttpException.serviceUnavailable(msg?)` | 503 |
+
+For custom error handling, see **§14 (Exception filters)** below.
 
 ---
 
@@ -309,6 +328,142 @@ async slow() {
 
 Async handlers run **per request** — there is no shared state between
 requests unless you put it on a singleton service.
+
+---
+
+## 12. Guards (@UseGuards)
+
+Guards authorize requests before they reach the route handler. They run
+after the middleware chain but before the handler.
+
+```ts
+import { Controller, Get, UseGuards, AuthGuard, RolesGuard } from '@nexusts/core';
+
+@Controller('/admin')
+@UseGuards(AuthGuard)                    // all routes require Bearer token
+class AdminController {
+  @Get('/dashboard')
+  @UseGuards(new RolesGuard(['admin']))   // this route also requires 'admin' role
+  dashboard() {
+    return { secret: true };
+  }
+}
+```
+
+**Built-in guards:**
+
+| Guard | Purpose |
+|-------|---------|
+| `AuthGuard` | Requires `Authorization: Bearer <token>` header |
+| `RolesGuard(roles, extractor?)` | Requires all specified roles (read from `x-user-roles` header by default) |
+
+**Custom guard:**
+
+```ts
+import { createHttpGuard, UseGuards } from '@nexusts/core';
+
+const ApiKeyGuard = createHttpGuard((ctx) => {
+  return ctx.getRequest().headers.get('x-api-key') === process.env.API_KEY;
+});
+
+@Get('/protected')
+@UseGuards(ApiKeyGuard)
+getData() { ... }
+```
+
+Class-level and method-level guards are merged: class guards run first,
+then method guards. If any guard returns `false`, a **403 Forbidden**
+response is returned immediately.
+
+---
+
+## 13. Interceptors (@UseInterceptors)
+
+Interceptors wrap handler execution to add cross-cutting behavior like
+logging, timing, or transformation.
+
+```ts
+import { Controller, Get, UseInterceptors, LoggingInterceptor, TimeoutInterceptor } from '@nexusts/core';
+
+@Controller('/api')
+@UseInterceptors(LoggingInterceptor)
+class ApiController {
+  @Get('/slow')
+  @UseInterceptors(new TimeoutInterceptor(5000))
+  slowRoute() { ... }
+}
+```
+
+**Built-in interceptors:**
+
+| Interceptor | Purpose |
+|-------------|---------|
+| `LoggingInterceptor` | Logs incoming request (method + path) and completed status + duration |
+| `TimeoutInterceptor(ms)` | Aborts the handler after `ms` milliseconds |
+
+**Custom interceptor:**
+
+```ts
+import { createInterceptor, UseInterceptors } from '@nexusts/core';
+
+const TimingInterceptor = createInterceptor(async (ctx, next) => {
+  const start = performance.now();
+  const result = await next();
+  console.log(`Took ${performance.now() - start}ms`);
+  return result;
+});
+
+@UseInterceptors(TimingInterceptor)
+@Get('/data')
+getData() { ... }
+```
+
+Execution order: controller-level wraps outermost, then route-level.
+
+---
+
+## 14. Exception Filters (@UseFilters)
+
+Exception filters catch errors thrown by route handlers and transform
+them into HTTP responses.
+
+```ts
+import { Controller, Get, UseFilters, HttpException, createExceptionFilter } from '@nexusts/core';
+
+const notFoundFilter = createExceptionFilter((error, ctx) => {
+  if (error instanceof HttpException && error.statusCode === 404) {
+    return new Response(JSON.stringify({ custom: error.message }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  throw error; // re-throw for the next filter
+});
+
+@Controller('/api')
+@UseFilters(notFoundFilter)
+class ApiController {
+  @Get('/risky')
+  @UseFilters(createExceptionFilter((err) => new Response('Fallback', { status: 500 })))
+  riskyRoute() { ... }
+}
+```
+
+Route-level filters are tried before controller-level filters. If no
+filter handles the error, the default filter serializes `HttpException`
+with its status code and wraps all other errors as 500.
+
+**Full request lifecycle:**
+
+```
+Request
+  → Global middleware (Hono)
+  → Guards (@UseGuards) ← 403 if denied
+  → Interceptors (@UseInterceptors) ← onion wrapping
+  → Handler (validation + controller)
+  → Exception filters (@UseFilters) ← catch errors
+  → Response
+```
 
 ---
 
