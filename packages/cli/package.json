@@ -1,11 +1,14 @@
 {
   "name": "@nexusts/cli",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "CLI command runner (nx)",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "nx": "./dist/index.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -18,8 +21,6 @@
   },
   "keywords": ["nexusts", "framework", "bun"],
   "license": "MIT",
-  
-  
   "dependencies": {
     "@nexusts/core": "file:../core"
   }
