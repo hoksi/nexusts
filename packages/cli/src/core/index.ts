@@ -6,6 +6,7 @@ export * from "./args.js";
 export * from "./config.js";
 export * from "./fs.js";
 export * from "./logger.js";
+export * from "./loose-json.js";
 export * from "./prompts.js";
 export * from "./template.js";
 

@@ -37,8 +37,8 @@ import {
 import { dirname, resolve } from "node:path";
 import * as readline from "node:readline";
 import * as vm from "node:vm";
-import { logger } from "@nexusts/core";
-import type { Command, CommandContext } from "@nexusts/core";
+import { logger } from "../core/index.js";
+import type { Command, CommandContext } from "../core/index.js";
 
 const BANNER = `
 ╭─────────────────────────────────────────────────╮

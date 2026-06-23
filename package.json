@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check packages/cli/ tests/cli/",
     "lint:fix": "biome check --write packages/cli/ tests/cli/",
-    "nx": "bun packages/core/src/cli/index.ts",
+    "nx": "bun packages/cli/src/index.ts",
     "examples:smoke": "vitest run tests/examples/smoke.test.ts",
     "examples:clean": "bash scripts/clean-examples.sh",
     "publish:all": "bun run scripts/publish.ts",
