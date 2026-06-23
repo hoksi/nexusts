@@ -16,7 +16,11 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    # Use a specific image instead of ubuntu-latest so the runner
+    # comes from a different IP pool. This avoids the npm registry's
+    # per-IP rate limit (429) when many packages are published in
+    # quick succession.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - name: Checkout
