@@ -33,8 +33,8 @@ import { ${spec.imports.join(", ")} } from '${spec.importPath}';
 export const {{ snake }} = ${spec.tableFn}('{{ tableName }}', {
   id: ${spec.idHelper}('id').primaryKey(${spec.idOpts}),
 {{ columns }}
-  createdAt: ${spec.tsTimestamp}('created_at'${spec.tsDateMode}).notNull().$defaultFn(() => new Date()),
-  updatedAt: ${spec.tsTimestamp}('updated_at'${spec.tsDateMode}).notNull().$defaultFn(() => new Date()),
+  createdAt: ${spec.tsTimestamp}('created_at'${spec.tsDateMode}).notNull()${spec.defaultTs},
+  updatedAt: ${spec.tsTimestamp}('updated_at'${spec.tsDateMode})${spec.defaultTsUpdate},
 });
 
 export type {{ name }} = typeof {{ snake }}.$inferSelect;
@@ -50,6 +50,8 @@ interface DialectSpec {
 	idOpts: string;
 	tsTimestamp: string;
 	tsDateMode: string;
+	defaultTs: string;
+	defaultTsUpdate: string;
 }
 
 const DIALECT_SPECS: Record<string, DialectSpec> = {
@@ -69,6 +71,8 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 		idOpts: "",
 		tsTimestamp: "timestamp",
 		tsDateMode: "",
+		defaultTs: ".defaultNow()",
+		defaultTsUpdate: "",
 	},
 	"bun-sqlite": {
 		imports: ["sqliteTable", "integer", "text"],
@@ -78,6 +82,8 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 		idOpts: "{ autoIncrement: true }",
 		tsTimestamp: "text",
 		tsDateMode: "",
+		defaultTs: ".default(\"(datetime('now'))\")",
+		defaultTsUpdate: "",
 	},
 	sqlite: {
 		imports: ["sqliteTable", "integer", "text", "real"],
@@ -87,6 +93,8 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 		idOpts: "{ autoIncrement: true }",
 		tsTimestamp: "integer",
 		tsDateMode: ", { mode: 'timestamp' }",
+		defaultTs: ".$defaultFn(() => Date.now())",
+		defaultTsUpdate: ".$defaultFn(() => Date.now())",
 	},
 	d1: {
 		imports: ["sqliteTable", "integer", "text", "real"],
@@ -96,6 +104,8 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 		idOpts: "{ autoIncrement: true }",
 		tsTimestamp: "integer",
 		tsDateMode: ", { mode: 'timestamp' }",
+		defaultTs: ".$defaultFn(() => Date.now())",
+		defaultTsUpdate: ".$defaultFn(() => Date.now())",
 	},
 	mysql: {
 		imports: [
@@ -113,6 +123,8 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 		idOpts: "{ autoIncrement: true }",
 		tsTimestamp: "timestamp",
 		tsDateMode: "",
+		defaultTs: ".defaultNow()",
+		defaultTsUpdate: "",
 	},
 };
 

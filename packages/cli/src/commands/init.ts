@@ -139,7 +139,7 @@ export const initCommand: Command = {
 			{ path: "package.json", mode: "merge-pkg" },
 			{ path: "tsconfig.json", mode: "merge-tsconfig" },
 			{ path: "public/.gitkeep", mode: "write" },
-			{ path: "resources/views/welcome.html", mode: "write" },
+			...view !== "none" ? [{ path: "resources/views/welcome.html", mode: "write" }] : [],
 			{ path: ".env", mode: "skip" },
 			{ path: ".env.local", mode: "skip" },
 			{ path: ".gitignore", mode: "skip" },
@@ -156,7 +156,9 @@ export const initCommand: Command = {
 		// Ensure directories exist
 		mkdirSync(resolve(target, "app/controllers"), { recursive: true });
 		mkdirSync(resolve(target, "public"), { recursive: true });
-		mkdirSync(resolve(target, "resources/views"), { recursive: true });
+		if (view !== "none") {
+			mkdirSync(resolve(target, "resources/views"), { recursive: true });
+		}
 
 		for (const entry of plan) {
 			const abs = resolve(target, entry.path);
@@ -390,20 +392,22 @@ import { HomeController } from './controllers/home.controller.js';
 export class AppModule {}
 `;
 		}
-		case "app/controllers/home.controller.ts":
+		case "app/controllers/home.controller.ts": {
+			const hasView = ctx.view !== "none";
+			const body = hasView
+				? `{\n      view: 'welcome.html',\n      data: { year: new Date().getFullYear() },\n    }`
+				: `{ status: 200, body: { message: 'Hello from NexusTS!' } }`;
 			return `import { Controller, Get } from '@nexusts/core';
 
 @Controller('/')
 export class HomeController {
   @Get('/')
   index() {
-    return {
-      view: 'welcome.html',
-      data: { year: new Date().getFullYear() },
-    };
+    return ${body};
   }
 }
 `;
+		}
 		case "README.md":
 			return `# ${ctx.targetName}
 

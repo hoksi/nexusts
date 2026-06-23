@@ -75,14 +75,30 @@ console.log(`\n  ✦  Scaffolding ${name}...\n`);
 const isBun = typeof Bun !== "undefined";
 const runner = isBun ? "bunx" : "npx";
 
-// Run @nexusts/cli init in the target directory.
-// @nexusts/cli exposes the `nx` binary which handles the `init` command.
-const initArgs = ["@nexusts/cli", "init", "--no-interaction", ...args.slice(1)];
-const child = spawn(runner, initArgs, {
-	cwd: target,
-	stdio: "inherit",
-	shell: process.platform === "win32",
-});
+// Determine if we're running inside the monorepo (local development).
+// If so, use the local CLI directly instead of downloading from npm.
+const monorepoRoot = resolve(import.meta.dirname, "..", "..");
+const cliEntry = join(monorepoRoot, "packages", "cli", "src", "index.ts");
+const isLocalDev = existsSync(cliEntry);
+
+let child;
+if (isLocalDev) {
+	// Local dev: run the CLI directly from the monorepo.
+	const initArgs = ["init", "--no-interaction", ...args.slice(1)];
+	child = spawn(process.argv[0], [cliEntry, ...initArgs], {
+		cwd: target,
+		stdio: "inherit",
+		shell: process.platform === "win32",
+	});
+} else {
+	// Published: run @nexusts/cli init via the package runner.
+	const initArgs = ["@nexusts/cli", "init", "--no-interaction", ...args.slice(1)];
+	child = spawn(runner, initArgs, {
+		cwd: target,
+		stdio: "inherit",
+		shell: process.platform === "win32",
+	});
+}
 
 child.on("exit", (code) => {
 	if (code === 0) {

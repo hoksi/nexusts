@@ -193,6 +193,7 @@ export const makeCrudCommand: Command = {
 				name: variants.pascal,
 				camel: variants.camel,
 				kebab: variants.kebab,
+				snake: variants.snake,
 				tableName,
 				repository,
 			});
