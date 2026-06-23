@@ -1,0 +1,42 @@
+{
+  "name": "create-nexusts",
+  "version": "0.7.0",
+  "description": "Scaffold a new NexusTS project — npm create nexusts@latest, bunx create-nexusts, or npx create-nexusts",
+  "bin": {
+    "create-nexusts": "index.js"
+  },
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node index.js --help || true"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kabyeon/nexusts.git",
+    "directory": "packages/create-nexusts"
+  },
+  "homepage": "https://github.com/kabyeon/nexusts#readme",
+  "bugs": {
+    "url": "https://github.com/kabyeon/nexusts/issues"
+  },
+  "engines": {
+    "node": ">=18",
+    "bun": ">=1.0"
+  },
+  "keywords": [
+    "nexusts",
+    "create-nexusts",
+    "scaffold",
+    "framework",
+    "bun",
+    "fullstack",
+    "typescript"
+  ]
+}
