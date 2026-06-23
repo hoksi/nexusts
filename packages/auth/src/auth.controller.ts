@@ -33,7 +33,7 @@ import {
 	Post,
 	Req,
 	Res,
-} from "@nexusts/core/decorators/index.js";
+} from "@nexusts/core";
 import type { Context } from "hono";
 import { AuthService } from "./auth.service.js";
 import type { AuthSession } from "./types.js";

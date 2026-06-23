@@ -21,6 +21,6 @@
   "peerDependencies": { "ws": "^8.18.0" },
   "peerDependenciesMeta": { "ws": { "optional": true } },
   "dependencies": {
-    "@nexusts/core": "workspace:*"
+    "@nexusts/core": "file:../core"
   }
 }

@@ -16,8 +16,8 @@
  */
 
 import { resolve } from "node:path";
-import type { Command, CommandContext } from "@nexusts/core/index.js";
-import { logger } from "@nexusts/core/index.js";
+import type { Command, CommandContext } from "@nexusts/core";
+import { logger } from "@nexusts/core";
 import { runDrizzleKit } from "./db-migrate.js";
 
 export const dbGenerateCommand: Command = {

@@ -35,7 +35,12 @@ for (const pkg of packageDirs) {
 	const replaceDeps = (deps: Record<string, string> | undefined) => {
 		if (!deps) return;
 		for (const [name, version] of Object.entries(deps)) {
-			if (version === "workspace:*") {
+			// Two internal-link conventions to resolve at publish time:
+			//   - "workspace:*"  (legacy, kept for safety)
+			//   - "file:../<sibling>"  (monorepo-internal cross-pkg links)
+			// Both must be replaced with the actual version before publish
+			// since npm only accepts semver ranges.
+			if (version === "workspace:*" || version.startsWith("file:../")) {
 				const refPkg = packageDirs.find((p) => {
 					const pj = join(PACKAGES_DIR, p, "package.json");
 					if (!existsSync(pj)) return false;

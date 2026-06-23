@@ -37,8 +37,8 @@ import {
 import { dirname, resolve } from "node:path";
 import * as readline from "node:readline";
 import * as vm from "node:vm";
-import { logger } from "@nexusts/core/index.js";
-import type { Command, CommandContext } from "@nexusts/core/index.js";
+import { logger } from "@nexusts/core";
+import type { Command, CommandContext } from "@nexusts/core";
 
 const BANNER = `
 ╭─────────────────────────────────────────────────╮
@@ -141,7 +141,7 @@ export const replCommand: Command = {
 					return 1;
 				}
 				const { Application } = await import(
-					"@nexusts/core/src/application.js"
+					"@nexusts/core"
 				);
 				const app = new Application(AppModule);
 				env.app = app;

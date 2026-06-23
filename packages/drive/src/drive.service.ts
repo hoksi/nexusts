@@ -5,7 +5,7 @@
  *   await drive.put('a.txt', 'hello');
  *   const body = await drive.get('a.txt');
  */
-import { Inject, Injectable } from "@nexusts/core/decorators/index.js";
+import { Inject, Injectable } from "@nexusts/core";
 import { MemoryDriver } from "./drivers/memory.js";
 import type {
 	DriveConfig,

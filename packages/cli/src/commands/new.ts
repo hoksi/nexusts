@@ -11,8 +11,8 @@
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { Command, CommandContext } from "@nexusts/core/index.js";
-import { flagBool, logger, render, select } from "@nexusts/core/index.js";
+import type { Command, CommandContext } from "@nexusts/core";
+import { flagBool, logger, render, select } from "@nexusts/core";
 import { templates } from "../templates/index.js";
 
 export const newCommand: Command = {

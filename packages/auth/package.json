@@ -21,6 +21,6 @@
   "peerDependencies": { "better-auth": "^1.6.0" },
   "peerDependenciesMeta": { "better-auth": { "optional": true } },
   "dependencies": {
-    "@nexusts/core": "workspace:*"
+    "@nexusts/core": "file:../core"
   }
 }

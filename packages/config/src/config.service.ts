@@ -14,7 +14,7 @@
  *   }
  */
 
-import { Inject, Injectable } from "@nexusts/core/decorators/index.js";
+import { Inject, Injectable } from "@nexusts/core";
 import type {
 	ConfigSchema,
 	InferConfig,

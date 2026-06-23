@@ -21,6 +21,6 @@
   "peerDependencies": { "bullmq": "^5.79.0", "ioredis": "^5.11.1" },
   "peerDependenciesMeta": { "bullmq": { "optional": true }, "ioredis": { "optional": true } },
   "dependencies": {
-    "@nexusts/core": "workspace:*"
+    "@nexusts/core": "file:../core"
   }
 }

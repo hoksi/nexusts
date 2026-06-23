@@ -21,6 +21,6 @@
   "peerDependencies": { "ioredis": "^5.11.1" },
   "peerDependenciesMeta": { "ioredis": { "optional": true } },
   "dependencies": {
-    "@nexusts/core": "workspace:*"
+    "@nexusts/core": "file:../core"
   }
 }

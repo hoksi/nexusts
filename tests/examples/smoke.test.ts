@@ -21,7 +21,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { spawn, type ChildProcess } from "node:child_process";
-import { readFile, readdir, stat, writeFile, rm } from "node:fs/promises";
+import { readFile, readdir, stat, writeFile, rm, mkdir, symlink } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
@@ -58,6 +58,11 @@ async function listExamples(): Promise<ExampleSpec[]> {
  *  them up in `afterAll` so the source tree stays clean. */
 const createdConfigs: string[] = [];
 const EXAMPLE_TSCONFIG = {
+	// Extend the root tsconfig so Bun picks up experimentalDecorators
+	// via the extends chain. Without this, Bun 1.3.10+ emits stage-3
+	// decorators (PR oven-sh/bun#30478's fix only kicks in when the
+	// tsconfig is part of an extends chain).
+	extends: "../../tsconfig.json",
 	compilerOptions: {
 		target: "ES2022",
 		module: "ESNext",
@@ -74,9 +79,54 @@ const EXAMPLE_TSCONFIG = {
 		// runtime error from the classic JSX transform.
 		jsx: "react-jsx",
 		types: ["bun-types"],
+		baseUrl: ".",
+		paths: {
+			"@nexusts/*": ["../../packages/*/src/index.ts"],
+			"@nexusts/core": ["../../packages/core/src/index.ts"],
+		},
 	},
 	include: ["./**/*.ts", "./*.tsx", "./**/*.tsx", "../../packages/*/src/**/*.ts"],
 };
+/** Drop a tsconfig.json AND a node_modules/ shim into each example
+ *  so bun can resolve both `@nexusts/*` (via tsconfig paths) and
+ *  npm packages like `reflect-metadata` (via a small symlink tree
+ *  pointing at the root node_modules). */
+const createdSymlinks: string[] = [];
+async function ensureExampleNodeModules(exampleDir: string): Promise<void> {
+	const nmDir = path.join(exampleDir, "node_modules");
+	if (!existsSync(nmDir)) {
+		await mkdir(nmDir, { recursive: true });
+		createdSymlinks.push(nmDir);
+	}
+	// Symlink every package in the root's node_modules/.bun/ into the
+	// example's node_modules. The .bun/ layout stores packages under
+	// `node_modules/.bun/<name>@<version>/node_modules/<name>` so we
+	// walk one level and link the inner name to the example's nm.
+	const bunDir = path.resolve(__dirname, "../../node_modules/.bun");
+	try {
+		const entries = await readdir(bunDir, { withFileTypes: true });
+		for (const entry of entries) {
+			if (!entry.isDirectory() || !entry.name.startsWith(".")) continue;
+			const innerNm = path.join(bunDir, entry.name, "node_modules");
+			try {
+				const innerEntries = await readdir(innerNm, { withFileTypes: true });
+				for (const inner of innerEntries) {
+					if (!inner.isDirectory() && !inner.isSymbolicLink()) continue;
+					if (inner.name.startsWith(".")) continue;
+					const target = path.join(innerNm, inner.name);
+					const link = path.join(nmDir, inner.name);
+					if (existsSync(link)) continue;
+					await symlink(target, link);
+					createdSymlinks.push(link);
+				}
+			} catch {
+				/* skip entries without inner node_modules */
+			}
+		}
+	} catch {
+		/* root .bun/ might not exist; nothing to symlink */
+	}
+}
 async function ensureExampleTsconfig(exampleDir: string): Promise<void> {
 	const target = path.join(exampleDir, "tsconfig.json");
 	if (!existsSync(target)) {
@@ -175,14 +225,18 @@ describe("examples/ — smoke tests", () => {
 		// `@nexusts/core` to the in-tree source.
 		for (const spec of allExamples) {
 			await ensureExampleTsconfig(path.dirname(spec.mainTs));
+			await ensureExampleNodeModules(path.dirname(spec.mainTs));
 		}
 	});
 
 	afterAll(async () => {
-		// Remove the per-example tsconfigs we wrote.
+		// Remove the per-example tsconfigs and symlinks we wrote.
 		await Promise.all(
 			createdConfigs.map((file) => rm(file, { force: true })),
 		);
+		for (const sym of createdSymlinks) {
+			await rm(sym, { recursive: true, force: true });
+		}
 	});
 
 	it("discovers at least 10 numbered examples", () => {

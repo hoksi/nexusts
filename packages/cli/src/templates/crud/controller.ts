@@ -9,7 +9,7 @@ import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nexust
 import { z } from 'zod';
 import { Validate } from '@nexusts/core';
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
-{{#hasInertia}}import { Inertia } from '@nexusts/view/inertia';{{/hasInertia}}
+{{#hasInertia}}import { Inertia } from '@nexusts/view';{{/hasInertia}}
 
 const Create{{ name }}Schema = z.object({
   // TODO: define fields

@@ -52,6 +52,12 @@ coverage/
 # `bun build` (see the example README). Not checked in.
 examples/*/public/app.js
 
+# Examples — smoke test creates these per-run. They are not source.
+examples/*/node_modules/
+examples/*/tsconfig.json
+examples/*/package.json
+examples/*/bun.lock
+
 # Cloudflare
 .wrangler/
 .dev.vars

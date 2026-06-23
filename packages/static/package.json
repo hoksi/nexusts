@@ -21,6 +21,6 @@
   
   
   "dependencies": {
-    "@nexusts/core": "workspace:*"
+    "@nexusts/core": "file:../core"
   }
 }

@@ -162,7 +162,7 @@ export interface CookieStorageOptions {
 
 export interface RedisSessionStorageConfig {
 	/** A pre-built `RedisClient` (from `nexusjs/redis`). Required. */
-	client: import("@nexusts/redis/types.js").RedisClient;
+	client: import("@nexusts/redis").RedisClient;
 	/** Key prefix. Default: "session:". */
 	keyPrefix?: string;
 }

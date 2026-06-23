@@ -81,7 +81,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PUBLISH_BATCH_DELAY_MS: "30000"
-          PUBLISH_BATCH_BREAK_MS: "600000"   # 10 minutes
+          PUBLISH_BATCH_BREAK_MS: "600000" # 10 minutes
           PUBLISH_BATCH_BREAK_N: "5"
         run: bun run scripts/publish.ts
 

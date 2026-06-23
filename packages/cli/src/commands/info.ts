@@ -7,8 +7,8 @@
  */
 
 import { resolve } from "node:path";
-import type { Command, CommandContext } from "@nexusts/core/index.js";
-import { colors, logger } from "@nexusts/core/index.js";
+import type { Command, CommandContext } from "@nexusts/core";
+import { colors, logger } from "@nexusts/core";
 
 export const infoCommand: Command = {
 	name: "info",

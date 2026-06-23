@@ -1,7 +1,7 @@
 {
   "name": "nexusts",
   "version": "0.7.0",
-  "description": "NexusTS — Bun-native fullstack framework. Multi-package monorepo. See packages/* for individual modules.",
+  "description": "NexusTS \u2014 Bun-native fullstack framework. Multi-package monorepo. See packages/* for individual modules.",
   "type": "module",
   "private": true,
   "workspaces": [
@@ -41,7 +41,11 @@
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^2.1.5",
     "vue": "^3.5.38",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "@opentelemetry/api": "^1.9.0",
+    "bullmq": "^5.79.0",
+    "ioredis": "^5.11.1",
+    "drizzle-orm": "^0.36.0"
   },
   "engines": {
     "bun": ">=1.3.0"

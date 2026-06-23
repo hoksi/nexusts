@@ -19,8 +19,8 @@
  */
 
 import "reflect-metadata";
-import { createParamDecorator } from "@nexusts/core/src/decorators/params.js";
-import { PARAM_TYPES } from "@nexusts/core/src/constants.js";
+import { createParamDecorator } from "@nexusts/core";
+import { PARAM_TYPES } from "@nexusts/core";
 import type { SessionRecord, SessionData } from "../types.js";
 
 export interface SessionOptions<T = SessionData> {

@@ -16,7 +16,7 @@
  */
 
 import "reflect-metadata";
-import { METADATA_KEY } from "@nexusts/core/constants.js";
+import { METADATA_KEY } from "@nexusts/core";
 
 /** A single cache entry. */
 export interface CacheEntry<T = unknown> {

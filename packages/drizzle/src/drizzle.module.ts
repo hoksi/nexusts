@@ -20,7 +20,7 @@
  *   });
  */
 import "reflect-metadata";
-import { Module } from "@nexusts/core/decorators/module.js";
+import { Module } from "@nexusts/core";
 import { DrizzleService } from "./drizzle.service.js";
 import type { DrizzleConfig } from "./types.js";
 
