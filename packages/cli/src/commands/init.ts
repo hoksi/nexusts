@@ -142,7 +142,7 @@ export const initCommand: Command = {
 			if (entry.mode === "merge-pkg") {
 				const { deps, devDeps } = computeDeps(view, orm, db, frontend);
 				if (exists) {
-					mergePackageJson(abs, deps, devDeps);
+					mergePackageJson(abs, deps, devDeps, view, frontend);
 					merged.push(entry.path);
 				} else {
 					const pkgJson = buildPackageJson(name, deps, devDeps, view, frontend);
@@ -203,6 +203,8 @@ function mergePackageJson(
 	path: string,
 	additions: Record<string, string>,
 	devAdditions: Record<string, string> = {},
+	view?: string,
+	frontend?: string,
 ): void {
 	const raw = readFileSync(path, "utf8");
 	const pkg = parseJsonLoose<Record<string, unknown>>(raw);
@@ -215,6 +217,11 @@ function mergePackageJson(
 		dev: "bun --hot app/main.ts", build: "bun run build.ts",
 		start: "bun app/main.ts", test: "vitest", nx: "nx",
 	};
+	if (view === "inertia") {
+		const ext = frontend === "vue" ? "ts" : "tsx";
+		SCRIPTS["build:frontend"] = `bun build ./resources/js/app.${ext} --outdir=./public --target=browser --format=esm --minify`;
+		SCRIPTS["dev"] = `bun run build:frontend && bun --hot app/main.ts`;
+	}
 	const existingScripts = (pkg["scripts"] as Record<string, string> | undefined) ?? {};
 	for (const [k, v] of Object.entries(SCRIPTS)) {
 		if (!(k in existingScripts)) { existingScripts[k] = v; changed = true; }
