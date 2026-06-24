@@ -82,7 +82,7 @@ const DIALECT_SPECS: Record<string, DialectSpec> = {
 		idOpts: "{ autoIncrement: true }",
 		tsTimestamp: "text",
 		tsDateMode: "",
-		defaultTs: ".default(\"(datetime('now'))\")",
+		defaultTs: ".$defaultFn(() => new Date().toISOString())",
 		defaultTsUpdate: "",
 	},
 	sqlite: {
