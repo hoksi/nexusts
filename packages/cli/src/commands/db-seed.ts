@@ -56,18 +56,27 @@ const SEED_TEMPLATE = `/**
  *   - \`ctx.dialect\`   : the active Drizzle dialect
  *   - \`ctx.truncate(table)\` : helper to clear a table
  *
- * Use ctx.db.insert(table).values([...]) etc. for inserts.
+ * Option A — plain inserts:
+ *   await ctx.db.insert(usersTable).values([{ email: "alice@example.com" }]);
+ *
+ * Option B — factory (requires @faker-js/faker as a dev dep):
+ *   import { UserFactory } from "../factories/user.factory.js";
+ *   await UserFactory.createMany(ctx.db, 10);
  */
 
 import type { SeedContext } from "@nexusts/cli";
 
 export default async function seed(ctx: SeedContext): Promise<void> {
 \tctx.logger.info("Running seed: {name}");
-\t// Example:
+\t// Example A — plain inserts:
 \t// await ctx.db.insert(usersTable).values([
 \t//   { email: "alice@example.com", name: "Alice" },
 \t//   { email: "bob@example.com",   name: "Bob"   },
 \t// ]);
+
+\t// Example B — factory (bun add -d @faker-js/faker):
+\t// import { UserFactory } from "../factories/user.factory.js";
+\t// await UserFactory.createMany(ctx.db, 10);
 }
 `;
 
