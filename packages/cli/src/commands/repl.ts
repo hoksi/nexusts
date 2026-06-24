@@ -385,6 +385,17 @@ export async function preloadService(
 	}
 }
 
+export function describeToken(token: unknown): string {
+	if (typeof token === "symbol") {
+		const desc = token.description ?? "(symbol)";
+		return `Symbol(${desc})`;
+	}
+	if (typeof token === "function") {
+		return (token as { name?: string }).name || "(anonymous class)";
+	}
+	return String(token);
+}
+
 export function listServices(
 	container: unknown,
 ): string[] {
@@ -396,7 +407,7 @@ export function listServices(
 	try {
 		return c
 			.listProviders()
-			.map((p) => p.token?.toString?.() ?? String(p.token));
+			.map((p) => describeToken(p.token));
 	} catch {
 		return [];
 	}
