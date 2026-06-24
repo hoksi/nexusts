@@ -53,16 +53,20 @@ export async function renderDefaultRoot(
 		.map((s) => `<script type="module" src="${escapeAttr(s)}"></script>`)
 		.join("\n");
 
+	// Inertia v3 protocol: embed page data in a <script data-page="app"> tag
+	// instead of a data-page attribute on the root div.
+	const ssrAttr = ssr ? ' data-server-rendered' : '';
 	const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
+<script data-page="app" type="application/json">${JSON.stringify(page)}</script>
 ${headTags.join("\n")}
 </head>
 <body>
-<div id="app" data-page="${escapeAttr(JSON.stringify(page))}">${bodyHtml}</div>
+<div id="app"${ssrAttr}>${bodyHtml}</div>
 ${scriptTags}
 </body>
 </html>`;
