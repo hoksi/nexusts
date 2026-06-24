@@ -28,7 +28,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
-    "types": ["bun-types"],
+    "types": ["@types/bun"],
     "baseUrl": ".",
     "paths": {
       "@nexusts/core": ["packages/core/src/index.ts"],
