@@ -44,3 +44,16 @@ export interface CommandContext {
 	positional: string[];
 	flags: Record<string, string | boolean | string[]>;
 }
+
+/**
+ * Context passed to seed file default exports.
+ *
+ *   import type { SeedContext } from "@nexusts/cli";
+ *   export default async function seed(ctx: SeedContext) { ... }
+ */
+export interface SeedContext {
+	db: import("@nexusts/drizzle").DrizzleService;
+	logger: import("@nexusts/logger").Logger;
+	dialect: string;
+	truncate: (table: any) => Promise<void>;
+}

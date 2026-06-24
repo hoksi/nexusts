@@ -40,7 +40,7 @@
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, readdir, readFile, writeFile, unlink } from "node:fs/promises";
+import { mkdir, readdir, writeFile, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
 import { logger } from "../core/index.js";
@@ -193,8 +193,8 @@ export const dbSeedCommand: Command = {
 
 		const script = `
 import 'reflect-metadata';
-import { DrizzleService } from '${relativeImport(ctx.cwd, "src/drizzle/index.js")}';
-import { logger as frameworkLogger } from '${relativeImport(ctx.cwd, "src/logger/index.js")}';
+import { DrizzleService } from '@nexusts/drizzle';
+import { Logger } from '@nexusts/logger';
 
 const url = ${JSON.stringify(url)};
 const dialect = ${JSON.stringify(dialect)};
@@ -203,7 +203,8 @@ const reset = ${JSON.stringify(reset)};
 const cfg = { dialect, connection: { url }, schema: dialect === 'postgres' ? 'public' : undefined };
 const db = new DrizzleService(cfg);
 await db.open();
-const logger = frameworkLogger;
+const logger = new Logger({ level: 'info' });
+await logger.ready();
 
 if (reset) {
   const tables = await db.allTables();
@@ -294,15 +295,6 @@ function readEnvUrl(dialect: string): string | null {
 					? process.env["SQLITE_FILENAME"]
 					: null);
 	return url ?? null;
-}
-
-function relativeImport(cwd: string, target: string): string {
-	const abs = resolve(cwd, target);
-	let rel = abs;
-	if (rel.startsWith(cwd)) rel = rel.slice(cwd.length);
-	if (rel.startsWith("/")) rel = rel.slice(1);
-	if (!rel.startsWith(".")) rel = "./" + rel;
-	return rel;
 }
 
 export default dbSeedCommand;
