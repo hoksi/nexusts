@@ -352,26 +352,39 @@ Shipped in v0.5–v0.6.8:
 
 ### v0.7.9 — Bun decorator diagnostics (shipped)
 
-### v0.8.3 — ResilienceAdminModule + FeatureFlagModule (shipped)
+### v0.8.0 — ResilienceAdminModule + FeatureFlagModule (shipped)
 
-- **`ResilienceAdminModule`** — HTTP admin endpoints for circuit
-  breaker and bulkhead inspection/control.
-- **Eager `applyResilience()`** — decorators auto-wrap at mount time.
-- **`@nexusts/feature-flag`** — canary / A/B testing with rollout,
-  allowlist/denylist, `@FeatureFlag` decorator.
-- **Repository migration** to `nexus-ts/nexusts`.
+- `ResilienceAdminModule` HTTP admin endpoints.
+- Eager `applyResilience()` auto-wrap.
+- `@nexusts/feature-flag`.
+- Code-first GraphQL SDL synthesis (`autoSchema: true`).
 
-### v0.8.x — Hardening
+### v0.8.1 — Cross-pod circuit breaker store (shipped)
 
-- **Cross-pod circuit breakers** (resilience backed by Redis / Drizzle).
-- Stable public API surface (semver guarantees).
-- Multi-runtime CI (Bun + Node + Cloudflare Workers).
+- `RedisResilienceStore`, `DrizzleResilienceStore`.
+
+### v0.8.2 — gRPC streaming (shipped)
+
+- `@GrpcServerStream`, `@GrpcClientStream`, `@GrpcBidiStream`.
+
+### v0.8.3 — CI workflow stabilization (shipped)
+
+- All 4 CI workflows passing.
+- Type-check, lint, benchmarks fixed.
+
+### v0.9 — DataLoader + Federation (planned)
+
+- **DataLoader integration** — N+1 query batching.
+- **Federation** — Apollo Federation v2 subgraph.
+- **Persisted queries.**
+- **Bulkhead queue tracing.**
+- **LaunchDarkly/Unleash adapters.**
 
 ### v1.0 — Production-ready LTS
 
 - Frozen API surface.
-- Migration guides from NestJS / AdonisJS.
-- LTS branch (security backports for 12 months).
+- Migration guides.
+- LTS branch (12 months).
 
 ---
 
@@ -381,47 +394,46 @@ NexusTS v0.8.3 is **production-ready for the vast majority of backend
 services**:
 
 - The MVC + DI + validation core is solid and battle-tested.
+- Exception Filters, Interceptors, Guards — full NestJS-style pipeline.
 - All **32** optional modules are independently usable and well-scoped.
 - **Tier 1 and Tier 2 gaps are fully closed**. Every production-need
   infrastructure piece from the v0.2 analysis has shipped.
-- gRPC (v0.5) closes the remaining NestJS-microservices gap.
-- GraphQL (v0.6.9) closes the BFF / mobile-first gap with an
-  SDL-first endpoint and the standard `@Resolver` / `@Query` decorator
-  shape.
-- Resilience (v0.7.0) closes the external-API reliability gap with
-  retry + circuit breaker + bulkhead in a single DI singleton.
-- Drizzle as the default ORM closes the AdonisJS-Lucid gap and
-  is arguably the **strongest** ORM choice for Bun-native apps.
-- The CLI is genuinely better than NestJS's `nest g` for new
-  projects.
-- The SQL-injection-safe raw-query primitive is best-in-class.
-- The `EncryptionService` is shared between the framework
-  (session cookies, CSRF) and user code, with a single APP_KEY.
-- **33 working examples** under `examples/` cover every major module
-  and act as living docs; the smoke test suite (67 vitest tests in
-  ~2s) catches import / DI / wiring regressions on every commit.
-- **102 vitest tests** in total (15 GraphQL + 20 Resilience + 67 smoke),
-  all passing.
+- **34 working examples** under `examples/` cover every major module.
+- **69 smoke tests** catch import / DI / wiring regressions on every commit.
+- **314+ vitest tests** across 18 test files, all passing.
+
+Features shipped since v0.7.0:
+
+| Feature | Version |
+|---------|---------|
+| Exception Filters / Interceptors / Guards | v0.7.3 |
+| REPL improvements (`.services`/`.modules`/`.routes`) | v0.7.4 |
+| Logger pino direct dependency | v0.7.4 |
+| Circuit breaker admin API | v0.7.5 |
+| Code-first GraphQL SDL synthesis (`autoSchema: true`) | v0.7.7 |
+| Eager `applyResilience()` auto-wrap | v0.8.0 |
+| `ResilienceAdminModule` HTTP admin | v0.8.0 |
+| `@nexusts/feature-flag` | v0.8.0 |
+| Cross-pod circuit breaker (Redis / Drizzle) | v0.8.1 |
+| gRPC streaming (server/client/bidi) | v0.8.2 |
+| CORS in ShieldModule | v0.8.0 |
+| Redis cache backend (`backend: 'redis'`) | v0.8.0 |
+| `Factory<T>` seeding factory | v0.8.0 |
 
 What's still missing for full "NestJS feature parity":
 
-- **Code-first GraphQL SDL synthesis** (alpha today; full release in
-  v0.8). For now, use SDL for non-trivial schemas.
-- **Feature flags** (`@nexusts/feature-flag`) — planned v0.8.
-- **Cross-pod circuit breakers** (in-resilience roadmap; planned v0.8).
-- **Federation** (Apollo Federation v2 subgraph support) — planned v0.8+.
+- **Federation** (Apollo Federation v2 subgraph) — planned v0.9+.
+- **DataLoader integration** — N+1 query batching.
+- **Persisted queries.**
 
-The path from v0.7.0 to v1.0 is roughly:
+The path from v0.8.3 to v1.0:
 
-- **v0.7.1** (immediate): Inertia `<Form>` SDK stabilization, code-first
-  GraphQL SDL synthesis, eager resilience wrapping, circuit-breaker
-  admin API.
-- **v0.8** (Q3 2026): Production hardening + feature flags +
-  cross-pod circuit breakers + federation.
+- **v0.9** (Q3 2026): Federation, DataLoader, persisted queries,
+  bulkhead queue tracing, LaunchDarkly/Unleash adapters.
 - **v1.0** (Q1 2027): Production-ready LTS — frozen API surface,
   migration guides, long-term support branch.
 
-After v0.8, NexusTS is a viable alternative for **any** backend
+NexusTS is a viable alternative for **any** backend
 that NestJS supports today, with the runtime + ORM advantages of Bun.
 
 ---

@@ -260,13 +260,27 @@ v0.5–v0.6.8에서 출시:
 - `drizzle.config.ts` 자동 생성.
 - DB 드라이버 deps 자동 추가.
 
-### v0.8 — Hardening + Feature flags (계획)
+### v0.8.0 — ResilienceAdminModule + FeatureFlagModule (출시)
 
-- **Code-first GraphQL SDL 합성**.
-- **`@nexusts/feature-flag`**.
-- **Cross-pod circuit breakers**.
-- 안정적인 public API surface (semver 보장).
-- 다중 런타임 CI.
+- `ResilienceAdminModule` HTTP admin endpoints.
+- Eager `applyResilience()` 자동 래핑.
+- `@nexusts/feature-flag` — rollout, allowlist, denylist.
+- Code-first GraphQL SDL 합성 (`autoSchema: true`).
+- Cross-pod circuit breaker (Redis / Drizzle).
+
+### v0.8.1 — Cross-pod circuit breaker store (출시)
+
+### v0.8.2 — gRPC streaming (출시)
+
+### v0.8.3 — CI workflow 안정화 (출시)
+
+### v0.9 — DataLoader + Federation (계획)
+
+- **DataLoader 통합** — N+1 쿼리 배칭.
+- **Federation** — Apollo Federation v2 subgraph.
+- **Persisted queries.**
+- **Bulkhead 큐 추적.**
+- **LaunchDarkly/Unleash 어댑터.**
 
 ### v1.0 — Production-ready LTS
 
@@ -276,47 +290,60 @@ v0.5–v0.6.8에서 출시:
 
 ---
 
-## 8. 정직한 평가 (v0.7.6)
+## 8. 정직한 평가 (v0.8.3)
 
-NexusTS v0.7.0는 **대부분의 백엔드 서비스를 위한 production-ready** 상태:
+NexusTS v0.8.3는 **대부분의 백엔드 서비스를 위한 production-ready** 상태:
 
 - MVC + DI + 검증 코어가 견고하고 실전 검증됨.
-- 모든 **30개** 옵션 모듈이 독립적으로 사용 가능하고 잘 분리됨.
+- Exception Filters, Interceptors, Guards — NestJS 스타일 파이프라인.
+- 모든 **32개** 옵션 모듈이 독립적으로 사용 가능하고 잘 분리됨.
 - **Tier 1 및 Tier 2 격차가 모두 해소**. 모든 프로덕션-필수
   인프라 조각이 출시됨.
-- **33개 동작 예제**가 모든 주요 모듈을 다루며 살아있는 문서 역할.
-- `examples/`의 smoke test 슈트가 매 커밋마다 import / DI / wiring
-  회귀를 잡는다.
+- **34개 동작 예제**가 모든 주요 모듈을 다루며 살아있는 문서 역할.
+- **69개 smoke test**가 매 커밋마다 import / DI / wiring 회귀를 잡는다.
 
 NestJS 기능 패리티에 **부족한 것**:
 
-- **Code-first GraphQL SDL 합성** (alpha; v0.8 정식 출시). 지금은
-  SDL을 직접 사용.
-- **Feature flags** (`@nexusts/feature-flag`) — v0.8 계획.
-- **Cross-pod circuit breakers** — v0.8 계획.
-- **Federation** (Apollo Federation v2 subgraph) — v0.8+ 계획.
+- **Federation** (Apollo Federation v2 subgraph) — v0.9+ 계획.
+- **DataLoader 통합** — v0.9+ 계획.
+- **Persisted queries** — v0.9+ 계획.
 
-v0.7.0에서 v1.0까지의 경로:
+v0.7.3–v0.8.3에서 **출시된 항목**:
 
-- **v0.7.1** (계획): Inertia `<Form>` SDK 안정화, code-first GraphQL SDL
-  합성, eager resilience wrapping, 서킷 브레이커 admin API.
-- **v0.8** (2026 Q3): Hardening + Feature flags — 안정 public API,
-  다중 런타임 CI, feature flags, cross-pod circuit breakers,
-  code-first GraphQL SDL 합성.
+| 기능 | 버전 |
+|------|------|
+| Exception Filters / Interceptors / Guards | v0.7.3 |
+| REPL 개선 (`.services`/`.modules`/`.routes`) | v0.7.4 |
+| Logger pino 직접 의존성 | v0.7.4 |
+| Circuit breaker admin API | v0.7.5 |
+| Code-first GraphQL SDL 합성 (`autoSchema: true`) | v0.7.7 |
+| Eager `applyResilience()` 자동 래핑 | v0.8.0 |
+| `ResilienceAdminModule` HTTP admin | v0.8.0 |
+| `@nexusts/feature-flag` | v0.8.0 |
+| Cross-pod circuit breaker (Redis / Drizzle) | v0.8.1 |
+| gRPC streaming (server/client/bidi) | v0.8.2 |
+| CORS in ShieldModule | v0.8.0 |
+| Redis cache backend (`backend: 'redis'`) | v0.8.0 |
+| `Factory<T>` 시딩 팩토리 | v0.8.0 |
+
+v0.8.3에서 v1.0까지의 경로:
+
+- **v0.9** (2026 Q3): Federation, DataLoader 통합, persisted queries,
+  Bulkhead 큐 추적, LaunchDarkly/Unleash 어댑터.
 - **v1.0** (2027 Q1): Production-ready LTS — 동결 API surface,
   마이그레이션 가이드, 장기 지원 브랜치.
 
-v0.7.0 이후 NexusTS는 Bun의 런타임 + ORM 이점을 가지고 NestJS가
+NexusTS는 Bun의 런타임 + Drizzle ORM 이점을 가지고 NestJS가
 오늘 지원하는 모든 백엔드의 **실현 가능한 대안**.
 
 ---
 
 ## 9. 참고
 
-- [`../../CHANGELOG.md`](../../CHANGELOG.md) — v0.7.0 릴리스 노트
+- [`../../CHANGELOG.md`](../../CHANGELOG.md) — 전체 릴리스 노트
 - [`../../user-guide/`](../../user-guide/) — 32개 모듈의 가이드
 - [`../../user-guide/testing-examples.md`](../../user-guide/testing-examples.md) — smoke test runner 가이드
-- [`../../../examples/`](../../../examples/) — 33개 동작 예제 앱
+- [`../../../examples/`](../../../examples/) — 34개 동작 예제 앱
 - [NestJS 문서](https://docs.nestjs.com) — 비교 기준선
 - [Bulletproof Node.js 아키텍처](https://github.com/santiq/bulletproof-nodejs) —
   이 분석이 파생된 프로덕션 체크리스트

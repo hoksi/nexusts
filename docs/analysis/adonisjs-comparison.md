@@ -315,39 +315,36 @@ A team that needs any of these gets them for free with NexusTS.
 ## 8. Honest assessment (v0.8.3)
 
 The v0.8.3 release **closes every AdonisJS v6 battery gap**. A team
-migrating from AdonisJS to NexusTS v0.7.0 would find:
+migrating from AdonisJS to NexusTS v0.8.3 would find:
 
-- All first-party batteries have an equivalent in NexusTS v0.7.0.
-- **GraphQL** now ships (`@nexusts/graphql`, v0.6.9).
-- **gRPC** ships (`@nexusts/grpc`, v0.5).
-- **Resilience** ships (`@nexusts/resilience`, v0.7.0).
-- **REPL** ships (`nx repl`, v0.5).
-- The migration from Lucid → Drizzle is mechanical.
-- The migration from Vine → Zod is mechanical.
-- **33 working examples** under `examples/` cover every major module.
-- The smoke test suite catches import / DI / wiring regressions on
-  every commit.
+- **Every** first-party battery has an equivalent in NexusTS.
+- GraphQL (`@nexusts/graphql`, code-first `autoSchema: true`).
+- gRPC + streaming (`@GrpcServerStream`, `@GrpcClientStream`).
+- Resilience (retry + circuit + bulkhead + HTTP admin).
+- Feature flags (`@nexusts/feature-flag`).
+- Cross-pod circuit breaker (Redis / Drizzle).
+- REPL (`nx repl`).
+- Seeding factories (`Factory<T>`).
+- CORS (built into ShieldModule).
+- Cache with Redis backend shorthand.
+- 34 working examples, 69 smoke tests, 314+ unit tests.
 
 What's still missing for **full** AdonisJS coverage:
 
 - **Inspector** — debugging-only; lower priority.
-- **Admin panel** — lower priority; most teams use something custom.
-- **Seeding factories** — first-party seed factory module.
+- **Admin panel** — lower priority.
 
-AdonisJS v6 vs NexusTS v0.7.0 differentiators:
+AdonisJS v6 vs NexusTS v0.8.3 differentiators:
 
-- **Bun-native** — NexusTS runs natively on Bun (faster startup,
-  faster I/O, fewer dependencies). AdonisJS is Node-only.
+- **Bun-native** — faster startup, faster I/O, fewer deps.
 - **Per-module bundle entry points** — import only what you use.
 - **OpenAPI / WebSockets / SSE / tracing / metrics / GraphQL /
-  resilience batteries** — NexusTS ships these out of the box;
-  AdonisJS users wire them up themselves or use third-party libs.
-- **Default ORM = Drizzle** — Drizzle is more performant on Bun.
+  resilience / feature flags** — NexusTS ships these out of the box.
+- **Default ORM = Drizzle** — more performant on Bun.
 - **Cloudflare Workers** — NexusTS is more Workers-friendly.
 
-After v0.7.0, NexusTS is a viable alternative for **any** AdonisJS
-user today, with the runtime + DX advantages of Bun + modern
-feature batteries that AdonisJS doesn't ship.
+After v0.8.3, NexusTS is a viable alternative for **any** AdonisJS
+user today, with the runtime + DX advantages of Bun.
 
 ---
 
