@@ -42,7 +42,9 @@ import type { Command, CommandContext } from "../core/index.js";
 
 const BANNER = `
 ╭─────────────────────────────────────────────────╮
-│  NexusTS REPL                                    │
+│  NexusTS REPL                              v0.7 │
+│                                                 │
+│  Type .help for available commands              │
 ╰─────────────────────────────────────────────────╯
 `;
 
