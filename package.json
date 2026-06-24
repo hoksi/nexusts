@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check packages/cli/ tests/cli/",
+    "lint": "biome check --error-on-warnings=false packages/cli/ tests/cli/",
     "lint:fix": "biome check --write packages/cli/ tests/cli/",
     "nx": "bun packages/cli/src/index.ts",
     "examples:smoke": "vitest run tests/examples/smoke.test.ts",

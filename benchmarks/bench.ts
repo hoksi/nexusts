@@ -103,10 +103,7 @@ async function runBenchmark(
 // ── Server lifecycle ──────────────────────────────────────────────────────────
 
 // Resolve the bun binary — it may not be in $PATH in CI / subprocess contexts
-const BUN_BIN =
-  process.env["BUN_BIN"] ??
-  Bun.which("bun") ??
-  process.execPath; // Bun's own executable path
+const BUN_BIN = process.env["BUN_BIN"] ?? process.execPath;
 
 async function startServer(cfg: ServerConfig): Promise<Bun.Subprocess> {
   const proc = Bun.spawn(

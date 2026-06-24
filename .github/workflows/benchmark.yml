@@ -55,7 +55,6 @@ jobs:
           BENCH_DURATION: ${{ github.event.inputs.duration || '5' }}
           BENCH_CONCURRENCY: ${{ github.event.inputs.concurrency || '50' }}
           BENCH_WARMUP: "1"
-          BUN_BIN: ${{ env.BUN_INSTALL }}/bin/bun
 
       - name: Save results artifact
         uses: actions/upload-artifact@v4
