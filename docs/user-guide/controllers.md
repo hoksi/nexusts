@@ -11,6 +11,12 @@ Inertia page).
 NexusTS supports **three** styles side-by-side — pick the one that fits
 each route.
 
+> **⚠ Bun note — one `@Controller` per file**: Defining multiple
+> `@Controller` classes in a single `.ts` file can cause Bun to
+> misorder decorator execution, resulting in some routes not being
+> registered. Move each controller into its own file. See
+> [`common-pitfalls.md §2`](./common-pitfalls.md).
+
 ### 1.1 Nest style (class decorators)
 
 ```ts
@@ -58,6 +64,21 @@ export class UserController {
   }
 }
 ```
+
+> **⚠ Bun note — `@Inject` + constructor parameter property**: On Bun
+> 1.3.x, `constructor(@Inject(Svc) private svc: Svc)` syntax can lose
+> the DI token. Use explicit assignment instead:
+>
+> ```ts
+> // ✅ Recommended
+> svc: Svc;
+> constructor(@Inject(Svc) svc: Svc) { this.svc = svc; }
+>
+> // ⚠ Unstable on Bun
+> constructor(@Inject(Svc) private svc: Svc) {}
+> ```
+>
+> See [`common-pitfalls.md §7`](./common-pitfalls.md).
 
 ### 1.2 Adonis style
 
