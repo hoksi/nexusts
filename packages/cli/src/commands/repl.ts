@@ -72,13 +72,13 @@ Examples:
   > app.container.size
 `;
 
-/** Pair of (module path inside the framework, export name). */
+/** Pair of (variable name, npm package name, export name). */
 const PRELOAD: Array<[string, string, string]> = [
-	["db", "../../drizzle/drizzle.service.js", "DrizzleService"],
-	["logger", "../../logger/logger.service.js", "LoggerService"],
-	["cfg", "../../config/config.service.js", "ConfigService"],
-	["cache", "../../cache/cache.service.js", "CacheService"],
-	["events", "../../events/event.service.js", "EventService"],
+	["db", "@nexusts/drizzle", "DrizzleService"],
+	["logger", "@nexusts/logger", "Logger"],
+	["cfg", "@nexusts/config", "ConfigService"],
+	["cache", "@nexusts/cache", "CacheService"],
+	["events", "@nexusts/events", "EventService"],
 ];
 
 export const replCommand: Command = {
@@ -340,22 +340,30 @@ export async function preloadService(
 					[key: string]: unknown;
 			  }
 			| undefined;
-		if (!ServiceClass) return;
+		if (!ServiceClass) {
+			logger.debug(`repl: ${className} not found in ${path}`);
+			return;
+		}
 		const Token =
 			ServiceClass.TOKEN ??
 			ServiceClass[`${className.toUpperCase()}_TOKEN`];
-		if (!Token) return;
+		if (!Token) {
+			logger.debug(`repl: ${className}.TOKEN not found`);
+			return;
+		}
 		try {
 			env[name] = app.container.resolve(Token);
+			logger.debug(`repl: loaded ${name} (${className})`);
 		} catch {
 			try {
 				env[name] = app.container.resolve(ServiceClass);
+				logger.debug(`repl: loaded ${name} (${className}) via class`);
 			} catch {
-				// not registered
+				logger.debug(`repl: ${name} (${className}) not registered in container`);
 			}
 		}
 	} catch {
-		// module not installed — skip silently
+		logger.debug(`repl: ${path} not installed — skipping ${name}`);
 	}
 }
 
