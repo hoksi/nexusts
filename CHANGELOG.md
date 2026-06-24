@@ -9,71 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.7.0] — 2026-06-22
-
-### Added
-
-- `@nexusts/resilience` — retry + circuit breaker +
-  bulkhead in a single DI singleton. `retry()` function with
-  four backoff strategies (constant, linear, exponential,
-  exponential-jitter). `CircuitBreaker` class with closed/open/
-  half-open state machine, rolling failure window, threshold +
-  `isFailure` predicate, `onStateChange` hook. `Bulkhead` class
-  with FIFO concurrency limiter and `rejectOnFull` for fail-fast.
-  `ResilienceService` exposes a `getOrCreateCircuit(name)` /
-  `getOrCreateBulkhead(name)` registry so a single circuit for
-  "stripe" is shared across every code path. `@Retry` /
-  `@CircuitBreaker` / `@Bulkhead` / `@Resilient` method decorators
-  (metadata-only; users on legacy decorator tsconfig can call
-  `applyResilience()` to wrap manually).
-- `examples/33-resilience-calls` — three routes, one per
-  primitive, plus tests in `tests/resilience/resilience.test.ts`
-  (20 tests covering backoff, state machine, FIFO ordering).
-- `docs/user-guide/resilience.md` + `.ko.md` — user guide.
-- `docs/design/resilience.md` + `.ko.md` — architecture deep-dive
-  (state machine, FIFO drain, decorator metadata design).
-
-### Notes
-
-- Zero new runtime dependencies — pure TypeScript.
-- The `@Retry` / `@CircuitBreaker` / `@Bulkhead` / `@Resilient`
-  decorators are **metadata-only** in v0.7.0. Eager wrapping at
-  the decorator level is reserved for v0.8 alongside other
-  Bun stage-3 decorator improvements. The recommended pattern
-  in v0.7 is inline: `svc.retry(() => ...)`,
-  `cb.execute(() => ...)`.
-
----
-
-## [0.6.9] — 2026-06-22
-
-### Added
-
-- `@nexusts/graphql` — SDL-first GraphQL endpoint with
-  `GraphQLService` + `GraphQLModule`. Wires `POST /graphql`,
-  `GET /graphql?query=...`, `GET /graphql/schema`, and a no-deps
-  in-bundle GraphiQL playground. `context()` factory for injecting
-  per-request state into resolvers. `@Resolver` / `@Query` /
-  `@Mutation` / `@Subscription` / `@Arg` decorators exported
-  (code-first SDL synthesis is reserved for v0.8).
-- `examples/32-graphql-hello` — minimal hello-world example, plus
-  tests in `tests/graphql/graphql.test.ts` (15 tests).
-- `docs/user-guide/graphql.md` + `.ko.md` — user guide.
-- `docs/design/graphql.md` + `.ko.md` — architecture deep-dive
-  (resolver lifecycle, schema build, peer-dep rationale).
-
-### Notes
-
-- `graphql` (peer-dep) is **not** bundled. Install with
-  `bun add graphql` to use the module. The first attempt without
-  the dep throws a clear error.
-- The code-first decorator API is **alpha**: types and metadata
-  are wired, but SDL synthesis and resolver-map auto-attach are
-  scheduled for v0.8.
-
----
-
 ## [Unreleased]
+
+### Added
+
+- (none)
+
+### Fixed
+
+- (none)
+
+---
+
+## [0.7.4] — 2026-06-24
 
 ### Added
 
@@ -186,6 +134,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `descriptor.value` reads in decorator body).
 - `Inertia` was unreachable from the published package — missing
   `./inertia` subpath in `package.json` `exports`.
+
+---
+
+## [0.7.0] — 2026-06-22
+
+### Added
+
+- `@nexusts/resilience` — retry + circuit breaker +
+  bulkhead in a single DI singleton. `retry()` function with
+  four backoff strategies (constant, linear, exponential,
+  exponential-jitter). `CircuitBreaker` class with closed/open/
+  half-open state machine, rolling failure window, threshold +
+  `isFailure` predicate, `onStateChange` hook. `Bulkhead` class
+  with FIFO concurrency limiter and `rejectOnFull` for fail-fast.
+  `ResilienceService` exposes a `getOrCreateCircuit(name)` /
+  `getOrCreateBulkhead(name)` registry so a single circuit for
+  "stripe" is shared across every code path. `@Retry` /
+  `@CircuitBreaker` / `@Bulkhead` / `@Resilient` method decorators
+  (metadata-only; users on legacy decorator tsconfig can call
+  `applyResilience()` to wrap manually).
+- `examples/33-resilience-calls` — three routes, one per
+  primitive, plus tests in `tests/resilience/resilience.test.ts`
+  (20 tests covering backoff, state machine, FIFO ordering).
+- `docs/user-guide/resilience.md` + `.ko.md` — user guide.
+- `docs/design/resilience.md` + `.ko.md` — architecture deep-dive
+  (state machine, FIFO drain, decorator metadata design).
+
+### Notes
+
+- Zero new runtime dependencies — pure TypeScript.
+- The `@Retry` / `@CircuitBreaker` / `@Bulkhead` / `@Resilient`
+  decorators are **metadata-only** in v0.7.0.
+
+---
+
+## [0.6.9] — 2026-06-22
+
+### Added
+
+- `@nexusts/graphql` — SDL-first GraphQL endpoint with
+  `GraphQLService` + `GraphQLModule`. Wires `POST /graphql`,
+  `GET /graphql?query=...`, `GET /graphql/schema`, and a no-deps
+  in-bundle GraphiQL playground. `context()` factory for injecting
+  per-request state into resolvers. `@Resolver` / `@Query` /
+  `@Mutation` / `@Subscription` / `@Arg` decorators exported
+  (code-first SDL synthesis is reserved for v0.8).
+- `examples/32-graphql-hello` — minimal hello-world example, plus
+  tests in `tests/graphql/graphql.test.ts` (15 tests).
+- `docs/user-guide/graphql.md` + `.ko.md` — user guide.
+- `docs/design/graphql.md` + `.ko.md` — architecture deep-dive
+  (resolver lifecycle, schema build, peer-dep rationale).
+
+### Notes
+
+- `graphql` (peer-dep) is **not** bundled. Install with
+  `bun add graphql` to use the module.
 
 ---
 
@@ -1305,7 +1309,6 @@ Initial release. **feature-complete MVP core.**
 ---
 
 [0.7.4]: https://github.com/kabyeon/nexusts/compare/v0.7.3...v0.7.4
-
 [0.7.3]: https://github.com/kabyeon/nexusts/compare/v0.7.0...v0.7.3
 [0.7.0]: https://github.com/kabyeon/nexusts/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/kabyeon/nexusts/compare/v0.6.8...v0.6.9

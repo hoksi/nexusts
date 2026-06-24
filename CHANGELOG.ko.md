@@ -1,4 +1,27 @@
+# Changelog
+
+All notable changes to NexusTS are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+> 영문으로 작성된 문서가 필요하면 [`CHANGELOG.md`](./CHANGELOG.md)를 참고하세요.
+
+---
+
 ## [Unreleased]
+
+### 추가
+
+- (없음)
+
+### 수정
+
+- (없음)
+
+---
+
+## [0.7.4] — 2026-06-24
 
 ### 추가
 
@@ -158,6 +181,30 @@
 - `07-events`와 `08-scheduler`가 잘못된 모듈 이름을 사용
   (`EventService.forRoot()` / `ScheduleService.forRoot()` 대신
   실제 export인 `EventsModule` / `ScheduleModule` 으로).
+
+---
+
+## [0.6.6] — 2026-06-22
+
+### 변경
+
+- 패키지명 변경: `@nexusts/core` (npm publish)
+
+### 추가
+
+- `router.getRoutes()` — 등록된 라우트 노출 (OpenAPI 스펙 생성용)
+- `nx db:generate` — 스키마 변경에서 마이그레이션 생성 (이름 옵션)
+- 환경 인식 `.env` 로딩 (`.env.{NODE_ENV}` 자동 감지)
+- 내장 `sessionMiddleware()` — `@Session()` 사용 시 커스텀 미들웨어 불필요
+- Scaffold가 `.env`, `.env.local`, `.gitignore` 생성
+- `PORT` 환경변수 읽기 (생성된 `main.ts`)
+- 데이터베이스 설정 가이드 (`docs/user-guide/database.md` + `.ko.md`)
+
+### 수정
+
+- Drizzle model import 경로: `drizzle-orm/bun-sqlite` → `drizzle-orm/sqlite-core`
+- `make:crud`가 올바른 로컬 import로 repository 파일 생성
+- `DrizzleService`가 bun-sqlite에서 자동 open (수동 `open()` 호출 불필요)
 
 ---
 
@@ -937,7 +984,6 @@ Feature-complete MVP. 프레임워크가 "v0.2 약속" 모듈을 모두 획득.
 ---
 
 [0.7.4]: https://github.com/kabyeon/nexusts/compare/v0.7.3...v0.7.4
-
 [0.7.3]: https://github.com/kabyeon/nexusts/compare/v0.7.0...v0.7.3
 [0.7.0]: https://github.com/kabyeon/nexusts/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/kabyeon/nexusts/compare/v0.6.8...v0.6.9
