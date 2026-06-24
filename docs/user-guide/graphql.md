@@ -8,11 +8,13 @@ SDL-first GraphQL adapter that mounts a `/graphql` endpoint, an
 introspection-friendly playground, and an SDL debug view, all
 backed by the standard `graphql` package.
 
-## TL;DR
+## TL;DR — Two approaches
 
 ```bash
 bun add graphql       # the only peer-dep you need
 ```
+
+### Approach 1: SDL-first (classic)
 
 ```ts
 import { GraphQLModule } from "@nexusts/graphql";
@@ -21,14 +23,10 @@ import { GraphQLModule } from "@nexusts/graphql";
   imports: [
     GraphQLModule.forRoot({
       typeDefs: `
-        type Query {
-          hello(name: String!): String!
-        }
+        type Query { hello(name: String!): String! }
       `,
       resolvers: {
-        Query: {
-          hello: (_p, args) => `Hello, ${args.name}!`,
-        },
+        Query: { hello: (_p, args) => `Hello, ${args.name}!` },
       },
     }),
   ],
@@ -36,9 +34,28 @@ import { GraphQLModule } from "@nexusts/graphql";
 class AppModule {}
 
 const app = new Application(AppModule);
-const g = app.container.resolve(GraphQLService) as GraphQLService;
-await GraphQLModule.mount(app.server.app, g);
+await GraphQLModule.mount(app.server.app, app.container.resolve(GraphQLService));
 await app.listen(3000);
+```
+
+### Approach 2: Code-first with `autoSchema: true`
+
+```ts
+import { Resolver, Query, Arg } from "@nexusts/graphql";
+
+@Resolver()
+class HelloResolver {
+  @Query()
+  hello(@Arg("name", { type: "String!" }) name: string): string {
+    return `Hello, ${name}!`;
+  }
+}
+
+@Module({
+  imports: [GraphQLModule.forRoot({ autoSchema: true })],
+  providers: [HelloResolver],
+})
+class AppModule {}
 ```
 
 ```bash
@@ -91,6 +108,9 @@ interface GraphQLConfig {
 
   /** Resolver map: { [TypeName]: { [fieldName]: resolverFn } }. */
   resolvers?: ResolverMap;
+
+  /** Auto-generate SDL from @Resolver/@Query/@Mutation decorators. */
+  autoSchema?: boolean;
 
   /** Endpoint config (default: { path: "/graphql", enableGet: true }). */
   endpoint?: { path: string; enableGet?: boolean };
@@ -156,35 +176,77 @@ GraphQLModule.forRoot({
 });
 ```
 
-## Code-first via decorators
+## Code-first via decorators (stable)
 
 The module exports `@Resolver`, `@Query`, `@Mutation`,
 `@Subscription`, and `@Arg` decorators for a code-first approach.
-Decorated resolver classes are automatically registered in a global
-registry — they no longer need to be manually listed in
-`GraphQLModule.forRoot()`. Just add the resolver class to your
-module's `providers` array.
+Set `autoSchema: true` in `GraphQLModule.forRoot()` and the
+framework synthesizes the SDL from your decorator metadata
+automatically — no hand-written `typeDefs` needed.
 
 ```ts
-import { Resolver, Query, Arg } from "@nexusts/graphql";
+import { Resolver, Query, Mutation, Arg } from "@nexusts/graphql";
 
-@Resolver("Query")
-class HelloResolver {
+@Resolver()
+class UserResolver {
   @Query()
-  hello(@Arg("name", { type: "String!" }) name: string): string {
-    return `Hello, ${name}!`;
+  users(@Arg("limit", { type: "Int" }) limit: number): User[] {
+    return this.userService.findAll(limit);
+  }
+
+  @Mutation()
+  addUser(@Arg("name", { type: "String!" }) name: string): User {
+    return this.userService.create({ name });
   }
 }
+
+@Module({
+  imports: [GraphQLModule.forRoot({ autoSchema: true })],
+  providers: [UserResolver],
+})
+class AppModule {}
 ```
 
-The global registry (`getRegisteredResolvers()`) collects all
-`@Resolver`-decorated classes at decoration time, making them
-available to the schema builder without a separate scan pass.
+### How it works
 
-**Note**: SDL synthesis from decorator metadata is still in
-alpha — the schema is currently built from `typeDefs`. For
-production, prefer the SDL-first approach. Full code-first SDL
-synthesis is planned for v0.8.
+1. `@Resolver`-decorated classes are collected by the global
+   registry (`getRegisteredResolvers()`).
+2. When `autoSchema: true` (or any `@Resolver` class exists),
+   the SDL synthesis engine (`mergeSDLWithDecorators()`) reads
+   each resolver's `@Query`, `@Mutation`, `@Subscription` and
+   `@Arg` metadata and builds the corresponding
+   `type Query / Mutation / Subscription` SDL blocks.
+3. If your `typeDefs` already defines one of these root types,
+   the synthesiser uses `extend type Query { ... }` to merge
+   rather than duplicate.
+4. Resolver instances are auto-wired into the resolver map —
+   `@Arg` parameters are extracted from graphql-js's `args`
+   object by name.
+
+### Coexisting with SDL
+
+`autoSchema: true` and manual `typeDefs` can coexist. Use
+`resolvers` for hand-written resolvers alongside decorator-based
+ones — the deep-merge helper ensures auto-wired fields are not
+clobbered.
+
+### `@Arg` return type normalization
+
+The `type` option in `@Arg` accepts GraphQL SDL strings or
+TypeScript aliases — they are normalized to canonical GraphQL
+scalars:
+
+| TypeScript alias | GraphQL scalar |
+|-----------------|----------------|
+| `string` | `String` |
+| `int`, `Int` | `Int` |
+| `float`, `Float` | `Float` |
+| `boolean`, `bool` | `Boolean` |
+| `id`, `ID` | `ID` |
+| `String!` | `String!` (preserved) |
+| `[Int]` | `[Int]` (preserved) |
+
+Appending `!` or wrapping `[...]` works on any input.
 
 ## Subscriptions
 
@@ -236,19 +298,15 @@ endpoints, and the smoke runner waits for the `Listening` log
 line. The 32-graphql-hello example demonstrates this in
 `tests/examples/smoke.test.ts`.
 
-## What's missing in v0.7 (and planned for v0.8)
+## What's planned for v0.8+
 
-- **Full SDL synthesis from decorators.** `@Resolver` classes are
-  now auto-registered (`getRegisteredResolvers()`), but the SDL
-  synthesis that builds `typeDefs` from decorator metadata is not
-  wired up yet. Today, define `typeDefs` manually.
-- **DataLoader integration.** N+1 query batching is a common
-  requirement; the integration point will be a per-resolver
+- **DataLoader integration.** N+1 query batching; per-resolver
   `loader` option.
-- **Federation.** Apollo Federation v2 subgraph support is on the
-  v0.8+ roadmap.
-- **Persisted queries.** APQ support is in `graphql` 16+; we just
-  need to plumb it through.
+- **Federation.** Apollo Federation v2 subgraph support.
+- **Persisted queries.** APQ support is in `graphql` 16+; needs
+  plumbing.
+
+Code-first SDL synthesis (`autoSchema: true`) shipped in v0.7.6.
 
 ## See also
 

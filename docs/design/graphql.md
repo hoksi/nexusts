@@ -257,14 +257,22 @@ const all = getRegisteredResolvers();
 
 For testing, `clearResolverRegistry()` resets the registry.
 
-### Remaining work (v0.8)
+### SDL synthesis (shipped v0.7.6)
 
-- **SDL synthesis.** The decorator metadata is collected but not yet
-  used to build `typeDefs` automatically. Users must still write
-  SDL by hand. Full code-first (decorators → SDL) is planned for v0.8.
-- **Auto-attach resolver map.** Currently the resolver map must be
-  merged manually or defined inline. v0.8 will attach collected
-  fields automatically.
+`mergeSDLWithDecorators()` now synthesises `type Query / Mutation /
+Subscription` blocks from registered `@Resolver` classes. When
+`autoSchema: true` is set (or when any `@Resolver` class exists),
+the schema is built entirely from decorator metadata — no manual
+`typeDefs` needed. If the user's `typeDefs` already defines a root
+type, the synthesiser uses `extend type` to merge.
+
+`_autoWireResolvers()` instantiates each `@Resolver` class and wires
+its `@Query`/`@Mutation` methods into the resolver map. `@Arg`
+parameters are extracted from graphql-js's `args` object by name.
+
+### Future work (v0.8+)
+
+- **DataLoader integration.**
 
 ## Future work
 

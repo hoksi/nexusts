@@ -61,7 +61,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | REPL | ✅ `node ace repl` | ✅ `nx repl` | Interactive REPL shipped in v0.5 |
 | Inspector | ✅ `@adonisjs/inspector` | ❌ Not shipped | Debugging-only |
 | Admin panel | ✅ `@adonisjs/admin` | ❌ Not shipped | Lower priority |
-| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` decorators with global class registry (v0.7.6). Code-first SDL synthesis v0.8. |
+| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first + code-first (`autoSchema: true`). Full SDL synthesis from decorators. Shipped v0.7.6. |
 | gRPC | ❌ DIY | ✅ `@nexusts/grpc` | Reflection-based, unary (streaming v2). v0.5 shipped. |
 | Feature flags | ❌ DIY | ❌ None | Planned v0.8 |
 | Resilience (circuit breaker, retry) | ❌ DIY | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff. v0.7.0 shipped. **Zero new deps.** |
@@ -292,12 +292,12 @@ A team that needs any of these gets them for free with NexusTS.
 
 ### v0.7.6 — Global @Resolver registry (shipped)
 
+- **Code-first GraphQL SDL synthesis** (`autoSchema: true`).
 - `@Resolver`-decorated classes auto-registered.
 - `drizzle.config.ts` auto-generation on init/new.
 
 ### v0.8 — Hardening + feature flags (planned)
 
-- **Code-first GraphQL SDL synthesis**.
 - **`@nexusts/feature-flag`**.
 - **Cross-pod circuit breakers**.
 - Stable public API surface (semver).

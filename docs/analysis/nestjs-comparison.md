@@ -44,7 +44,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `@nexusts/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
 | Feature flags | ⚠️ DIY (no first-party) | ⚠️ DIY | Both lack first-party |
 | Resilience (circuit breaker, retry) | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff |
-| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` decorators with global class registry (v0.7.6). Code-first SDL synthesis reserved for v0.8. |
+| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first + code-first (`autoSchema: true`). `@Resolver`/`@Query`/`@Mutation` decorators with full SDL synthesis. Shipped v0.7.6. |
 | gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection-based, unary methods (streaming planned v2). Shipped v0.5. |
 | Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, admin API (listCircuits, metrics, forceOpen/Close). Shipped v0.7.0; admin API v0.7.5. **Zero new dependencies.** |
 
@@ -339,16 +339,16 @@ Shipped in v0.5–v0.6.8:
 - `make:repository` CLI command.
 - `route:list` prefix fix, `make:service` import fix, `db:seed` path fix.
 
-### v0.7.6 — Global @Resolver registry (shipped)
+### v0.7.6 — Global @Resolver registry + code-first SDL (shipped)
 
+- **Code-first GraphQL SDL synthesis** (`autoSchema: true`) — SDL
+  auto-generated from `@Resolver`/`@Query`/`@Mutation` decorators.
 - `@Resolver`-decorated classes auto-registered via global Set.
 - `drizzle.config.ts` auto-generated on `init`/`new`.
 - Database driver deps auto-added based on dialect.
 
 ### v0.8 — Hardening + feature flags
 
-- **Code-first GraphQL SDL synthesis** — auto-generate SDL from
-  `@Resolver` / `@Query` decorators.
 - **`@nexusts/feature-flag`** — canary / A/B testing.
 - **Cross-pod circuit breakers** (resilience backed by Redis / Drizzle).
 - Stable public API surface (semver guarantees).
