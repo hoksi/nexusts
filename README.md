@@ -7,19 +7,21 @@
 
 **Bun Native Fullstack Framework** — NestJS structure × Adonis productivity × Hono edge performance.
 
-> **v0.8.0 — ResilienceAdminModule + Eager applyResilience.** The
-> framework now ships **31 independent modules**. Tier 1 and Tier 2
+> **v0.8 — Feature flags, gRPC streaming, cross-pod resilience.** The
+> framework now ships **32 independent modules**. Tier 1 and Tier 2
 > gaps from the NestJS / AdonisJS gap analyses are fully closed.
-> v0.8 adds `ResilienceAdminModule` (HTTP admin endpoints),
-> eager `applyResilience()` (auto-wrap at controller mount),
-> and CORS support in `@nexusts/shield`. See
-> [CHANGELOG.md](./CHANGELOG.md) for the full v0.8 release notes.
+> v0.8 adds `@nexusts/feature-flag` (canary / A–B testing),
+> full gRPC streaming (server / client / bidi),
+> cross-pod circuit breaker stores (Redis / Drizzle / Memory),
+> `@nexusts/cache` Redis backend, `ResilienceAdminModule`, and
+> eager `applyResilience()`. See [CHANGELOG.md](./CHANGELOG.md)
+> for the full v0.8 release notes.
 
 ---
 
 ## What's in v0.8
 
-The framework ships **31 independent modules** — every one is
+The framework ships **32 independent modules** — every one is
 its own bundle entry point, so you install only what you use. Tier 1
 and Tier 2 gaps from the NestJS / AdonisJS gap analyses are fully
 closed.
@@ -39,7 +41,7 @@ closed.
 | `@nexusts/static` | Static file serving with ETag, Range, path-traversal protection |
 | `@nexusts/limiter` | Rate limiting. 3 strategies × memory / **Drizzle** storage |
 | `@nexusts/shield` | Security suite: CSRF + HSTS + CSP + X-Frame-Options + Referrer-Policy |
-| `@nexusts/cache` | Application cache. Memory (LRU) / **Drizzle** backends. Tag invalidation |
+| `@nexusts/cache` | Application cache. Memory (LRU) / **Drizzle** / **Redis** backends. Tag invalidation |
 | `@nexusts/drive` | File storage abstraction. Memory / Local / S3 / R2 drivers |
 | `@nexusts/mail` | Outbound email. Null / File / SMTP transports. MJML rendering |
 | `@nexusts/drizzle` | **Default ORM.** 5 dialects, `DrizzleModel`, `DrizzleRepository`, migrations, raw SQL (injection-safe) |
@@ -53,9 +55,10 @@ closed.
 | `@nexusts/crypto` | AES-256-GCM encryption + HMAC + scrypt/argon2 password hashing. Single APP_KEY for sessions, CSRF, encrypted data |
 | `@nexusts/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
 | `@nexusts/redis` | Runtime-aware Redis client (Bun / Node / Workers KV). Powers `redis` / `cloudflare-kv` session & cache backends |
-| `@nexusts/grpc` | Reflection-based gRPC server + typed client. Loads `.proto` files at runtime via `@grpc/proto-loader`. Unary methods (streaming deferred to v2) |
+| `@nexusts/grpc` | Reflection-based gRPC server + typed client. Loads `.proto` files at runtime via `@grpc/proto-loader`. All four call types: unary (`@GrpcMethod`), server-stream (`@GrpcServerStream`), client-stream (`@GrpcClientStream`), bidi (`@GrpcBidiStream`) |
 | `@nexusts/graphql` | SDL-first + code-first GraphQL endpoint (`autoSchema: true`). `@Resolver` / `@Query` / `@Mutation` / `@Arg` decorators with full SDL synthesis. In-bundle GraphiQL playground. Requires `graphql` peer-dep |
-| `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead in a single DI singleton. Eager `applyResilience()` auto-wrap at controller mount. `ResilienceAdminModule` with HTTP admin endpoints. Circuit metrics, `forceOpen`/`forceClose`. **Zero new dependencies.** |
+| `@nexusts/feature-flag` | Canary / A–B testing. `isEnabled(flag, ctx)`, rollout %, allowlist/denylist, pluggable backends (Memory / custom). `@FeatureFlag()` guard decorator |
+| `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead in a single DI singleton. Eager `applyResilience()` auto-wrap at controller mount. `ResilienceAdminModule` with HTTP admin endpoints. Cross-pod stores: Redis / Drizzle / Memory. Circuit metrics, `forceOpen`/`forceClose`. **Zero new dependencies.** |
 | `@nexusts/view` | View engine with 3 adapters: Rendu (default, every runtime), Edge (Adonis-style `.edge`), Eta (EJS-style `.eta`). Auto-detects adapter by file extension. `setViewPaths()` for file-based templates, `Application.tryLoadNxConfig()` auto-loads from `nx.config.ts` |
 
 See [`docs/user-guide/drizzle.md`](./docs/user-guide/drizzle.md) for the
@@ -482,7 +485,7 @@ class OrderService {
 
 The framework also exports `@Retry` / `@CircuitBreaker` /
 `@Bulkhead` / `@Resilient` method decorators (metadata-only;
-eager wrapping is reserved for v0.8). See
+eager wrapping via `applyResilience()` is available since v0.8.0). See
 [`docs/user-guide/resilience.md`](./docs/user-guide/resilience.md) for
 the full reference.
 
@@ -547,8 +550,10 @@ full reference.
 
 `@nexusts/grpc` ships a reflection-based gRPC server + typed
 client. No codegen — `.proto` files are loaded at runtime via
-`@grpc/proto-loader`. Unary methods only in v1; streaming
-(server / client / bidi) is on the v2 roadmap.
+`@grpc/proto-loader`. All four gRPC call types are supported:
+unary (`@GrpcMethod`), server streaming (`@GrpcServerStream`),
+client streaming (`@GrpcClientStream`), and bidirectional
+(`@GrpcBidiStream`) — streaming added in v0.8.2.
 
 ```ts
 import { GrpcModule, GrpcService, GrpcMethod } from '@nexusts/grpc';
@@ -1023,11 +1028,13 @@ v1.0, only major bumps will.
 - **v0.7.8** (2026-06-24) — Repository migration to `nexus-ts/nexusts`.
 - **v0.7.9** (2026-06-24) — Bun decorator diagnostics, GitHub repo metadata.
 - **v0.8.0** (2026-06-24) — `ResilienceAdminModule` (HTTP admin endpoints), eager `applyResilience()` auto-wrap, CORS in ShieldModule. **31 modules.**
+- **v0.8.1** (2026-06-24) — Cross-pod circuit breaker store: `RedisResilienceStore`, `DrizzleResilienceStore`, `MemoryResilienceStore`. Configurable `syncIntervalMs`, last-writer-wins conflict resolution.
+- **v0.8.2** (2026-06-24) — gRPC streaming v2: `@GrpcServerStream`, `@GrpcClientStream`, `@GrpcBidiStream`. Multi-runtime CI (Bun + Node.js 22 + Cloudflare Workers + Drizzle dialects). HTTP benchmark suite with auto-regression check.
+- **v0.8.3** (2026-06-25) — Static analysis CI (Biome lint + tsc typecheck). **32 modules**: `@nexusts/feature-flag` (canary / A–B testing, rollout %, allowlist/denylist), `@nexusts/cache` Redis backend, `@nexusts/drizzle` seeding `Factory<T>`.
 
 ### Planned
 
-- **v0.8.x** — `@nexusts/feature-flag` (canary / A/B testing), runtime parity test suite, performance benchmarks across Bun / Node / Workers, cross-pod circuit breaker via Redis/Drizzle backing store.
-- **v1.0** — stable public API surface with semver guarantees, long-term LTS support plan.
+- **v1.0** — stable public API surface with semver guarantees, removal of all v0.1 deprecated aliases, long-term LTS support plan.
 
 Detailed release notes for every version live in
 [`CHANGELOG.md`](./CHANGELOG.md).
