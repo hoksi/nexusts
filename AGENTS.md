@@ -10,7 +10,7 @@
 ## 1. What this project is
 
 `@nexusts/core` is a Bun-native fullstack framework. It
-publishes **30 independent modules** (one entry point each under
+publishes **32 independent modules** (one entry point each under
 `@nexusts/*`), so a user only ships the code they actually
 import. The runtime is built on **Hono** (HTTP) + **reflect-metadata**
 (legacy decorators) + **Drizzle** (default ORM).
@@ -39,7 +39,7 @@ import. The runtime is built on **Hono** (HTTP) + **reflect-metadata**
 
 ```
 nexusts/                          # Monorepo root
-├── packages/                     # 30 independently-published npm packages
+├── packages/                     # 32 independently-published npm packages
 │   ├── core/                     # @nexusts/core — main package (MVC + DI + routing + validation + view)
 │   │   ├── package.json          # name: "@nexusts/core", depends on @nexusts/cli, @nexusts/view
 │   │   ├── src/
@@ -48,15 +48,16 @@ nexusts/                          # Monorepo root
 │   ├── view/                     # @nexusts/view — view engines + Inertia.js v3 adapter
 │   ├── auth/                     # @nexusts/auth — better-auth integration
 │   ├── cache, config, crypto, drive, drizzle, events, graphql,
-│   │   grpc, health, i18n, limiter, logger, mail, metrics, openapi,
-│   │   queue, redis, resilience, schedule, session, shield, sse,
-│   │   static, tracing, upload, ws/    # (24 more modules, all @nexusts/<name>)
-│   └── ...                       # 30 packages total, each independently installable
+│   │   feature-flag, grpc, health, i18n, limiter, logger, mail,
+│   │   metrics, openapi, queue, redis, resilience, schedule,
+│   │   session, shield, sse, static, tracing, upload, ws/
+│   │   # (26 more modules, all @nexusts/<name>)
+│   └── ...                       # 32 packages total, each independently installable
 ├── tests/                        # Vitest suites (one directory per package's tests)
 │   ├── auth, cache, ...          # one directory per module
 │   ├── examples/                 # smoke test for examples/
 │   └── e2e/                      # (mostly empty — reserved for future)
-├── examples/                     # 33 working examples (1 per module) — also serves as smoke-test corpus
+├── examples/                     # 34 working examples (1 per module) — also serves as smoke-test corpus
 │   ├── 01-basic-mvc/ ... 27-request-scope/         # core/DI/etc.
 │   ├── 28-inertia-react-spa/ 29-inertia-react-ssr/   # Inertia v3 examples
 │   ├── 30-inertia-vue-spa/ 31-inertia-vue-ssr/     # Inertia v3 + Vue
@@ -173,8 +174,11 @@ export class <Name>Module {
 
 ### Step 4 — Wire it into the build
 
-**Three files** must mention your new module or `dist/` will silently
-miss it:
+The build pipeline (`build.ts`) **auto-scans** `packages/` and
+picks up any directory with a `src/index.ts`. No manual
+`entrypoints:` registration needed.
+
+However, you must still update these files:
 
 `package.json`:
 
@@ -192,27 +196,16 @@ miss it:
 "optional-peer-dep-name": { "optional": true }
 ```
 
-`build.ts` — append to the `entrypoints:` array **in dependency order**:
+`vitest.config.ts` and `vitest.config.node.ts` — add a `@nexusts/<name>`
+alias so in-tree tests resolve correctly:
 
 ```ts
-entrypoints: [
-  // ... existing
-  "./packages/<name>/src/index.ts",
-]
+{ find: /^@nexusts\/<name>$/, replacement: `${root}/packages/<name>/src/index.ts` },
 ```
 
-`tsconfig.build.json` — add the `.ts` glob. (`.d.ts` globs are also
-present but optional — they only matter if your module ships
-external `.d.ts` files):
-
-```jsonc
-"packages/<name>/src//**/*.ts"
-```
-
-Forgetting **any one** of these is a silent failure: `bun x vitest
-run tests/examples/` passes, the example imports from the source
-directly via the path alias, but the published package is missing
-the entry point.
+Forgetting any of these is a silent failure: the example may
+import from source via path alias, but the published package
+will be missing the entry point.
 
 ### Step 5 — Add a peer-dep (only if you need one)
 
@@ -274,17 +267,22 @@ radius):
 1. `packages/<name>/src/` (the code)
 2. `tests/<name>/` (the tests)
 3. `examples/NN-<name>/` (the example)
-4. `package.json` + `build.ts` + `tsconfig.build.json` (the build wiring)
-5. `examples/README.md` (one row in the table)
-6. Top-level `README.md` (module table + Why NexusTS row)
-7. `docs/user-guide/<name>.md` + `.ko.md` (user guide, en+ko)
-8. `docs/design/<name>.md` + `.ko.md` (design deep-dive, en+ko)
-9. `docs/analysis/nestjs-comparison.md` + `.ko.md` (status: ✅ shipped)
-10. `CHANGELOG.md` + `.ko.md` (move from `[Unreleased]` to dated section)
+4. `package.json` (exports + deps — build.ts auto-scans)
+5. `vitest.config.ts` + `vitest.config.node.ts` (aliases)
+6. `examples/README.md` (one row in the table)
+7. Top-level `README.md` (module table + Why NexusTS row)
+8. `docs/user-guide/<name>.md` + `.ko.md` (user guide)
+9. `docs/design/<name>.md` + `.ko.md` (design deep-dive)
+10. `docs/analysis/nestjs-comparison.md` + `.ko.md`
+11. `CHANGELOG.md` + `.ko.md`
 
-The Korean versions are mandatory for the user guide and design
-doc, optional but recommended elsewhere. Format: copy the English,
-translate the prose, keep the code blocks verbatim.
+**IMPORTANT: Every doc change must be written in BOTH English (`.md`)
+and Korean (`.ko.md`) simultaneously.** Do not write one first and
+"translate later" — the Korean docs drift from the English within a
+single session. Always create or update both files in the same commit.
+
+Format: copy the English `.md`, translate the prose, keep the code
+blocks verbatim.
 
 ---
 
