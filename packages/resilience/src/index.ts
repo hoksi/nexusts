@@ -13,6 +13,8 @@ export { CircuitBreaker, CircuitOpenError } from "./circuit-breaker.js";
 export { Bulkhead, BulkheadFullError } from "./bulkhead.js";
 export { ResilienceService } from "./resilience.service.js";
 export { ResilienceModule } from "./resilience.module.js";
+export { ResilienceAdminModule } from "./admin.module.js";
+export type { ResilienceAdminConfig } from "./admin.module.js";
 export {
 	Retry,
 	CircuitBreaker as CircuitBreakerDecorator,

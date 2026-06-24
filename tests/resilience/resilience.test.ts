@@ -7,6 +7,7 @@
  *  - `Bulkhead` concurrency limit + queue + reject-on-full.
  *  - `ResilienceService` registry: getOrCreate pattern.
  *  - `ResilienceModule.forRoot()` DI integration.
+ *  - `ResilienceAdminModule.forRoot()` HTTP admin endpoints.
  */
 import { beforeAll, describe, expect, it } from "vitest";
 import "reflect-metadata";
@@ -19,6 +20,7 @@ let Bulkhead: typeof import("@nexusts/resilience").Bulkhead;
 let BulkheadFullError: typeof import("@nexusts/resilience").BulkheadFullError;
 let ResilienceService: typeof import("@nexusts/resilience").ResilienceService;
 let ResilienceModule: typeof import("@nexusts/resilience").ResilienceModule;
+let ResilienceAdminModule: typeof import("@nexusts/resilience").ResilienceAdminModule;
 
 beforeAll(async () => {
 	const mod = await import("@nexusts/resilience");
@@ -30,6 +32,7 @@ beforeAll(async () => {
 	BulkheadFullError = mod.BulkheadFullError;
 	ResilienceService = mod.ResilienceService;
 	ResilienceModule = mod.ResilienceModule;
+	ResilienceAdminModule = mod.ResilienceAdminModule;
 });
 
 describe("retry()", () => {
@@ -297,5 +300,118 @@ describe("ResilienceModule — DI integration", () => {
 		// The class is a JS function with a name and a `providers`
 		// accessor set by the @Module decorator.
 		expect(typeof mod).toBe("function");
+	});
+});
+
+describe("ResilienceAdminModule — HTTP endpoints", () => {
+	async function makeApp(prefix = "/resilience") {
+		const { Application, Module } = await import("@nexusts/core");
+		const ResilienceMod = (ResilienceModule as any).forRoot({ threshold: 0.5 });
+		const AdminMod = (ResilienceAdminModule as any).forRoot({ prefix });
+
+		@Module({ imports: [ResilienceMod, AdminMod] })
+		class AppModule {}
+
+		return new (Application as any)(AppModule);
+	}
+
+	it("forRoot() returns a module class", () => {
+		const mod = (ResilienceAdminModule as any).forRoot();
+		expect(typeof mod).toBe("function");
+		expect(mod.name).toBe("ConfiguredResilienceAdminModule");
+	});
+
+	it("GET {prefix}/circuits returns empty array initially", async () => {
+		const app = await makeApp();
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/circuits"),
+		);
+		expect(res.status).toBe(200);
+		expect(await res.json()).toEqual([]);
+	});
+
+	it("GET {prefix}/bulkheads returns empty array initially", async () => {
+		const app = await makeApp();
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/bulkheads"),
+		);
+		expect(res.status).toBe(200);
+		expect(await res.json()).toEqual([]);
+	});
+
+	it("GET {prefix}/circuits lists a circuit after it is created", async () => {
+		const app = await makeApp();
+		const svc = app.container.resolve(ResilienceService.TOKEN);
+		svc.getOrCreateCircuit("test-svc", { threshold: 0.5 });
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/circuits"),
+		);
+		const body = await res.json();
+		expect(body).toHaveLength(1);
+		expect(body[0].name).toBe("test-svc");
+		expect(body[0].state).toBe("closed");
+	});
+
+	it("POST force-open opens a known circuit", async () => {
+		const app = await makeApp();
+		const svc = app.container.resolve(ResilienceService.TOKEN);
+		svc.getOrCreateCircuit("my-cb");
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/circuits/my-cb/force-open", {
+				method: "POST",
+			}),
+		);
+		expect(res.status).toBe(200);
+		const body = await res.json();
+		expect(body).toMatchObject({ name: "my-cb", state: "open" });
+		expect(svc.getCircuit("my-cb")?.currentState).toBe("open");
+	});
+
+	it("POST force-close closes a forced-open circuit", async () => {
+		const app = await makeApp();
+		const svc = app.container.resolve(ResilienceService.TOKEN);
+		const cb = svc.getOrCreateCircuit("my-cb2");
+		cb.forceOpen();
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/circuits/my-cb2/force-close", {
+				method: "POST",
+			}),
+		);
+		expect(res.status).toBe(200);
+		expect(svc.getCircuit("my-cb2")?.currentState).toBe("closed");
+	});
+
+	it("POST reset clears circuit history", async () => {
+		const app = await makeApp();
+		const svc = app.container.resolve(ResilienceService.TOKEN);
+		const cb = svc.getOrCreateCircuit("my-cb3");
+		cb.forceOpen();
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/circuits/my-cb3/reset", {
+				method: "POST",
+			}),
+		);
+		expect(res.status).toBe(200);
+		expect(svc.getCircuit("my-cb3")?.currentState).toBe("closed");
+	});
+
+	it("POST force-open on unknown circuit returns 404", async () => {
+		const app = await makeApp();
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/resilience/circuits/no-such/force-open", {
+				method: "POST",
+			}),
+		);
+		expect(res.status).toBe(404);
+		const body = await res.json();
+		expect(body.error).toMatch(/no-such/);
+	});
+
+	it("custom prefix is respected", async () => {
+		const app = await makeApp("/admin/resilience");
+		const res = await app.server.app.fetch(
+			new Request("http://localhost/admin/resilience/circuits"),
+		);
+		expect(res.status).toBe(200);
 	});
 });
