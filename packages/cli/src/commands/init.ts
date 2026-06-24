@@ -139,7 +139,12 @@ export const initCommand: Command = {
 			{ path: "package.json", mode: "merge-pkg" },
 			{ path: "tsconfig.json", mode: "merge-tsconfig" },
 			{ path: "public/.gitkeep", mode: "write" },
-			...view !== "none" ? [{ path: "resources/views/welcome.html", mode: "write" as const }] : [],
+			...view === "inertia"
+				? [{ path: `resources/js/Pages/Welcome.${frontend === "vue" ? "vue" : "tsx"}`, mode: "write" as const },
+				   { path: `resources/js/app.${frontend === "vue" ? "ts" : "tsx"}`, mode: "write" as const }]
+				: view !== "none"
+					? [{ path: "resources/views/welcome.html", mode: "write" as const }]
+					: [],
 			{ path: ".env", mode: "skip" },
 			{ path: ".env.local", mode: "skip" },
 			{ path: ".gitignore", mode: "skip" },
@@ -157,7 +162,9 @@ export const initCommand: Command = {
 		// Ensure directories exist
 		mkdirSync(resolve(target, "app/controllers"), { recursive: true });
 		mkdirSync(resolve(target, "public"), { recursive: true });
-		if (view !== "none") {
+		if (view === "inertia") {
+			mkdirSync(resolve(target, "resources/js/Pages"), { recursive: true });
+		} else if (view !== "none") {
 			mkdirSync(resolve(target, "resources/views"), { recursive: true });
 		}
 
@@ -185,6 +192,16 @@ export const initCommand: Command = {
 				}
 				if (view !== "none") {
 					coreDeps["@nexusts/static"] = "*";
+				}
+				if (view === "inertia") {
+					if (frontend === "vue") {
+						coreDeps["@inertiajs/vue"] = "^2.0.0";
+						coreDeps["vue"] = "^3.5.0";
+					} else {
+						coreDeps["@inertiajs/react"] = "^2.0.0";
+						coreDeps["react"] = "^19.0.0";
+						coreDeps["react-dom"] = "^19.0.0";
+					}
 				}
 
 				if (exists) {
@@ -306,6 +323,69 @@ function renderContent(path: string, ctx: RenderCtx): string {
 			return "";
 		case "resources/views/welcome.html":
 			return `<h1>Welcome to ${ctx.targetName}</h1>\n<p>This is a sample Rendu template.</p>\n<p>Founded <?= year ?>.</p>\n`;
+		case "resources/js/Pages/Welcome.tsx":
+			return `import { useState } from "react";
+
+export default function Welcome({ name }: { name: string }) {
+  const [count, setCount] = useState(0);
+  return (
+    <main style={{ fontFamily: "system-ui, sans-serif", maxWidth: 560, margin: "2em auto" }}>
+      <h1>Hello, {name}!</h1>
+      <p>Counter: <strong>{count}</strong></p>
+      <button onClick={() => setCount((c) => c + 1)} style={{ padding: "0.5em 1em" }}>
+        +1
+      </button>
+    </main>
+  );
+}
+`;
+		case "resources/js/Pages/Welcome.vue":
+			return `<template>
+  <main style="font-family: system-ui, sans-serif; max-width: 560px; margin: 2em auto">
+    <h1>Hello, {{ name }}!</h1>
+    <p>Counter: <strong>{{ count }}</strong></p>
+    <button @click="count++" style="padding: 0.5em 1em">+1</button>
+  </main>
+</template>
+
+<script setup lang="ts">
+defineProps<{ name: string }>();
+import { ref } from "vue";
+const count = ref(0);
+</script>
+`;
+		case "resources/js/app.tsx":
+			return `import { createInertiaApp } from "@inertiajs/react";
+import { createRoot } from "react-dom/client";
+import Welcome from "./Pages/Welcome.js";
+
+createInertiaApp({
+  resolve: (name: string) => {
+    if (name === "Welcome") return Welcome;
+    throw new Error("Unknown page: " + name);
+  },
+  setup({ el, App, props }: any) {
+    createRoot(el).render(<App {...props} />);
+  },
+});
+`;
+		case "resources/js/app.ts":
+			return `import { createInertiaApp } from "@inertiajs/vue";
+import { createApp, h } from "vue";
+import Welcome from "./Pages/Welcome.vue";
+
+createInertiaApp({
+  resolve: (name: string) => {
+    if (name === "Welcome") return Welcome;
+    throw new Error("Unknown page: " + name);
+  },
+  setup({ el, App, props }: any) {
+    createApp({ render: () => h(App, props) }).mount(el);
+  },
+});
+`;
+		case "resources/views/welcome.html":
+			return `<h1>Welcome to ${ctx.targetName}</h1>\n<p>This is a sample Rendu template.</p>\n<p>Founded <?= year ?>.</p>\n`;
 		case ".gitignore":
 			return `# NexusTS
 node_modules/
@@ -376,16 +456,27 @@ DATABASE_URL=app.db
 					+ `const staticMiddleware = StaticModule.mount({ root: './public', prefix: '/static' });\n`
 				: '';
 			const staticOpt = hasView ? '\n  middleware: [staticMiddleware],' : '';
+			const isInertia = ctx.view === "inertia";
+			const inertiaAdapter = ctx.inertiaFrontend === "vue" ? "Vue" : "React";
+			const inertiaMw = isInertia
+				? `import { Inertia, create${inertiaAdapter}Adapter } from '@nexusts/view';
+`
+				: '';
+			const inertiaSetup = isInertia
+				? `const inertia = app.container.resolve(Inertia.TOKEN) as Inertia;
+inertia.setSsrAdapter(create${inertiaAdapter}Adapter());
+`
+				: '';
 			return `import 'reflect-metadata';
 import { Application } from '@nexusts/core';
-${staticMw}import { AppModule } from './app.module.js';
+${staticMw}${inertiaMw}import { AppModule } from './app.module.js';
 
 const app = new Application(AppModule, {
   logging: true,
   port: Number(process.env['PORT'] ?? 3000),${staticOpt}
 });
 
-await app.listen();
+${inertiaSetup}await app.listen();
 console.log('[nexus] Listening on http://localhost:' + (process.env['PORT'] ?? 3000));
 `;
 		}
@@ -410,6 +501,22 @@ export class AppModule {}
 `;
 		}
 		case "app/controllers/home.controller.ts": {
+			const isInertia = ctx.view === "inertia";
+			if (isInertia) {
+				return `import { Controller, Get, Inject } from '@nexusts/core';
+import { Inertia } from '@nexusts/view';
+
+@Controller('/')
+export class HomeController {
+  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}
+
+  @Get('/')
+  index() {
+    return this.inertia.render('Welcome', { name: 'NexusTS' });
+  }
+}
+`;
+			}
 			const hasView = ctx.view !== "none";
 			const body = hasView
 				? `{\n      view: 'welcome.html',\n      data: { year: new Date().getFullYear() },\n    }`
