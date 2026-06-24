@@ -1,46 +1,77 @@
 # Publishing NexusTS packages to npm
 
-This directory documents how the 31 NexusTS packages get published to
-the public npm registry.
+All 31 NexusTS packages (`@nexusts/*` + `create-nexusts`) are
+published. This doc covers how to publish new versions.
 
-## Documents
-
-| File | Audience | Covers |
-|------|----------|--------|
-| [workflow.md](./workflow.md) | Maintainers | How the GitHub Actions workflow publishes (release vs. manual trigger) |
-| [local-publish.md](./local-publish.md) | Maintainers | How to run `bun run publish:all` from your machine |
-| [npm-rate-limit.md](./npm-rate-limit.md) | Everyone | The 25/24h publish rate limit — what to do when you hit it |
-| [troubleshooting.md](./troubleshooting.md) | Maintainers | Common failures (429, EOTP, E401) and how to recover |
-| [first-time-setup.md](./first-time-setup.md) | First-time maintainer | How to set up the npm org, token, GitHub secret |
-
-## TL;DR for the impatient
+## Quick reference
 
 ```bash
 # Build everything
 bun run build
 
-# Publish (idempotent: skips already-published versions)
+# Publish (idempotent — skips already-published versions)
 bun run publish:all
 ```
 
 Or trigger the GitHub Actions workflow:
 
-- **Auto**: push a release tag (`gh release create v0.7.7`)
+- **Auto**: create a GitHub release (`gh release create v0.x.x`)
 - **Manual**: GitHub → Actions → "Publish packages to npm" → Run workflow
 
-## Why monorepo publishing is tricky
+## How publish.ts works
 
-NexusTS ships as **30 independent npm packages** under `@nexusts/*`,
-plus the `create-nexusts` scaffolder. That means a single release is
-30+ `npm publish` calls. npm's anti-abuse system flags a burst of 30
-publishes from a brand-new org as suspicious, so we hit
-[rate limits](./npm-rate-limit.md) on the very first release.
+`scripts/publish.ts` iterates all 31 packages in dependency order:
 
-The solutions documented here:
+1. `npm view <name>@<version> version` — check registry
+2. If same version exists → skip (idempotent)
+3. Otherwise → `npm publish --access public`
 
-- `publish.ts` is **idempotent** — re-running it only retries missing
-  versions, not all 30.
-- The CI workflow supports a **`publish-batch`** mode that adds a
-  10-minute break every 5 packages.
-- Local publish always uses **`npm login --auth-type=web`** so 2FA is
-  handled via the browser, not via pasted OTPs.
+Default delays: **3s between packages**, **10s batch break every 5**
+packages (configurable via `PUBLISH_BATCH_DELAY_MS` /
+`PUBLISH_BATCH_BREAK_MS` / `PUBLISH_BATCH_BREAK_N` env vars).
+
+## Local publish
+
+```bash
+# Login (one time per machine)
+npm login --auth-type=web
+
+# Build + publish
+bun run build
+bun run publish:all
+```
+
+`npm login --auth-type=web` uses npm 11's device authorization flow:
+
+- Opens a browser → log in → complete 2FA
+- Caches a session token in `~/.npmrc`
+- Subsequent publishes in the same session don't re-prompt
+
+See [local-publish.md](./local-publish.md) for details.
+
+## CI publish (GitHub Actions)
+
+The workflow `.github/workflows/publish.yml` supports four modes:
+
+| Mode | When to use |
+|------|-------------|
+| `publish` (default for release) | Normal version bump. 3s between packages. |
+| `publish-batch` | Slower (10s/30s delays) for extra safety. |
+| `dry-run` (default for manual) | Validate package.json only. |
+| `build` | Build only, no registry interaction. |
+
+The workflow auto-triggers on `release: published`. A GitHub release
+created via `gh release create v0.x.x` automatically starts a publish.
+
+## Troubleshooting
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `E401 Unauthorized` | Token expired or missing | `npm login --auth-type=web` or update `NPM_TOKEN` secret |
+| `EOTP` | 2FA re-auth needed | Follow the device auth URL printed by npm |
+| `ENEEDAUTH` | No token in env | Check `NPM_TOKEN` secret or `~/.npmrc` |
+| `dist/ not found` | Build not run | `bun run build` first |
+
+All 31 packages are on the registry — the 25/24h new-package rate
+limit no longer applies (subsequent releases only update existing
+packages, not create new ones).
