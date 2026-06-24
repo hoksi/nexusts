@@ -21,6 +21,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.6] — 2026-06-24
+
+### 추가
+
+- **Global `@Resolver` 클래스 레지스트리**: `@Resolver()` 데코레이터만
+  붙이면 GraphQL 리졸버가 자동 등록됨 — 모듈 providers 배열에만 추가하면 됨.
+- **`nx init` / `nx new` 개선**:
+  - ORM이 drizzle일 때 `drizzle.config.ts` 자동 생성
+  - `drizzle-kit ^0.31.0` devDependencies에 자동 추가
+  - 선택한 dialect에 따라 DB 드라이버(`pg`, `mysql2`, `better-sqlite3`)
+    자동 추가
+
+### 수정
+
+- **`nx init` / `nx new`**: `drizzle.config.ts` 누락으로 `db:generate`/
+  `db:migrate` 실패 — 이제 처음부터 생성.
+- **`nx db:generate` 도움말**: `make:migration`과의 차이점 명확화.
+
+---
+
 ## [0.7.5] — 2026-06-24
 
 ### 추가
@@ -1012,6 +1032,7 @@ Feature-complete MVP. 프레임워크가 "v0.2 약속" 모듈을 모두 획득.
 
 ---
 
+[0.7.6]: https://github.com/kabyeon/nexusts/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/kabyeon/nexusts/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/kabyeon/nexusts/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/kabyeon/nexusts/compare/v0.7.0...v0.7.3

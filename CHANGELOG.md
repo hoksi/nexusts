@@ -21,6 +21,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.6] — 2026-06-24
+
+### Added
+
+- **Global `@Resolver` class registry**: resolver classes no longer
+  need to be manually listed in `GraphQLModule.forRoot()`. Any class
+  decorated with `@Resolver()` is auto-registered — just add it to
+  the module's providers array.
+- **`nx init` / `nx new` improvements**:
+  - `drizzle.config.ts` auto-generated when ORM is drizzle
+  - `drizzle-kit ^0.31.0` added to devDependencies
+  - Database driver deps auto-added (`pg`, `mysql2`, `better-sqlite3`)
+    based on selected dialect
+
+### Fixed
+
+- **`nx init` / `nx new`**: missing `drizzle.config.ts` caused
+  `db:generate` and `db:migrate` to fail until `nx config` was run.
+  Now generated from the start.
+- **`nx db:generate` help text**: clarified difference from
+  `make:migration` — `db:generate` auto-generates from schema,
+  `make:migration` scaffolds an empty file for manual editing.
+
+---
+
 ## [0.7.5] — 2026-06-24
 
 ### Added
@@ -1340,6 +1365,7 @@ Initial release. **feature-complete MVP core.**
 
 ---
 
+[0.7.6]: https://github.com/kabyeon/nexusts/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/kabyeon/nexusts/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/kabyeon/nexusts/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/kabyeon/nexusts/compare/v0.7.0...v0.7.3

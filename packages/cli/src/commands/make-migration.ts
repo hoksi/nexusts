@@ -123,7 +123,7 @@ export const makeMigrationCommand: Command = {
 		if (isDrizzle) {
 			logger.finger(`run \`nx migrate\` to apply pending migrations.`);
 		} else {
-			logger.finger(`run \`bunx drizzle-kit migrate\` or your migration tool.`);
+			logger.finger(`run \`bun nx db:generate & bun nx db:migrate\` or your migration tool.`);
 		}
 		return 0;
 	},

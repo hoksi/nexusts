@@ -1,6 +1,6 @@
 {
   "name": "@nexusts/cli",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "CLI command runner (nx)",
   "type": "module",
   "main": "./dist/index.js",
