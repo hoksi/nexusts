@@ -60,7 +60,7 @@ AdonisJS가 출시하는 모든 battery를 다루며, 그 이상을 제공한다
 | Admin panel | ✅ `@adonisjs/admin` | ❌ 출시 안 됨 | 낮은 우선순위 |
 | GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 + 전역 클래스 레지스트리 (v0.7.6). Code-first SDL 합성 v0.8. |
 | gRPC | ❌ DIY | ✅ `@nexusts/grpc` | v0.5에 출시됨 (reflection-based, unary / streaming v2) |
-| Feature flags | ❌ DIY | ❌ 없음 | v0.8 예정 |
+| Feature flags | ❌ DIY | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` 데코레이터. v0.8.0 출시. |
 | Resilience (서킷 브레이커, retry) | ❌ DIY | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, exponential-jitter 백오프. v0.7.0 출시. **새 의존성 0.** |
 
 **헤드라인**: NexusTS v0.7.6는 **모든** AdonisJS v6 battery를

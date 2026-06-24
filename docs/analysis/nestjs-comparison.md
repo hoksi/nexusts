@@ -42,14 +42,14 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Metrics | ✅ Prometheus integration | ✅ `@nexusts/metrics` | Counter / Gauge / Histogram / Summary |
 | Auth | ✅ @nestjs/passport + many strategies | ✅ `@nexusts/auth` (better-auth) | better-auth supports many strategies |
 | Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `@nexusts/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
-| Feature flags | ⚠️ DIY (no first-party) | ⚠️ DIY | Both lack first-party |
+| Feature flags | ⚠️ DIY (no first-party) | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` decorator, memory backend. Shipped v0.8.0. |
 | Resilience (circuit breaker, retry) | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff |
 | GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first + code-first (`autoSchema: true`). `@Resolver`/`@Query`/`@Mutation` decorators with full SDL synthesis. Shipped v0.7.6. |
 | gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection-based, unary methods (streaming planned v2). Shipped v0.5. |
 | Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, HTTP admin API (`ResilienceAdminModule`), eager `applyResilience()` auto-wrap. **Zero new dependencies.** |
 
 **Headline**: NexusTS v0.8.0 closes **every Tier 1 and Tier 2 gap** from
-the v0.2 analysis. All **31** shipped modules are first-party.
+the v0.2 analysis. All **32** shipped modules are first-party.
 
 ---
 
@@ -350,16 +350,17 @@ Shipped in v0.5–v0.6.8:
 
 ### v0.7.9 — Bun decorator diagnostics (shipped)
 
-### v0.8.0 — ResilienceAdminModule + eager applyResilience (shipped)
+### v0.8.0 — ResilienceAdminModule + FeatureFlagModule (shipped)
 
 - **`ResilienceAdminModule`** — HTTP admin endpoints for circuit
   breaker and bulkhead inspection/control.
 - **Eager `applyResilience()`** — decorators auto-wrap at mount time.
+- **`@nexusts/feature-flag`** — canary / A/B testing with rollout,
+  allowlist/denylist, `@FeatureFlag` decorator.
 - **Repository migration** to `nexus-ts/nexusts`.
 
-### v0.8.x — Feature flags & hardening
+### v0.8.x — Hardening
 
-- **`@nexusts/feature-flag`** — canary / A/B testing.
 - **Cross-pod circuit breakers** (resilience backed by Redis / Drizzle).
 - Stable public API surface (semver guarantees).
 - Multi-runtime CI (Bun + Node + Cloudflare Workers).

@@ -63,13 +63,13 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Admin panel | ✅ `@adonisjs/admin` | ❌ Not shipped | Lower priority |
 | GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first + code-first (`autoSchema: true`). Full SDL synthesis from decorators. Shipped v0.7.6. |
 | gRPC | ❌ DIY | ✅ `@nexusts/grpc` | Reflection-based, unary (streaming v2). v0.5 shipped. |
-| Feature flags | ❌ DIY | ❌ None | Planned v0.8 |
+| Feature flags | ❌ DIY | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` decorator. Shipped v0.8.0. |
 | Resilience (circuit breaker, retry) | ❌ DIY | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff. v0.7.0 shipped. **Zero new deps.** |
 
-**Headline**: NexusTS v0.7.6 covers **every** AdonisJS v6 battery
+**Headline**: NexusTS v0.8.0 covers **every** AdonisJS v6 battery
 and exceeds it on modern features (GraphQL, WebSockets, OpenAPI,
 SSE, tracing, metrics, gRPC, resilience) that AdonisJS doesn't
-ship as batteries. All **31** modules are first-party.
+ship as batteries. All **32** modules are first-party.
 
 ---
 
@@ -296,9 +296,10 @@ A team that needs any of these gets them for free with NexusTS.
 - `@Resolver`-decorated classes auto-registered.
 - `drizzle.config.ts` auto-generation on init/new.
 
-### v0.8 — Hardening + feature flags (planned)
+### v0.8.0 — FeatureFlagModule (shipped)
 
-- **`@nexusts/feature-flag`**.
+- **`@nexusts/feature-flag`** — canary / A/B testing with rollout,
+  allowlist/denylist, `@FeatureFlag` decorator.
 - **Cross-pod circuit breakers**.
 - Stable public API surface (semver).
 - Multi-runtime CI.
@@ -311,9 +312,9 @@ A team that needs any of these gets them for free with NexusTS.
 
 ---
 
-## 8. Honest assessment (v0.7.6)
+## 8. Honest assessment (v0.8.0)
 
-The v0.7.6 release **closes every AdonisJS v6 battery gap**. A team
+The v0.8.0 release **closes every AdonisJS v6 battery gap**. A team
 migrating from AdonisJS to NexusTS v0.7.0 would find:
 
 - All first-party batteries have an equivalent in NexusTS v0.7.0.
@@ -331,7 +332,6 @@ What's still missing for **full** AdonisJS coverage:
 
 - **Inspector** — debugging-only; lower priority.
 - **Admin panel** — lower priority; most teams use something custom.
-- **Feature flags** — planned v0.8 (`@nexusts/feature-flag`).
 - **Seeding factories** — first-party seed factory module.
 
 AdonisJS v6 vs NexusTS v0.7.0 differentiators:

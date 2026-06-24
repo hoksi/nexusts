@@ -42,7 +42,7 @@ Tier 3+ 잔존 격차에 집중한다.
 | Metrics | ✅ Prometheus 통합 | ✅ `@nexusts/metrics` | Counter / Gauge / Histogram / Summary |
 | Auth | ✅ @nestjs/passport + 다수 전략 | ✅ `@nexusts/auth` (better-auth) | better-auth가 다수 전략 지원 |
 | 암호화 | ⚠️ DIY (또는 `nestjs-crypto`) | ✅ `@nexusts/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
-| Feature flags | ⚠️ DIY (first-party 없음) | ⚠️ DIY | 둘 다 first-party 없음 |
+| Feature flags | ⚠️ DIY (first-party 없음) | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` 데코레이터. v0.8.0 출시. |
 | GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 + 전역 클래스 레지스트리 (v0.7.6). Code-first SDL 합성 v0.8 예정. |
 | gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection 기반, unary 메소드 (streaming v2 예정). v0.5 출시. |
 | Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, exponential-jitter 백오프. v0.7.0 출시. **새 의존성 0.** |
