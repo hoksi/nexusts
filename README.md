@@ -2,22 +2,22 @@
 
 **Bun Native Fullstack Framework** — NestJS structure × Adonis productivity × Hono edge performance.
 
-> **v0.7.0 — GraphQL + Resilience.** The framework now ships **30
-> independent modules**. Tier 1 and Tier 2 gaps from the NestJS /
-> AdonisJS gap analyses are now fully closed. v0.7 adds
-> `@nexusts/graphql` (SDL-first GraphQL with peer-dep
-> `graphql`) and `@nexusts/resilience` (retry + circuit
-> breaker + bulkhead in a single DI singleton). See
-> [CHANGELOG.md](./CHANGELOG.md) for the full v0.7 release notes.
+> **v0.8.0 — ResilienceAdminModule + Eager applyResilience.** The
+> framework now ships **31 independent modules**. Tier 1 and Tier 2
+> gaps from the NestJS / AdonisJS gap analyses are fully closed.
+> v0.8 adds `ResilienceAdminModule` (HTTP admin endpoints),
+> eager `applyResilience()` (auto-wrap at controller mount),
+> and CORS support in `@nexusts/shield`. See
+> [CHANGELOG.md](./CHANGELOG.md) for the full v0.8 release notes.
 
 ---
 
-## What's in v0.7
+## What's in v0.8
 
-The framework ships **30 independent modules** — every one is
+The framework ships **31 independent modules** — every one is
 its own bundle entry point, so you install only what you use. Tier 1
-and Tier 2 gaps from the NestJS / AdonisJS gap analyses are now
-fully closed.
+and Tier 2 gaps from the NestJS / AdonisJS gap analyses are fully
+closed.
 
 | Module | Purpose |
 | ------ | ------- |
@@ -49,15 +49,15 @@ fully closed.
 | `@nexusts/i18n` | Locale-aware translations + date/number/currency formatters via `Intl`. `I18nService`, `@CurrentLocale()`, JSON message catalogs |
 | `@nexusts/redis` | Runtime-aware Redis client (Bun / Node / Workers KV). Powers `redis` / `cloudflare-kv` session & cache backends |
 | `@nexusts/grpc` | Reflection-based gRPC server + typed client. Loads `.proto` files at runtime via `@grpc/proto-loader`. Unary methods (streaming deferred to v2) |
-| `@nexusts/graphql` *(v0.7)* | SDL-first GraphQL endpoint. `POST/GET /graphql`, `/graphql/schema`, in-bundle GraphiQL playground. `context()` factory for per-request state. `@Resolver` / `@Query` / `@Mutation` decorators (alpha). Requires the `graphql` peer-dep |
-| `@nexusts/resilience` *(v0.7)* | Retry + Circuit Breaker + Bulkhead in a single DI singleton. `retry()` with 4 backoff strategies. `CircuitBreaker` with closed/open/half-open state machine. `Bulkhead` with FIFO queue. `@Retry` / `@CircuitBreaker` / `@Bulkhead` / `@Resilient` decorators. **Zero new dependencies.** |
+| `@nexusts/graphql` | SDL-first + code-first GraphQL endpoint (`autoSchema: true`). `@Resolver` / `@Query` / `@Mutation` / `@Arg` decorators with full SDL synthesis. In-bundle GraphiQL playground. Requires `graphql` peer-dep |
+| `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead in a single DI singleton. Eager `applyResilience()` auto-wrap at controller mount. `ResilienceAdminModule` with HTTP admin endpoints. Circuit metrics, `forceOpen`/`forceClose`. **Zero new dependencies.** |
 | `@nexusts/view` | View engine with 3 adapters: Rendu (default, every runtime), Edge (Adonis-style `.edge`), Eta (EJS-style `.eta`). Auto-detects adapter by file extension. `setViewPaths()` for file-based templates, `Application.tryLoadNxConfig()` auto-loads from `nx.config.ts` |
 
 See [`docs/user-guide/drizzle.md`](./docs/user-guide/drizzle.md) for the
 Drizzle integration guide, [`docs/user-guide/graphql.md`](./docs/user-guide/graphql.md)
 for GraphQL, [`docs/user-guide/resilience.md`](./docs/user-guide/resilience.md)
 for retry/circuit/bulkhead, and [CHANGELOG.md](./CHANGELOG.md)
-for the detailed v0.7 release notes.
+for the detailed v0.8 release notes.
 
 > 27 working examples under `examples/` — one per major module —
 > double as living documentation and as the smoke-test suite. See
@@ -82,8 +82,8 @@ for the detailed v0.7 release notes.
 | **30 independent bundle entry points** |   ❌   |   △   |   ❌   |    ✅     |
 | **SQL-injection-safe raw queries by construction** |   △   |   △   |   ❌   |    ✅     |
 | **Migrations + autoMigrate on boot** |   △   |   ✅   |   ❌   |    ✅     |
-| **First-party GraphQL** *(v0.7)*  |   ✅   |   △    |   ❌   |    ✅     |
-| **First-party retry / circuit / bulkhead** *(v0.7)* |   △   |   ❌   |   ❌   |    ✅     |
+| **First-party GraphQL** (SDL + code-first) |   ✅   |   △    |   ❌   |    ✅     |
+| **First-party retry / circuit / bulkhead** |   △   |   ❌   |   ❌   |    ✅     |
 | **First-party gRPC server + client** |   ✅   |   ❌   |   ❌   |    ✅     |
 | **Inertia.js v3 server-side**    |   ❌   |   ✅   |   ❌   |    ✅     |
 
@@ -121,8 +121,8 @@ bun add @nexusts/auth               # authentication (better-auth)
 bun add @nexusts/queue              # background jobs
 bun add @nexusts/session            # cookie/memory/drizzle sessions
 bun add @nexusts/grpc               # gRPC server + typed client (v0.5+)
-bun add @nexusts/graphql            # GraphQL endpoint (v0.7+)
-bun add @nexusts/resilience         # retry/circuit/bulkhead (v0.7+)
+bun add @nexusts/graphql            # GraphQL endpoint (SDL + code-first)
+bun add @nexusts/resilience         # retry/circuit/bulkhead + HTTP admin
 
 # DX + observability
 bun add @nexusts/openapi            # OpenAPI docs
@@ -432,7 +432,7 @@ class UserModule {}
 
 ---
 
-## Resilience: retry, circuit breaker, bulkhead *(v0.7)*
+## Resilience: retry, circuit breaker, bulkhead
 
 `@nexusts/resilience` ships the three classic
 distributed-systems primitives in a single DI singleton with
@@ -483,7 +483,7 @@ the full reference.
 
 ---
 
-## GraphQL *(v0.7)*
+## GraphQL
 
 `@nexusts/graphql` adds a `POST/GET /graphql` endpoint with
 an in-bundle GraphiQL playground. SDL-first, optional
@@ -958,8 +958,8 @@ src/
 ├── i18n/                   # locale-aware translations
 ├── redis/                  # runtime-aware Redis client
 ├── grpc/                   # reflection-based gRPC server + client
-├── graphql/                # SDL-first GraphQL (v0.7)
-└── resilience/             # retry / circuit / bulkhead (v0.7)
+├── graphql/                # SDL + code-first GraphQL
+└── resilience/             # retry / circuit / bulkhead + HTTP admin
 ```
 
 ### Examples
@@ -1009,13 +1009,20 @@ v1.0, only major bumps will.
 - **v0.6.6** (2026-06-22) — package renamed to `@nexusts/core`, `router.getRoutes()` for OpenAPI spec generation.
 - **v0.6.7** (2026-06-22) — `create-nexusts` scaffolder published as a separate npm package; 27 working examples under `examples/`.
 - **v0.6.8** (2026-06-22) — smoke test suite (`tests/examples/smoke.test.ts`) with 55 vitest tests, 67 examples by v0.6.8.
-- **v0.7.0** (2026-06-22) — **GraphQL** (`@nexusts/graphql`, SDL-first, optional `graphql` peer-dep) and **Resilience** (`@nexusts/resilience`, retry + circuit + bulkhead, zero new dependencies). 30 first-party modules, 33 examples, 102 vitest tests.
+- **v0.7.0** (2026-06-22) — **GraphQL** (`@nexusts/graphql`) and **Resilience** (`@nexusts/resilience`, retry + circuit + bulkhead).
+- **v0.7.3** (2026-06-23) — Exception Filters, Interceptors, Guards, Lifecycle Hooks, `@Global()` decorator.
+- **v0.7.4** (2026-06-24) — REPL improvements (`.services`/`.modules`/`.routes`), Logger pino direct dep, Schedule hot-reload.
+- **v0.7.5** (2026-06-24) — Circuit breaker admin API (`metrics`, `forceOpen`/`forceClose`), `make:repository` CLI command.
+- **v0.7.6** (2026-06-24) — Global `@Resolver` registry, code-first GraphQL SDL synthesis (`autoSchema: true`).
+- **v0.7.7** (2026-06-24) — GraphQL code-first SDL synthesis enhancements.
+- **v0.7.8** (2026-06-24) — Repository migration to `nexus-ts/nexusts`.
+- **v0.7.9** (2026-06-24) — Bun decorator diagnostics, GitHub repo metadata.
+- **v0.8.0** (2026-06-24) — `ResilienceAdminModule` (HTTP admin endpoints), eager `applyResilience()` auto-wrap, CORS in ShieldModule. **31 modules.**
 
 ### Planned
 
-- **v0.7.1** — Inertia `Form` + lazy props SDK stabilization, code-first GraphQL SDL synthesis (the `@Resolver` / `@Query` decorators are alpha today), eager `applyResilience()` wrapping at controller-mount time, `forceOpen` / `forceClose` admin API for the circuit breakers.
-- **v0.8** — `@nexusts/feature-flag` (canary / A/B testing), runtime parity test suite, performance benchmarks across Bun / Node / Workers, cross-pod circuit breaker via Redis/Drizzle backing store.
-- **v1.0** — stable public API surface with semver guarantees, removal of all v0.1 deprecated aliases, long-term LTS support plan.
+- **v0.8.x** — `@nexusts/feature-flag` (canary / A/B testing), runtime parity test suite, performance benchmarks across Bun / Node / Workers, cross-pod circuit breaker via Redis/Drizzle backing store.
+- **v1.0** — stable public API surface with semver guarantees, long-term LTS support plan.
 
 Detailed release notes for every version live in
 [`CHANGELOG.md`](./CHANGELOG.md).
