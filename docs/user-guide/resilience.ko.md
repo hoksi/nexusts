@@ -285,6 +285,61 @@ cb.forceClose();
 cb.reset();
 ```
 
+## HTTP Admin 엔드포인트
+
+`ResilienceAdminModule`을 임포트하면 회로 차단기와 벌크헤드를 HTTP로
+검사·제어할 수 있습니다. 프로덕션 환경에서는 이 모듈을 별도 인증 미들웨어로
+보호하세요.
+
+```ts
+import { ResilienceModule, ResilienceAdminModule } from "@nexusts/resilience";
+
+@Module({
+  imports: [
+    ResilienceModule.forRoot({ threshold: 0.5 }),
+    ResilienceAdminModule.forRoot({ prefix: "/resilience" }),
+  ],
+})
+class AppModule {}
+```
+
+### 엔드포인트 목록
+
+| 메서드 | 경로 | 설명 |
+|--------|------|------|
+| `GET` | `{prefix}/circuits` | 등록된 모든 회로와 현재 메트릭 반환 |
+| `GET` | `{prefix}/bulkheads` | 등록된 모든 벌크헤드와 현재 통계 반환 |
+| `POST` | `{prefix}/circuits/:name/force-open` | 회로를 강제 open (요청 즉시 차단) |
+| `POST` | `{prefix}/circuits/:name/force-close` | 회로를 강제 close (요청 통과) |
+| `POST` | `{prefix}/circuits/:name/reset` | 회로를 초기 closed 상태로 리셋 (히스토리 삭제) |
+
+`prefix`의 기본값은 `"/resilience"`입니다.
+
+### 예시
+
+```bash
+# 모든 회로 상태 확인
+curl http://localhost:3000/resilience/circuits
+# [
+#   { "name": "stripe", "state": "open", "metrics": { "failures": 8, ... } },
+#   { "name": "github", "state": "closed", "metrics": { "failures": 0, ... } }
+# ]
+
+# stripe 회로 강제 close (복구 확인 후)
+curl -X POST http://localhost:3000/resilience/circuits/stripe/force-close
+# { "name": "stripe", "state": "closed" }
+
+# stripe 회로 리셋 (히스토리 삭제)
+curl -X POST http://localhost:3000/resilience/circuits/stripe/reset
+# { "name": "stripe", "state": "closed" }
+```
+
+존재하지 않는 회로 이름을 지정하면 `404`를 반환합니다.
+
+```json
+{ "error": "Circuit \"unknown\" not found" }
+```
+
 ## 이번 릴리스에 포함되지 않은 것
 
 - **Bulkhead 큐 추적.** 큐가 길 때 현재는 `BulkheadFullError`만 본다.
