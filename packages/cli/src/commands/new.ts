@@ -132,6 +132,19 @@ export const newCommand: Command = {
 		});
 		writeFileSync(resolve(target, "nx.config.ts"), code);
 
+		if (orm === "drizzle") {
+			const dialect = db === "bun-sqlite" || db === "node-sqlite" || db === "libsql"
+				? "sqlite"
+				: db === "postgres"
+					? "postgresql"
+					: "sqlite";
+			const drizzleConfig = render(templates.project["drizzle.config.ts"], {
+				dialect,
+				dbUrl: db === "bun-sqlite" || db === "node-sqlite" ? "app.db" : "",
+			});
+			writeFileSync(resolve(target, "drizzle.config.ts"), drizzleConfig);
+		}
+
 		const deps: Record<string, string> = {
 			"@nexusts/core": "*",
 			"reflect-metadata": "^0.2.2",
@@ -141,30 +154,30 @@ export const newCommand: Command = {
 		if (orm === "drizzle") {
 			deps["@nexusts/drizzle"] = "*";
 			deps["drizzle-orm"] = "^0.45.0";
+			if (db === "postgres") deps["pg"] = "^8.13.0";
+			if (db === "mysql") deps["mysql2"] = "^3.11.0";
+			if (db === "sqlite" || db === "node-sqlite") deps["better-sqlite3"] = "^11.0.0";
 		}
 		if (view !== "none") {
 			deps["@nexusts/static"] = "*";
 		}
-		writeFileSync(
-			resolve(target, "package.json"),
-			JSON.stringify(
-				{
-					name,
-					version: "0.1.0",
-					type: "module",
-					scripts: {
-						dev: "bun --hot app/main.ts",
-						build: "bun run build.ts",
-						start: "bun app/main.ts",
-						test: "vitest",
-						nx: "nx",
-					},
-					dependencies: deps,
-				},
-				null,
-				2,
-			),
-		);
+		const pkgJson: Record<string, any> = {
+			name,
+			version: "0.1.0",
+			type: "module",
+			scripts: {
+				dev: "bun --hot app/main.ts",
+				build: "bun run build.ts",
+				start: "bun app/main.ts",
+				test: "vitest",
+				nx: "nx",
+			},
+			dependencies: deps,
+		};
+		if (orm === "drizzle") {
+			pkgJson.devDependencies = { "drizzle-kit": "^0.31.0" };
+		}
+		writeFileSync(resolve(target, "package.json"), JSON.stringify(pkgJson, null, 2));
 
 		writeFileSync(
 			resolve(target, "tsconfig.json"),

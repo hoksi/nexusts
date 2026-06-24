@@ -143,6 +143,7 @@ export const initCommand: Command = {
 			{ path: ".env", mode: "skip" },
 			{ path: ".env.local", mode: "skip" },
 			{ path: ".gitignore", mode: "skip" },
+			...orm === "drizzle" ? [{ path: "drizzle.config.ts", mode: "write" as const }] : [],
 			{ path: "app/main.ts", mode: "write" },
 			{ path: "app/app.module.ts", mode: "write" },
 			{ path: "app/controllers/home.controller.ts", mode: "write" },
@@ -175,6 +176,11 @@ export const initCommand: Command = {
 				if (orm === "drizzle") {
 					coreDeps["@nexusts/drizzle"] = "*";
 					coreDeps["drizzle-orm"] = "^0.45.0";
+					// Add database driver for non-bun-sqlite dialects
+					if (db === "postgres") coreDeps["pg"] = "^8.13.0";
+					if (db === "mysql") coreDeps["mysql2"] = "^3.11.0";
+					if (db === "sqlite" || db === "node-sqlite") coreDeps["better-sqlite3"] = "^11.0.0";
+					// drizzle-kit goes to devDependencies, handled below
 				}
 				if (view !== "none") {
 					coreDeps["@nexusts/static"] = "*";
@@ -184,27 +190,26 @@ export const initCommand: Command = {
 					mergePackageJson(abs, coreDeps);
 					merged.push(entry.path);
 				} else {
-					writeFileSync(
-						abs,
-						JSON.stringify(
-							{
-								name: target.split("/").pop() ?? "nexus-app",
-								version: "0.1.0",
-								type: "module",
-								private: true,
-								scripts: {
-									dev: "bun --hot app/main.ts",
-									build: "bun run build.ts",
-									start: "bun app/main.ts",
-									test: "vitest",
-									nx: "nx",
-								},
-								dependencies: coreDeps,
-							},
-							null,
-							2,
-						),
-					);
+					const pkgJson: Record<string, any> = {
+						name: target.split("/").pop() ?? "nexus-app",
+						version: "0.1.0",
+						type: "module",
+						private: true,
+						scripts: {
+							dev: "bun --hot app/main.ts",
+							build: "bun run build.ts",
+							start: "bun app/main.ts",
+							test: "vitest",
+							nx: "nx",
+						},
+						dependencies: coreDeps,
+					};
+					if (orm === "drizzle") {
+						pkgJson.devDependencies = {
+							"drizzle-kit": "^0.31.0",
+						};
+					}
+					writeFileSync(abs, JSON.stringify(pkgJson, null, 2));
 					created.push(entry.path);
 				}
 				continue;
@@ -352,6 +357,17 @@ DATABASE_URL=app.db
 # DATABASE_URL=postgres://user:password@localhost:5432/myapp
 # SESSION_SECRET=my-local-secret
 `;
+		case "drizzle.config.ts": {
+			const dialect = ctx.dbDriver === "bun-sqlite" || ctx.dbDriver === "node-sqlite" || ctx.dbDriver === "libsql"
+				? "sqlite"
+				: ctx.dbDriver === "postgres"
+					? "postgresql"
+					: "sqlite";
+			return render(templates.project["drizzle.config.ts"], {
+				dialect,
+				dbUrl: ctx.dbUrl || "app.db",
+			});
+		}
 		case "app/main.ts": {
 			const hasView = ctx.view !== "none";
 			const staticMw = hasView

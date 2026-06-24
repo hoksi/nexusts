@@ -1,8 +1,9 @@
 /**
- * `nx db:generate <name>` — generate a new migration file from schema changes.
+ * `nx db:generate [name]` — generate a new migration file from schema changes.
  *
- * Wraps `drizzle-kit generate` with the project's config, so you
- * don't need to pass `--config` every time.
+ * Runs `drizzle-kit generate` which compares your schema files
+ * (under app/models/*.model.ts) with the database and auto-generates
+ * a migration. This is the recommended way to create migrations.
  *
  * Examples:
  *   nx db:generate add_users_table
@@ -10,9 +11,11 @@
  *   nx db:generate --sql                       # raw SQL file (no drizzle-kit)
  *
  * See also:
- *   nx db:migrate       — apply pending migrations
- *   nx db:seed          — run database seeds
- *   nx make:migration   — scaffold an empty migration file
+ *   nx db:migrate            — apply pending migrations
+ *   nx db:seed               — run database seeds
+ *   nx make:migration        — scaffold an EMPTY migration file (manual)
+ *                              Use this for one-off SQL edits; prefer
+ *                              db:generate for normal schema changes.
  */
 
 import { resolve } from "node:path";

@@ -1,5 +1,12 @@
 /**
- * `nx make:migration <Name>` — generate a database migration.
+ * `nx make:migration <Name>` — scaffold an EMPTY migration file (manual).
+ *
+ * Creates a template file under app/database/migrations/ that you
+ * fill in by hand. Use this for one-off SQL edits or when you need
+ * fine-grained control over the migration.
+ *
+ * For NORMAL schema changes, prefer `nx db:generate [name]` which
+ * auto-generates migrations from your model files via drizzle-kit.
  *
  * Filename pattern: `YYYYMMDD_HHmmss_<snake>.sql` (or `.ts` for
  * Drizzle). The file is placed under the configured `paths.migrations`
@@ -7,10 +14,6 @@
  *
  * Drizzle dialect is chosen via `--dialect` (postgres | mysql | sqlite
  * | bun-sqlite | d1) or `nx.config.ts`'s `dialect` field. Default: bun-sqlite.
- *
- * Drizzle migrations are TypeScript files that export a `pgTable` /
- * `mysqlTable` / `sqliteTable` definition — the same shape as
- * `nx make:model` — and are loaded by the Drizzle migrator at runtime.
  *
  * Plain SQL migrations work for any dialect that uses Drizzle's
  * migrator (postgres-js / node-postgres / mysql2 / better-sqlite3).
