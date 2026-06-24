@@ -627,7 +627,80 @@ await pushSchema({
 
 ---
 
-## 15. Closing gap with AdonisJS Lucid
+## 15. Seeding Factory
+
+`Factory<TData>` generates test data for Drizzle tables. It works
+with or without `@faker-js/faker`.
+
+### Install
+
+```bash
+bun add -d @faker-js/faker   # optional — Factory works without it
+```
+
+### Define a factory
+
+```ts
+// database/factories/user.factory.ts
+import { Factory } from '@nexusts/drizzle';
+import { users } from '../schema.js';
+
+export const UserFactory = new Factory(users, (faker) => ({
+  email:     faker.internet.email(),
+  username:  faker.internet.username(),
+  createdAt: new Date(),
+}));
+```
+
+### Methods
+
+| Method | Description |
+| ------ | ----------- |
+| `make(overrides?)` | Generate a plain object (no DB insert) |
+| `makeMany(n, overrides?)` | Generate an array of plain objects |
+| `create(db, overrides?)` | Insert a single row and return the data |
+| `createMany(db, n, overrides?)` | Insert multiple rows in one statement |
+
+`overrides` partially override the factory defaults.
+
+### Usage in seed files
+
+```ts
+// database/seeds/01_users.ts
+import type { SeedContext } from '@nexusts/cli';
+import { UserFactory } from '../factories/user.factory.js';
+
+export default async function seed(ctx: SeedContext) {
+  await UserFactory.createMany(ctx.db, 10);
+  await UserFactory.create(ctx.db, { email: 'admin@example.com' });
+}
+```
+
+```bash
+nx db:seed --create users
+nx db:seed
+```
+
+### Usage in tests (without faker)
+
+```ts
+import { Factory } from '@nexusts/drizzle';
+import { users } from '../schema.js';
+
+const UserFactory = new Factory(users, () => ({
+  email: 'test@example.com',
+  username: 'testuser',
+}));
+
+it('creates a user', async () => {
+  const row = await UserFactory.make({ email: 'override@example.com' });
+  expect(row.email).toBe('override@example.com');
+});
+```
+
+---
+
+## 17. Closing gap with AdonisJS Lucid
 
 | AdonisJS Lucid | NexusTS drizzle equivalent |
 | -------------- | --------------------------- |
@@ -664,7 +737,7 @@ transparency and zero runtime overhead.
 
 ---
 
-## 16. See also
+## 18. See also
 
 - [`./cross-cutting-features.md`](./cross-cutting-features.md) — limiter, shield, cache, drive, mail
 - [`./production-basics.md`](./production-basics.md) — health, config, logger, static
