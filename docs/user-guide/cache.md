@@ -141,22 +141,35 @@ entry cleanup. Not cluster-safe.
 
 ### Redis
 
-For multi-pod deployments:
+For multi-pod deployments. Requires `@nexusts/redis`.
+
+**Method 1 — `backend: 'redis'` shorthand (recommended):**
 
 ```ts
-import { CacheModule } from '@nexusts/cache';
-import { RedisCacheStore, createRedisClient } from '@nexusts/redis';
+CacheModule.forRoot({
+  backend: 'redis',
+  redis: { url: process.env.REDIS_URL },
+  defaultTtl: 300,
+})
+```
 
-const cache = new CacheService({
+The Redis client and store are created automatically.
+
+**Method 2 — explicit store instance:**
+
+```ts
+import { CacheModule, RedisCacheStore } from '@nexusts/cache';
+import { createRedisClient } from '@nexusts/redis';
+
+CacheModule.forRoot({
   store: new RedisCacheStore(
     createRedisClient({ url: process.env.REDIS_URL! }),
     { keyPrefix: 'cache:' },
   ),
-});
+})
 ```
 
-Requires `@nexusts/redis` and a Redis instance. Supports
-tag-based invalidation and works across multiple instances.
+Supports tag-based invalidation and works across multiple instances.
 
 ### Drizzle (database)
 
@@ -245,7 +258,9 @@ add event-based invalidation via the event system.
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| `store` | `CacheStore` | `MemoryStore` | Storage backend |
+| `backend` | `'memory' \| 'redis'` | `'memory'` | Backend shorthand selector |
+| `redis` | `RedisConnectionOptions` | — | Redis connection config (when `backend: 'redis'`) |
+| `store` | `CacheStore` | `MemoryStore` | Explicit store instance (overrides `backend`) |
 | `defaultTtl` | `number` | `60` | Default TTL in seconds |
 | `prefix` | `string` | `'nexusts'` | Key prefix |
 
