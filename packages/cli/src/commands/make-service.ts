@@ -36,6 +36,7 @@ export const makeServiceCommand: Command = {
 			name: variants.pascal,
 			camel: variants.camel,
 			kebab: variants.kebab,
+			snake: variants.snake,
 			hasRepo,
 			repository,
 			repositoryCamel,

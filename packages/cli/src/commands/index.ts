@@ -17,6 +17,7 @@ import makeMigration from "./make-migration.js";
 import makeModel from "./make-model.js";
 import makeModule from "./make-module.js";
 import makeQueue from "./make-queue.js";
+import makeRepository from "./make-repository.js";
 import makeSchedule from "./make-schedule.js";
 import makeService from "./make-service.js";
 import makeSession from "./make-session.js";
@@ -35,6 +36,7 @@ export const commands: Command[] = [
 	configCmd,
 	makeCrud,
 	makeController,
+	makeRepository,
 	makeService,
 	makeModule,
 	makeModel,
