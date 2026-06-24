@@ -19,12 +19,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kabyeon/nexusts.git",
+    "url": "git+https://github.com/nexus-ts/nexusts.git",
     "directory": "packages/create-nexusts"
   },
-  "homepage": "https://github.com/kabyeon/nexusts#readme",
+  "homepage": "https://github.com/nexus-ts/nexusts#readme",
   "bugs": {
-    "url": "https://github.com/kabyeon/nexusts/issues"
+    "url": "https://github.com/nexus-ts/nexusts/issues"
   },
   "engines": {
     "node": ">=18",

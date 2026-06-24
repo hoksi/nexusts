@@ -1,8 +1,8 @@
 # create-nexusts
 
-> Scaffold a new [NexusTS](https://github.com/kabyeon/nexusts) project — Bun-native fullstack framework.
+> Scaffold a new [NexusTS](https://github.com/nexus-ts/nexusts) project — Bun-native fullstack framework.
 
-The official scaffolder for [NexusTS](https://github.com/kabyeon/nexusts). Creates a new project with the framework's MVC + DI + routing + validation stack pre-configured, plus your choice of view engine, ORM, and database.
+The official scaffolder for [NexusTS](https://github.com/nexus-ts/nexusts). Creates a new project with the framework's MVC + DI + routing + validation stack pre-configured, plus your choice of view engine, ORM, and database.
 
 ## Quick start
 
@@ -76,4 +76,4 @@ create-nexusts --version  # Show version
 
 ## License
 
-MIT — see the [LICENSE](./LICENSE) file in the main [NexusTS repo](https://github.com/kabyeon/nexusts).
+MIT — see the [LICENSE](./LICENSE) file in the main [NexusTS repo](https://github.com/nexus-ts/nexusts).

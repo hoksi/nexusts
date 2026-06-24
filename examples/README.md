@@ -1,6 +1,6 @@
 # NexusTS Examples
 
-Working examples for every module in the [NexusTS](https://github.com/kabyeon/nexusts) framework.
+Working examples for every module in the [NexusTS](https://github.com/nexus-ts/nexusts) framework.
 
 Each subfolder is a self-contained runnable example showing how to
 use one specific module or pattern. Examples assume you've already
@@ -79,7 +79,7 @@ bunx create-nexusts my-app   # full scaffold via the CLI
 
 `create-nexusts` is a separate package that calls
 `npx @nexusts/core init` under the hood — see
-[github.com/kabyeon/nexusts](https://github.com/kabyeon/nexusts/tree/main/create-nexusts).
+[github.com/nexus-ts/nexusts](https://github.com/nexus-ts/nexusts/tree/main/create-nexusts).
 
 ---
 

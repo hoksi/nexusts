@@ -3,7 +3,7 @@
 > 한국어 버전: [`wasp-comparison.ko.md`](./wasp-comparison.ko.md)
 > 분석 일자: 2026-06-24 · 기준: NexusTS **v0.7.6**, Wasp **Launch Week #12 / TS Spec**
 
-This document compares [NexusTS](https://github.com/kabyeon/nexusts) v0.7.6
+This document compares [NexusTS](https://github.com/nexus-ts/nexusts) v0.7.6
 against [Wasp](https://wasp.sh) — both labelled "full-stack TypeScript
 frameworks", but with **fundamentally different design philosophies** that
 emerged from the same lesson: developers don't want to learn a new language

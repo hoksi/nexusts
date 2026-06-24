@@ -1054,14 +1054,14 @@ Feature-complete MVP. 프레임워크가 "v0.2 약속" 모듈을 모두 획득.
 
 ---
 
-[0.7.7]: https://github.com/kabyeon/nexusts/compare/v0.7.6...v0.7.7
-[0.7.6]: https://github.com/kabyeon/nexusts/compare/v0.7.5...v0.7.6
-[0.7.5]: https://github.com/kabyeon/nexusts/compare/v0.7.4...v0.7.5
-[0.7.4]: https://github.com/kabyeon/nexusts/compare/v0.7.3...v0.7.4
-[0.7.3]: https://github.com/kabyeon/nexusts/compare/v0.7.0...v0.7.3
-[0.7.0]: https://github.com/kabyeon/nexusts/compare/v0.6.9...v0.7.0
-[0.6.9]: https://github.com/kabyeon/nexusts/compare/v0.6.8...v0.6.9
-[0.4.0]: https://github.com/kabyeon/@nexusts/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/kabyeon/@nexusts/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/kabyeon/@nexusts/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/kabyeon/@nexusts/releases/tag/v0.1.0
+[0.7.7]: https://github.com/nexus-ts/nexusts/compare/v0.7.6...v0.7.7
+[0.7.6]: https://github.com/nexus-ts/nexusts/compare/v0.7.5...v0.7.6
+[0.7.5]: https://github.com/nexus-ts/nexusts/compare/v0.7.4...v0.7.5
+[0.7.4]: https://github.com/nexus-ts/nexusts/compare/v0.7.3...v0.7.4
+[0.7.3]: https://github.com/nexus-ts/nexusts/compare/v0.7.0...v0.7.3
+[0.7.0]: https://github.com/nexus-ts/nexusts/compare/v0.6.9...v0.7.0
+[0.6.9]: https://github.com/nexus-ts/nexusts/compare/v0.6.8...v0.6.9
+[0.4.0]: https://github.com/nexus-ts/@nexusts/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/nexus-ts/@nexusts/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/nexus-ts/@nexusts/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/nexus-ts/@nexusts/releases/tag/v0.1.0
