@@ -101,6 +101,51 @@ export class ResilienceService {
 		return this.bulkheads.get(name);
 	}
 
+	/**
+	 * List all registered circuit breakers and their current metrics.
+	 * Useful for admin dashboards and monitoring.
+	 */
+	listCircuits(): Array<{
+		name: string;
+		state: import("./types.js").CircuitState;
+		metrics: import("./types.js").CircuitMetrics;
+	}> {
+		const results: Array<{
+			name: string;
+			state: import("./types.js").CircuitState;
+			metrics: import("./types.js").CircuitMetrics;
+		}> = [];
+		for (const [name, cb] of this.circuits) {
+			results.push({ name, state: cb.currentState, metrics: cb.metrics() });
+		}
+		return results;
+	}
+
+	/**
+	 * List all registered bulkheads and their current stats.
+	 */
+	listBulkheads(): Array<{
+		name: string;
+		inFlight: number;
+		queued: number;
+		maxConcurrent: number;
+	}> {
+		const results: Array<{
+			name: string;
+			inFlight: number;
+			queued: number;
+			maxConcurrent: number;
+		}> = [];
+		for (const [name, bh] of this.bulkheads) {
+			results.push({
+				name,
+				...bh.stats,
+				maxConcurrent: bh.config.maxConcurrent,
+			});
+		}
+		return results;
+	}
+
 	/** Retry with default config. */
 	retry<T>(fn: (signal: AbortSignal) => Promise<T> | T, cfg?: RetryConfig): Promise<T> {
 		return retry(fn, { ...this.defaults.retry, ...cfg });

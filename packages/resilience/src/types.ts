@@ -155,6 +155,28 @@ export interface ResilienceConfig {
 }
 
 // ============================================================================
+// Metrics
+// ============================================================================
+
+/** Snapshot of a circuit breaker's current state and stats. */
+export interface CircuitMetrics {
+	name: string;
+	state: CircuitState;
+	/** Total calls recorded in the current rolling window. */
+	totalCalls: number;
+	/** Failed calls in the rolling window. */
+	failures: number;
+	/** Successes in the rolling window. */
+	successes: number;
+	/** Failure ratio (0..1) in the rolling window. */
+	failureRatio: number;
+	/** Timestamp when the circuit was last opened (0 if never). */
+	openedAt: number;
+	/** Milliseconds until the circuit transitions from open → half-open (0 if not open). */
+	msUntilHalfOpen: number;
+}
+
+// ============================================================================
 // Helpers
 // ============================================================================
 

@@ -30,7 +30,7 @@
  *     of them fails → back to `open`. If all succeed → back to
  *     `closed`.
  */
-import type { CircuitBreakerConfig, CircuitState } from "./types.js";
+import type { CircuitBreakerConfig, CircuitMetrics, CircuitState } from "./types.js";
 
 const DEFAULTS = {
 	threshold: 0.5,
@@ -124,8 +124,76 @@ export class CircuitBreaker {
 		}
 	}
 
+	// ===================================================================
+	// Admin API — manual overrides & inspection
+	// ===================================================================
+
+	/**
+	 * Return a snapshot of the circuit's current state and metrics.
+	 * Useful for admin dashboards and monitoring.
+	 */
+	metrics(): CircuitMetrics {
+		const now = Date.now();
+		const cutoff = now - this.config.window;
+		const windowSamples = this.samples.filter((s) => s.ts >= cutoff);
+		const total = windowSamples.length;
+		const failures = windowSamples.filter((s) => !s.ok).length;
+		const successes = total - failures;
+		const ratio = total > 0 ? failures / total : 0;
+		const openedAt = this.openedAt;
+		const msUntilHalfOpen =
+			this.state === "open"
+				? Math.max(0, openedAt + this.config.timeout - Date.now())
+				: 0;
+
+		return {
+			name: this.name,
+			state: this.currentState,
+			totalCalls: total,
+			failures,
+			successes,
+			failureRatio: ratio,
+			openedAt,
+			msUntilHalfOpen,
+		};
+	}
+
+	/** Manually open the circuit (overrides normal state machine). */
+	forceOpen(): void {
+		this.openedAt = Date.now();
+		this.halfOpenInFlight = 0;
+		this.transition("open");
+	}
+
+	/** Manually close the circuit (overrides normal state machine). */
+	forceClose(): void {
+		this.openedAt = 0;
+		this.halfOpenInFlight = 0;
+		this.samples = [];
+		this.transition("closed");
+	}
+
+	/** Reset the circuit to its initial closed state (clears all history). */
+	reset(): void {
+		this.state = "closed";
+		this.openedAt = 0;
+		this.halfOpenInFlight = 0;
+		this.halfOpenAllowed = 0;
+		this.samples = [];
+	}
+
+	// ===================================================================
+	// Internal
+	// ===================================================================
+
 	private record(ok: boolean, latency: number, stateAtCall: CircuitState): void {
-		this.config; // touch — keep the type narrow
+		// Fire per-call hook.
+		try {
+			this._onCall?.(this.name, ok, latency);
+		} catch {
+			/* ignore */
+		}
+
 		// Track in the rolling window.
 		const now = Date.now();
 		this.samples.push({ ts: now, ok });
@@ -133,9 +201,6 @@ export class CircuitBreaker {
 		while (this.samples.length > 0 && this.samples[0].ts < cutoff) {
 			this.samples.shift();
 		}
-
-		const failed = ok ? 0 : 1;
-		void failed;
 
 		// State transitions.
 		if (stateAtCall === "half-open") {
@@ -167,13 +232,6 @@ export class CircuitBreaker {
 			if (this.samples.length > this.config.minCalls * 4) {
 				this.samples = this.samples.slice(-this.config.minCalls);
 			}
-		}
-
-		// Hooks — best-effort, swallow errors.
-		try {
-			this.config; // (placeholder for future hooks read)
-		} catch {
-			/* ignore */
 		}
 	}
 
