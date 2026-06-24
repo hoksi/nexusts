@@ -433,7 +433,89 @@ class DrizzleService {
 
 ---
 
-## 11. AdonisJS Lucid 격차 해소
+## 11. 시딩 팩토리 (Factory)
+
+`Factory<TData>`는 Drizzle 테이블용 테스트 데이터 팩토리다.  
+`@faker-js/faker`와 함께 현실적인 픽스처를 생성하거나, faker 없이 정적 데이터만 사용할 수도 있다.
+
+### 설치
+
+```bash
+bun add -d @faker-js/faker   # 선택 사항 — faker를 쓰지 않아도 Factory는 동작한다
+```
+
+### 팩토리 정의
+
+```ts
+// database/factories/user.factory.ts
+import { Factory } from '@nexusts/drizzle';
+import { users } from '../schema.js';
+
+export const UserFactory = new Factory(users, (faker) => ({
+  email:     faker.internet.email(),
+  username:  faker.internet.username(),
+  createdAt: new Date(),
+}));
+```
+
+### 메서드
+
+| 메서드 | 설명 |
+| ------ | ---- |
+| `make(overrides?)` | DB insert 없이 plain object 생성 |
+| `makeMany(n, overrides?)` | plain object 배열 생성 |
+| `create(db, overrides?)` | 단일 행 insert 후 데이터 반환 |
+| `createMany(db, n, overrides?)` | 여러 행을 한 번의 insert로 처리 |
+
+`overrides`는 팩토리 정의값을 부분 덮어쓴다.
+
+### 시드 파일에서 사용
+
+```ts
+// database/seeds/01_users.ts
+import type { SeedContext } from '@nexusts/cli';
+import { UserFactory } from '../factories/user.factory.js';
+
+export default async function seed(ctx: SeedContext) {
+  // 10명의 사용자 생성
+  await UserFactory.createMany(ctx.db, 10);
+
+  // 특정 값 덮어쓰기
+  await UserFactory.create(ctx.db, { email: 'admin@example.com' });
+}
+```
+
+시드 파일 스캐폴딩:
+
+```bash
+nx db:seed --create users    # db/seeds/users.ts 파일 생성
+nx db:seed                    # db/seeds/ 내 모든 시드 실행
+nx db:seed --file 01_users   # 단일 파일만 실행
+nx db:seed --reset           # 테이블 초기화 후 시드 실행 (DESTRUCTIVE)
+```
+
+### 테스트에서 사용 (faker 없이)
+
+faker 없이 정적 정의를 사용하면 테스트 환경에서 의존성 없이 동작한다:
+
+```ts
+import { Factory } from '@nexusts/drizzle';
+import { users } from '../schema.js';
+
+const UserFactory = new Factory(users, () => ({
+  email: 'test@example.com',
+  username: 'testuser',
+}));
+
+it('creates a user', async () => {
+  const row = await UserFactory.make({ email: 'override@example.com' });
+  expect(row.email).toBe('override@example.com');
+});
+```
+
+---
+
+## 12. AdonisJS Lucid 격차 해소
 
 | AdonisJS Lucid | NexusTS drizzle 등가물 |
 | -------------- | --------------------------- |
@@ -464,7 +546,7 @@ Drizzle는 underlying SQL 위의 얇은 타입 레이어다. Lucid magic의
 
 ---
 
-## 12. 참고
+## 13. 참고
 
 - [`./cross-cutting-features.md`](./cross-cutting-features.md) — limiter, shield, cache, drive, mail
 - [`./production-basics.md`](./production-basics.md) — health, config, logger, static

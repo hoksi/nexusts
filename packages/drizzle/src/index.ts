@@ -34,6 +34,10 @@ export { Entity, getEntityTable } from "./entity.decorator.js";
 // Migration helpers (programmatic drizzle-kit wrappers)
 export { generateMigrations, pushSchema } from "./migrations.js";
 
+// Seeding factory
+export { Factory } from "./factory.js";
+export type { FactoryDb } from "./factory.js";
+
 // ============================================================================
 // Re-exports from drizzle-orm — convenience exports so users don't need
 // `import { eq } from 'drizzle-orm'` separately.
