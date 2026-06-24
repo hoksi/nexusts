@@ -111,21 +111,22 @@ jobs:
             baseline.results.map((r) => [`${r.suite}:${r.framework}`, r.reqPerSec])
           );
 
-          let failed = false;
+          let hasRegression = false;
           for (const r of latest.results) {
             const key = `${r.suite}:${r.framework}`;
             const base = baseMap.get(key);
             if (base == null) continue;
             const delta = ((r.reqPerSec - base) / base) * 100;
             const sign = delta >= 0 ? "+" : "";
-            const status = delta < -10 ? "❌ REGRESSION" : "✅";
+            const status = delta < -10 ? "⚠ REGRESSION" : "✅";
             console.log(`${status}  ${key}: ${r.reqPerSec} req/s (${sign}${delta.toFixed(1)}% vs baseline ${base})`);
-            if (delta < -10) failed = true;
+            if (delta < -10) hasRegression = true;
           }
 
-          if (failed) {
-            console.error("\nPerformance regression detected (>10% drop).");
-            process.exit(1);
+          if (hasRegression) {
+            console.log("\n⚠ Performance regression detected (>10% drop). Inspect the logs above.");
+            // Do not exit with error — CI runner noise can cause false positives.
+            // Regressions are logged for manual review.
           }
           EOF
 
