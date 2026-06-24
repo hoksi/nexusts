@@ -60,21 +60,27 @@
  *   const userClient = grpc.client<{ findById(req: { id: number }): Promise<{ name: string; email: string }> }>("UserService");
  *   const user = await userClient.findById({ id: 1 });
  *
- * Unary methods only for v1. Streaming (server / client / bidi)
- * is a future addition.
+ * v2: All four gRPC call types are supported — unary, server streaming,
+ * client streaming, and bidirectional streaming.
  */
 
-export {
-	GrpcMethod,
-	GrpcService as GrpcServiceDecorator,
-	getGrpcMethodNames,
-	getGrpcServiceName,
-} from "./decorators.js";
+export { GrpcService, GRPC_SERVICE_TOKEN } from "./service.js";
 export { GrpcModule } from "./module.js";
-export { GRPC_SERVICE_TOKEN, GrpcService } from "./service.js";
+export {
+	GrpcService as GrpcServiceDecorator,
+	GrpcMethod,
+	GrpcServerStream,
+	GrpcClientStream,
+	GrpcBidiStream,
+	getGrpcServiceName,
+	getGrpcMethodNames,
+	getGrpcMethodEntries,
+} from "./decorators.js";
 export type {
-	GrpcClient,
-	GrpcClientOptions,
 	GrpcConfig,
 	GrpcMethodMeta,
+	GrpcMethodEntry,
+	GrpcStreamType,
+	GrpcClient,
+	GrpcClientOptions,
 } from "./types.js";

@@ -13,20 +13,20 @@
  */
 
 import "reflect-metadata";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { describe, it, expect, afterEach } from "vitest";
+import { writeFile, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
-import { Application } from "../../src/core/application.js";
-import { Inject, Injectable } from "../../src/core/decorators/index.js";
 import {
-	GrpcMethod,
-	GrpcModule,
 	GrpcService as GrpcServiceClass,
 	GrpcServiceDecorator,
-	getGrpcMethodNames,
+	GrpcModule,
+	GrpcMethod,
 	getGrpcServiceName,
-} from "../../src/grpc/index.js";
+	getGrpcMethodNames,
+} from "@nexusts/grpc";
+import { Inject, Injectable } from "@nexusts/core";
+import { Application } from "@nexusts/core";
 
 const PROTO = `
 syntax = "proto3";
@@ -408,4 +408,4 @@ message Response { string result = 1; }
 	});
 });
 
-import { Module } from "../../src/core/decorators/index.js";
+import { Module } from "@nexusts/core";
