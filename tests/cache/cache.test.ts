@@ -3,15 +3,17 @@
  */
 
 import "reflect-metadata";
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
-	CacheService,
-	MemoryStore,
 	Cacheable,
 	CacheInvalidate,
+	CacheService,
+	MemoryStore,
+} from "../../src/cache/index.js";
+import {
 	getCacheableSpecs,
 	getCacheInvalidateSpecs,
-} from "@nexusts/cache";
+} from "../../src/cache/types.js";
 
 describe("MemoryStore", () => {
 	let store: MemoryStore;
