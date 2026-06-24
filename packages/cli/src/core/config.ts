@@ -196,14 +196,14 @@ export async function loadConfig(
 			} else {
 				// Dynamic import — works under Bun and Node (tsx).
 				// Some nx.config.ts files import from `@nexusts/cli` for
-				// type-safety. When nexus isn't installed yet (e.g. in
+				// type-safety. When NexusTS isn't installed yet (e.g. in
 				// a fresh project after `nx new`), swallow the import
 				// failure and fall back to defaults.
 				try {
 					const mod: any = await import(path);
 					config = (mod.default ?? mod) as Partial<NxConfig>;
 				} catch (importErr: any) {
-					// If the file imports from nexus and nexus isn't installed,
+					// If the file imports from NexusTS and NexusTS isn't installed,
 					// try to extract the config by evaluating the export with a
 					// simple regex (last resort). For now, just log and fall back.
 					console.warn(

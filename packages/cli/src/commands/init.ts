@@ -411,7 +411,7 @@ export class HomeController {
 		case "README.md":
 			return `# ${ctx.targetName}
 
-A Nexus project.
+A NexusTS project.
 
 ## Run
 

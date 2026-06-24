@@ -65,9 +65,9 @@ for the detailed v0.7 release notes.
 
 ---
 
-## Why Nexus?
+## Why NexusTS?
 
-| Capability                       | NestJS | Adonis | Hono  | **Nexus** |
+| Capability                       | NestJS | Adonis | Hono  | **NexusTS** |
 | -------------------------------- | :----: | :----: | :---: | :-------: |
 | Bun-native runtime               |   ❌   |   △    |   ✅   |    ✅     |
 | Cloudflare Workers / Edge        |   △    |   ❌   |   ✅   |    ✅     |

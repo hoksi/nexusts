@@ -18,7 +18,7 @@ import { templates } from "../templates/index.js";
 export const newCommand: Command = {
 	name: "new",
 	aliases: ["n"],
-	summary: "Create a new Nexus project",
+	summary: "Create a new NexusTS project",
 	description:
 		"Generates a new project directory with nx.config.ts, tsconfig, package.json, and a starter app/main.ts.",
 	examples: [
@@ -248,7 +248,7 @@ export class HomeController {
 			resolve(target, "README.md"),
 			`# ${name}
 
-A new Nexus project.
+A new NexusTS project.
 
 ## Run
 

@@ -1,7 +1,7 @@
 /**
  * HTTP middleware primitives.
  *
- * Middleware in Nexus is just a Hono-compatible function: `(c, next) => ...`.
+ * Middleware in NexusTS is just a Hono-compatible function: `(c, next) => ...`.
  * The framework exposes a few ready-made middlewares (logger, CORS, error)
  * and lets users write their own.
  */

@@ -39,7 +39,7 @@ const html = await rendu.render(
 async about() {
   return {
     view: `
-      <h1>Nexus 소개</h1>
+      <h1>NexusTS 소개</h1>
       <p>설립 <?= year ?>년.</p>
     `,
     data: { year: 2026 },
@@ -322,7 +322,7 @@ async about() {
 `views/about.html`:
 
 ```html
-<h1>Nexus 소개</h1>
+<h1>NexusTS 소개</h1>
 <p>설립 <?= year ?>년.</p>
 ```
 

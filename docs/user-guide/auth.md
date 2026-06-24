@@ -15,7 +15,7 @@ need it pay no cost.
 ## 1. Install
 
 ```bash
-bun add nexus better-auth
+bun add @nexusts/auth better-auth
 # Better-auth also needs its peers; the CLI's `nx make:auth` will
 # generate a .env.example with all required keys.
 ```

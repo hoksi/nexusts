@@ -123,7 +123,7 @@ Template files are embedded in the published package (bundled by
 | Command | Description |
 |---------|-------------|
 | `nx new <name>` | Create a new project from scratch |
-| `nx init` | Initialize nexus in an existing project |
+| `nx init` | Initialize NexusTS in an existing project |
 
 ### Code generation (make:*)
 

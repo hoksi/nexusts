@@ -4,7 +4,7 @@
  */
 
 export default `/**
- * Nexus project configuration.
+ * NexusTS project configuration.
  * Run \`nx info\` to see the resolved values.
  */
 

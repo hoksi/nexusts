@@ -284,7 +284,7 @@ import { AppModule } from './app.module.js';
 const app = new Application(AppModule, {
   inertia: {
     version: '1.0.0',
-    title: 'Nexus 데모',
+    title: 'NexusTS 데모',
     sharedProps: async () => ({
       currentUser: null,   // TODO: 실제 인증
     }),

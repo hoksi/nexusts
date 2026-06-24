@@ -1,5 +1,5 @@
 /**
- * Nexus framework — public entry point.
+ * NexusTS framework — public entry point.
  *
  * Re-exports the public surface of every core module so users can
  * `import { ... } from 'nexusjs'` without reaching into subpaths.

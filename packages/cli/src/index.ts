@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * `nx` — the Nexus CLI entry point.
+ * `nx` — the NexusTS CLI entry point.
  *
  * Invocation:
  *   bunx nx <command> [args...]
@@ -71,7 +71,7 @@ function renderHelp(commandName?: string): number {
 		return 0;
 	}
 
-	logger.heading("nx — Nexus CLI");
+	logger.heading("nx — NexusTS CLI");
 	console.log(`
   ${colors.dim("Adonis ACE-style command runner for the NexusTS framework.")}
 

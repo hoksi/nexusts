@@ -12,7 +12,7 @@ auth 모듈은 `@nexusts/auth`에 살고 **`@nexusts/core`와 분리**되어 있
 ## 1. 설치
 
 ```bash
-bun add nexus better-auth
+bun add @nexusts/auth better-auth
 # Better-auth는 peer 의존성도 필요합니다; CLI의 `nx make:auth`는
 # 모든 필수 키가 포함된 .env.example을 생성합니다.
 ```

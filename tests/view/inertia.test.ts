@@ -115,7 +115,7 @@ beforeEach(() => {
     inertia: {
       version: 'v1',
       title: 'Test',
-      sharedProps: { appName: 'Nexus Test', csrfToken: 'tok' },
+      sharedProps: { appName: 'NexusTS Test', csrfToken: 'tok' },
     },
   });
 });
@@ -169,7 +169,7 @@ describe('Inertia adapter', () => {
   it('merges shared props into every response', async () => {
     const res = await get('/page', inertiaHeaders());
     const body = await res.json();
-    expect(body.props.appName).toBe('Nexus Test');
+    expect(body.props.appName).toBe('NexusTS Test');
     expect(body.props.csrfToken).toBe('tok');
   });
 

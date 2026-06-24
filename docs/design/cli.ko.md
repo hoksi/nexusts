@@ -118,7 +118,7 @@ Config 값은 기본값과 merge되며, 둘 다 존재할 때 CLI flag가 이김
 | 명령 | 설명 |
 |------|------|
 | `nx new <name>` | 새 프로젝트를 처음부터 생성 |
-| `nx init` | 기존 프로젝트에 nexus 초기화 |
+| `nx init` | 기존 프로젝트에 NexusTS 초기화 |
 
 ### 코드 생성 (make:*)
 

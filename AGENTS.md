@@ -276,7 +276,7 @@ radius):
 3. `examples/NN-<name>/` (the example)
 4. `package.json` + `build.ts` + `tsconfig.build.json` (the build wiring)
 5. `examples/README.md` (one row in the table)
-6. Top-level `README.md` (module table + Why Nexus row)
+6. Top-level `README.md` (module table + Why NexusTS row)
 7. `docs/user-guide/<name>.md` + `.ko.md` (user guide, en+ko)
 8. `docs/design/<name>.md` + `.ko.md` (design deep-dive, en+ko)
 9. `docs/analysis/nestjs-comparison.md` + `.ko.md` (status: ✅ shipped)

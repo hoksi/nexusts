@@ -36,7 +36,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Health checks | ✅ @nestjs/terminus | ✅ `@nexusts/health` | Built-in indicators (memory/disk/http/db) |
 | Email | ✅ @nestjs/mailer | ✅ `@nexusts/mail` (SMTP / File / Null) | MJML via optional peer |
 | File upload | ✅ multer integration | ✅ `@nexusts/upload` | `@Upload` / `@UploadedFile` decorators, size + MIME validation |
-| File storage | ❌ DIY | ✅ `@nexusts/drive` (memory / Local / S3 / R2) | Nexus has a first-party `@nexusts/drive`; Nest doesn't |
+| File storage | ❌ DIY | ✅ `@nexusts/drive` (memory / Local / S3 / R2) | NexusTS has a first-party `@nexusts/drive`; Nest doesn't |
 | i18n | ✅ nestjs-i18n | ✅ `@nexusts/i18n` | `Intl`-based, pluralization, JSON catalogs |
 | Tracing | ✅ OpenTelemetry integration | ✅ `@nexusts/tracing` | Lazy OTel SDK, W3C + B3 propagation |
 | Metrics | ✅ Prometheus integration | ✅ `@nexusts/metrics` | Counter / Gauge / Histogram / Summary |

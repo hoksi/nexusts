@@ -22,7 +22,7 @@
 새 프로젝트에서:
 
 ```bash
-bun add nexus reflect-metadata zod hono
+bun add @nexusts/core reflect-metadata zod hono
 bun add -d @types/bun typescript vitest
 ```
 

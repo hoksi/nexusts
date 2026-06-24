@@ -26,7 +26,7 @@ Optional, depending on your target runtime:
 In a new project:
 
 ```bash
-bun add nexus reflect-metadata zod hono
+bun add @nexusts/core reflect-metadata zod hono
 bun add -d @types/bun typescript vitest
 
 # Pick the modules you need. v0.4 ships 22 independent modules.

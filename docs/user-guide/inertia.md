@@ -296,7 +296,7 @@ import { AppModule } from './app.module.js';
 const app = new Application(AppModule, {
   inertia: {
     version: '1.0.0',
-    title: 'Nexus Demo',
+    title: 'NexusTS Demo',
     sharedProps: async () => ({
       currentUser: null,   // TODO: real auth
     }),

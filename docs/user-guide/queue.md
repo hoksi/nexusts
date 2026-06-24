@@ -20,7 +20,7 @@ own bundle entry point.
 ## 1. Install
 
 ```bash
-bun add nexus bullmq ioredis
+bun add @nexusts/queue bullmq ioredis
 # Only need the one(s) for your backend:
 #   bun add bullmq ioredis     # for the BullMQ backend
 #   no extra deps             # for the Cloudflare backend (Workers runtime provides them)

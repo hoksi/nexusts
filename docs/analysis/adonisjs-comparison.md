@@ -26,12 +26,12 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 
 | Category | AdonisJS | NexusTS v0.7.0 | Notes |
 |----------|----------|--------------|-------|
-| HTTP server | ✅ Custom (Node & Workers) | ✅ Hono (Bun / Node / Workers) | Nexus uses Hono as the underlying server |
+| HTTP server | ✅ Custom (Node & Workers) | ✅ Hono (Bun / Node / Workers) | NexusTS uses Hono as the underlying server |
 | Routing | ✅ Route groups, resources, subdomains | ✅ Class decorators + functional | Three styles: Nest, Adonis, Functional |
 | Controllers | ✅ "thin" (Adonis convention) | ✅ "fat" (Nest-style with DI) | Both work; pick your style |
 | Middleware | ✅ Class-based, ordered | ✅ Hono middleware (typed) | `app.use('*', mw)` |
 | DI | ✅ IoC container, decorators | ✅ Class-based + `@Inject()` | Both Nest-style and Adonis-style |
-| Validation | ✅ Vine (Zod-inspired) | ✅ Zod | Nexus uses Zod directly via `@Validate` |
+| Validation | ✅ Vine (Zod-inspired) | ✅ Zod | NexusTS uses Zod directly via `@Validate` |
 | ORM | ✅ Lucid (built-in) | ✅ `@nexusts/drizzle` | Drizzle is the default ORM |
 | Migrations | ✅ Built-in | ✅ `nx db:migrate` (drizzle-kit wrapper) | Same DX |
 | Seeding | ✅ Built-in factories | ⚠️ DIY | No first-party; users write factories |
@@ -50,7 +50,7 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Scheduler | ✅ `@adonisjs/scheduler` | ✅ `@nexusts/schedule` (in-tree cron parser) | No external dep |
 | Static | ✅ `@adonisjs/static` | ✅ `@nexusts/static` (ETag / Range / MIME) | |
 | Health | ✅ `@adonisjs/health` | ✅ `@nexusts/health` (built-in indicators) | |
-| SSE | ❌ DIY | ✅ `@nexusts/sse` | Nexus ships SSE out of the box |
+| SSE | ❌ DIY | ✅ `@nexusts/sse` | NexusTS ships SSE out of the box |
 | WebSockets | ❌ DIY | ✅ `@nexusts/ws` | Runtime auto-detected (Bun / Node) |
 | Upload | ❌ DIY | ✅ `@nexusts/upload` | `@Upload()` / `@UploadedFile()` decorators |
 | i18n | ✅ `@adonisjs/i18n` | ✅ `@nexusts/i18n` | `Intl`-based, pluralization |

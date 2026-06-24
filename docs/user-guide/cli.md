@@ -2,7 +2,7 @@
 
 > 한국어 버전: [`cli.ko.md`](./cli.ko.md)
 
-Nexus ships an Adonis ACE / Ruby on Rails-style CLI under the
+NexusTS ships an Adonis ACE / Ruby on Rails-style CLI under the
 `nx` command. It scaffolds controllers, services, modules, models,
 migrations, middleware, validators, and **full CRUD slices** for any
 resource — all driven by `nx.config.ts` so the generated code matches
@@ -15,7 +15,7 @@ your project's chosen routing style, view engine, ORM, and database.
 The CLI is part of the `@nexusts/core` package — no extra dependency:
 
 ```bash
-bun add nexus reflect-metadata zod hono
+bun add @nexusts/cli reflect-metadata zod hono
 ```
 
 After install, `bunx nx ...` works automatically via the `bin` entry
@@ -118,7 +118,7 @@ Generated `nx.config.ts`:
 
 ```ts
 /**
- * Nexus project configuration.
+ * NexusTS project configuration.
  * Run `nx info` to see the resolved values.
  */
 
@@ -326,7 +326,7 @@ Output:
 
 ```
 ────────────────────────────
-  Nexus CLI — Project Info
+  NexusTS CLI — Project Info
 ────────────────────────────
 
 ℹ  Resolved configuration

@@ -16,7 +16,7 @@ export const infoCommand: Command = {
 	summary: "Show project configuration",
 	description: "Prints the resolved nx.config.ts plus relevant env vars.",
 	async run(ctx: CommandContext): Promise<number> {
-		logger.heading("Nexus CLI — Project Info");
+		logger.heading("NexusTS CLI — Project Info");
 
 		logger.info(colors.bold("Resolved configuration"));
 		logger.blank();

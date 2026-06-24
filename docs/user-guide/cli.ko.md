@@ -11,7 +11,7 @@ Nexus는 Adonis ACE / Ruby on Rails 스타일의 CLI를 `nx` 명령어로 제공
 CLI는 `@nexusts/core` 패키지에 포함되어 있어 추가 의존성이 필요 없습니다.
 
 ```bash
-bun add nexus reflect-metadata zod hono
+bun add @nexusts/cli reflect-metadata zod hono
 ```
 
 설치 후 `bunx nx ...`가 `@nexusts/package.json`의 `bin` 항목을 통해 자동 동작합니다.
@@ -111,7 +111,7 @@ nx init --merge
 
 ```ts
 /**
- * Nexus project configuration.
+ * NexusTS project configuration.
  * Run `nx info` to see the resolved values.
  */
 
@@ -274,7 +274,7 @@ nx info
 
 ```
 ────────────────────────────
-  Nexus CLI — Project Info
+  NexusTS CLI — Project Info
 ────────────────────────────
 
 ℹ  Resolved configuration
