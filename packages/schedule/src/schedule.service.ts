@@ -32,6 +32,14 @@ export class ScheduleService implements OnApplicationInit {
 		// Register this instance immediately so the Application's scanner
 		// callback can use it for subsequent providers resolved after this one.
 		__setScheduleService(this);
+		// Bun hot-reload support: when the module is about to be disposed,
+		// stop all timers so stale intervals from the previous version don't
+		// keep running alongside the new version.
+		if (typeof module !== 'undefined' && (module as any).hot) {
+			(module as any).hot?.dispose?.(() => {
+				void this.stop();
+			});
+		}
 	}
 
 	/** @internal called by Application.bootstrap() for each resolved instance. */
