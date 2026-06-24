@@ -1,9 +1,9 @@
 # NexusTS vs Wasp — Comparison
 
 > 한국어 버전: [`wasp-comparison.ko.md`](./wasp-comparison.ko.md)
-> 분석 일자: 2026-06-25 · 기준: NexusTS **v0.7.0**, Wasp **Launch Week #12 / TS Spec**
+> 분석 일자: 2026-06-24 · 기준: NexusTS **v0.7.6**, Wasp **Launch Week #12 / TS Spec**
 
-This document compares [NexusTS](https://github.com/kabyeon/nexusts) v0.7.0
+This document compares [NexusTS](https://github.com/kabyeon/nexusts) v0.7.6
 against [Wasp](https://wasp.sh) — both labelled "full-stack TypeScript
 frameworks", but with **fundamentally different design philosophies** that
 emerged from the same lesson: developers don't want to learn a new language
@@ -19,7 +19,7 @@ framework end and your code begin?" in opposite ways.
 
 ## 1. Summary table
 
-| Category | Wasp (TS Spec) | NexusTS v0.7.0 |
+| Category | Wasp (TS Spec) | NexusTS v0.7.6 |
 | --- | --- | --- |
 | **Paradigm** | Compiler-based — `main.wasp.ts` is **compiled** into a target app | Library-based — you `import { … } from '@nexusts/*'` |
 | **Spec location** | One (or more) root-level `.wasp.ts` files | Anywhere in your project — every file is "user code" |
@@ -296,7 +296,7 @@ successor).
 ### 5.4 Maturity & ecosystem
 
 - Wasp: 5 years old, $5M+ funding, full-time team, paid support plans.
-- NexusTS: 4 months old (v0.7.x), single maintainer, community-driven.
+- NexusTS: 5 months old (v0.7.6), single maintainer, community-driven.
 
 If you're a startup that needs a battle-tested framework with
 enterprise support contracts, Wasp is the safer choice today.

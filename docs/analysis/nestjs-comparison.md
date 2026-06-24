@@ -1,9 +1,9 @@
 # NexusTS vs NestJS — Feature Gap Analysis
 
 > 한국어 버전: [`nestjs-comparison.ko.md`](./nestjs-comparison.ko.md)
-> 분석 일자: 2026-06-25 · 기준: NexusTS **v0.7.0**
+> 분석 일자: 2026-06-24 · 기준: NexusTS **v0.7.6**
 
-This document compares NexusTS v0.7.0 against [NestJS](https://nestjs.com)
+This document compares NexusTS v0.7.6 against [NestJS](https://nestjs.com)
 to identify which production-grade backend features are **present**,
 **partially present**, or **missing**. Every Tier 1 *and* Tier 2 gap
 has been closed; this analysis now focuses on the remaining Tier 3+
@@ -17,11 +17,11 @@ gaps that block complete feature parity.
 
 ---
 
-## 1. Summary table (v0.7.0)
+## 1. Summary table (v0.7.6)
 
 Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 
-| Category | NestJS | NexusTS v0.7.0 | Notes |
+| Category | NestJS | NexusTS v0.7.6 | Notes |
 |----------|--------|--------------|-------|
 | HTTP / routing | ✅ GraphQL, WebSockets, gRPC, SSE, Fastify | ✅ Hono + SSE + WS + gRPC + GraphQL | REST + functional + Nest/Adonis styles |
 | DI | ✅ Request-scoped, circular auto-resolve | ✅ Singleton + transient + request | Request scope via `AsyncLocalStorage`; `@Injectable({ scope: 'request' })` |
@@ -44,12 +44,12 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | Encryption | ⚠️ DIY (or `nestjs-crypto`) | ✅ `@nexusts/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
 | Feature flags | ⚠️ DIY (no first-party) | ⚠️ DIY | Both lack first-party |
 | Resilience (circuit breaker, retry) | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff |
-| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` decorators (code-first SDL synthesis reserved for v0.8). Shipped v0.6.9. |
+| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` decorators with global class registry (v0.7.6). Code-first SDL synthesis reserved for v0.8. |
 | gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection-based, unary methods (streaming planned v2). Shipped v0.5. |
-| Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff. Shipped v0.7.0. **Zero new dependencies.** |
+| Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, admin API (listCircuits, metrics, forceOpen/Close). Shipped v0.7.0; admin API v0.7.5. **Zero new dependencies.** |
 
-**Headline**: NexusTS v0.7.0 closes **every Tier 1 and Tier 2 gap** from
-the v0.2 analysis. All **30** shipped modules are first-party.
+**Headline**: NexusTS v0.7.6 closes **every Tier 1 and Tier 2 gap** from
+the v0.2 analysis. All **31** shipped modules are first-party.
 
 ---
 
@@ -93,9 +93,14 @@ the v0.2 analysis. All **30** shipped modules are first-party.
 | **`@nexusts/graphql`** | v0.6.9 | SDL-first GraphQL endpoint + `GraphQLService`/`GraphQLModule`. `@Resolver`/`@Query`/`@Mutation` decorators (code-first SDL synthesis alpha). Optional peer-dep `graphql` |
 | **Inertia v3 examples (React + Vue, SPA + SSR)** | v0.6.9 | 4 new examples under `examples/28-31` |
 | **`@nexusts/resilience`** | v0.7.0 | Retry + Circuit Breaker + Bulkhead in a single DI singleton. `retry()` with 4 backoff strategies, named-circuit registry. **Zero new dependencies.** |
+| **Circuit breaker admin API** | v0.7.5 | `metrics()`, `forceOpen()`, `forceClose()`, `reset()`, `listCircuits()`, `listBulkheads()`. |
+| **Global `@Resolver` registry** | v0.7.6 | `@Resolver`-decorated classes auto-registered via global Set. |
+| **CLI improvements** | v0.7.5-6 | `make:repository` command, `drizzle.config.ts` auto-generation, `route:list` prefix fix, `make:service` import fix, `db:seed` path fix. |
+| **Logger pino dep** | v0.7.4 | pino is now a direct dependency — no manual `bun add pino`. |
+| **REPL improvements** | v0.7.4 | `.services`, `.modules`, `.routes` commands working; handler class.method display. |
 | **Examples + smoke test expansion** | v0.7.0 | 33 examples total (added `32-graphql-hello`, `33-resilience-calls`). 67 smoke tests. |
 
-Total: **37 Tier 1+2+3 gaps closed** since v0.2.
+Total: **42+ Tier 1+2+3 gaps closed** since v0.2.
 
 ---
 
@@ -317,35 +322,49 @@ Shipped in v0.5–v0.6.8:
   `docs/design/resilience.md` + `.ko.md`.
 - **Tests**: 20 vitest unit tests for retry / circuit / bulkhead.
 
-### v0.7.1 — DX polish (planned)
+### v0.7.3 — Exception Filters, Interceptors, Guards (shipped)
 
-- Inertia `<Form>` SDK stabilization, code-first GraphQL SDL synthesis
-  (the `@Resolver` / `@Query` decorators are alpha today), eager
-  `applyResilience()` wrapping at controller-mount time, `forceOpen` /
-  `forceClose` admin API for the circuit breakers.
+- `@UseFilters()`, `@UseInterceptors()`, `@UseGuards()` decorators
+  with onion composition, plus lifecycle hooks (`OnModuleInit`, etc.).
+
+### v0.7.4 — REPL & DX improvements (shipped)
+
+- REPL `.services`, `.modules`, `.routes` fixed; handler class.method display.
+- Logger pino made a direct dependency.
+- Schedule hot-reload support for Bun `--hot`.
+
+### v0.7.5 — Circuit breaker admin API (shipped)
+
+- `metrics()`, `forceOpen()`, `forceClose()`, `reset()`, `listCircuits()`.
+- `make:repository` CLI command.
+- `route:list` prefix fix, `make:service` import fix, `db:seed` path fix.
+
+### v0.7.6 — Global @Resolver registry (shipped)
+
+- `@Resolver`-decorated classes auto-registered via global Set.
+- `drizzle.config.ts` auto-generated on `init`/`new`.
+- Database driver deps auto-added based on dialect.
 
 ### v0.8 — Hardening + feature flags
 
-- Stable public API surface (semver guarantees)
-- Multi-runtime CI (Bun + Node + Cloudflare Workers)
-- Performance benchmarks + cross-runtime parity tests
-- Long-term LTS support plan
-- **`@nexusts/feature-flag`** — canary / A/B testing
-- **Cross-pod circuit breakers** (resilience backed by Redis / Drizzle)
-- **Code-first GraphQL SDL synthesis** (auto-generate SDL from
-  `@Resolver` / `@Query` decorators)
+- **Code-first GraphQL SDL synthesis** — auto-generate SDL from
+  `@Resolver` / `@Query` decorators.
+- **`@nexusts/feature-flag`** — canary / A/B testing.
+- **Cross-pod circuit breakers** (resilience backed by Redis / Drizzle).
+- Stable public API surface (semver guarantees).
+- Multi-runtime CI (Bun + Node + Cloudflare Workers).
 
 ### v1.0 — Production-ready LTS
 
-- Frozen API surface
-- Migration guides from NestJS / AdonisJS
-- LTS branch (security backports for 12 months)
+- Frozen API surface.
+- Migration guides from NestJS / AdonisJS.
+- LTS branch (security backports for 12 months).
 
 ---
 
-## 8. Honest assessment (v0.7.0)
+## 8. Honest assessment (v0.7.6)
 
-NexusTS v0.7.0 is **production-ready for the vast majority of backend
+NexusTS v0.7.6 is **production-ready for the vast majority of backend
 services**:
 
 - The MVC + DI + validation core is solid and battle-tested.

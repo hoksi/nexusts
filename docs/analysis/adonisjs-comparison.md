@@ -1,9 +1,9 @@
 # NexusTS vs AdonisJS — Feature Gap Analysis
 
 > 한국어 버전: [`adonisjs-comparison.ko.md`](./adonisjs-comparison.ko.md)
-> 분석 일자: 2026-06-23 · 기준: NexusTS **v0.7.0**
+> 분석 일자: 2026-06-24 · 기준: NexusTS **v0.7.6**
 
-This document compares NexusTS v0.7.0 against [AdonisJS v6](https://adonisjs.com)
+This document compares NexusTS v0.7.6 against [AdonisJS v6](https://adonisjs.com)
 to identify which AdonisJS-style "batteries" (convention-driven,
 "everything just works" features) are **present**, **partially
 present**, or **missing**. The v0.3–v0.7.0 milestones together
@@ -61,15 +61,15 @@ Legend: ✅ ship · ⚠️ partial · ❌ missing · 🔵 third-party required
 | REPL | ✅ `node ace repl` | ✅ `nx repl` | Interactive REPL shipped in v0.5 |
 | Inspector | ✅ `@adonisjs/inspector` | ❌ Not shipped | Debugging-only |
 | Admin panel | ✅ `@adonisjs/admin` | ❌ Not shipped | Lower priority |
-| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` decorators (code-first SDL synthesis v0.8). v0.6.9 shipped. |
+| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` decorators with global class registry (v0.7.6). Code-first SDL synthesis v0.8. |
 | gRPC | ❌ DIY | ✅ `@nexusts/grpc` | Reflection-based, unary (streaming v2). v0.5 shipped. |
 | Feature flags | ❌ DIY | ❌ None | Planned v0.8 |
 | Resilience (circuit breaker, retry) | ❌ DIY | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, shared named registry, exponential-jitter backoff. v0.7.0 shipped. **Zero new deps.** |
 
-**Headline**: NexusTS v0.7.0 covers **every** AdonisJS v6 battery
+**Headline**: NexusTS v0.7.6 covers **every** AdonisJS v6 battery
 and exceeds it on modern features (GraphQL, WebSockets, OpenAPI,
 SSE, tracing, metrics, gRPC, resilience) that AdonisJS doesn't
-ship as batteries. All **30** modules are first-party.
+ship as batteries. All **31** modules are first-party.
 
 ---
 
@@ -277,32 +277,43 @@ A team that needs any of these gets them for free with NexusTS.
   Bulkhead. **Zero new dependencies.**
 - **example 33** (`resilience-calls`).
 
-### v0.7.1 — DX polish (planned)
+### v0.7.3 — Exception Filters, Interceptors, Guards (shipped)
 
-- Inertia `<Form>` SDK stabilization, code-first GraphQL SDL synthesis,
-  eager `applyResilience()` wrapping, circuit-breaker admin API.
+- `@UseFilters()`, `@UseInterceptors()`, `@UseGuards()` decorators.
+
+### v0.7.4 — REPL & DX (shipped)
+
+- REPL commands fixed; Logger pino direct dep.
+
+### v0.7.5 — Circuit breaker admin API (shipped)
+
+- `metrics()`, `forceOpen()`, `forceClose()`, `listCircuits()`.
+- `make:repository` CLI command.
+
+### v0.7.6 — Global @Resolver registry (shipped)
+
+- `@Resolver`-decorated classes auto-registered.
+- `drizzle.config.ts` auto-generation on init/new.
 
 ### v0.8 — Hardening + feature flags (planned)
 
-- Stable public API surface (semver guarantees)
-- Multi-runtime CI (Bun + Node + Cloudflare Workers)
-- Performance benchmarks
-- Long-term LTS support plan
-- **`@nexusts/feature-flag`** — canary / A/B testing
-- **Cross-pod circuit breakers** (resilience backed by Redis / Drizzle)
-- **Code-first GraphQL SDL synthesis**
+- **Code-first GraphQL SDL synthesis**.
+- **`@nexusts/feature-flag`**.
+- **Cross-pod circuit breakers**.
+- Stable public API surface (semver).
+- Multi-runtime CI.
 
 ### v1.0 — Production-ready LTS
 
-- Frozen API surface
-- Migration guides from AdonisJS
-- LTS branch (security backports for 12 months)
+- Frozen API surface.
+- Migration guides.
+- LTS branch (12 months).
 
 ---
 
-## 8. Honest assessment (v0.7.0)
+## 8. Honest assessment (v0.7.6)
 
-The v0.7.0 release **closes every AdonisJS v6 battery gap**. A team
+The v0.7.6 release **closes every AdonisJS v6 battery gap**. A team
 migrating from AdonisJS to NexusTS v0.7.0 would find:
 
 - All first-party batteries have an equivalent in NexusTS v0.7.0.

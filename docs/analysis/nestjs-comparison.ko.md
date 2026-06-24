@@ -1,9 +1,9 @@
 # NexusTS vs NestJS — 기능 격차 분석
 
 > English version: [`nestjs-comparison.md`](./nestjs-comparison.md)
-> 분석 일자: 2026-06-23 · 기준: NexusTS **v0.7.0**
+> 분석 일자: 2026-06-24 · 기준: NexusTS **v0.7.6**
 
-이 문서는 NexusTS v0.7.0와 [NestJS](https://nestjs.com)를 비교하여
+이 문서는 NexusTS v0.7.6와 [NestJS](https://nestjs.com)를 비교하여
 프로덕션 등급 백엔드 기능이 **있음**, **부분적**, **없음** 상태를
 식별한다. v0.3, v0.4, v0.5, v0.6.x, v0.7.0 마일스톤이 모든 Tier 1과
 Tier 2 격차를 모두 해소했다. 이 분석은 v0.8+ 로드맵을 위한
@@ -11,7 +11,7 @@ Tier 3+ 잔존 격차에 집중한다.
 
 > **중요**: NestJS는 7년 된 프레임워크로 주당 ~1000만 다운로드를
 > 기록하며 수십 개의 first-party 패키지를 보유. NexusTS는
-> 어린 프레임워크다 (v0.7.0, 개발 기간 약 6개월). 프로덕션
+> 어린 프레임워크다 (v0.7.6, 개발 기간 약 6개월). 프로덕션
 > 백엔드에 "지금" 필요한 것만 출시하며, 잔존 격차는 v0.8+
 > 로드맵 우선순위를 정하기 위해 여기에 문서화된다.
 
@@ -43,7 +43,7 @@ Tier 3+ 잔존 격차에 집중한다.
 | Auth | ✅ @nestjs/passport + 다수 전략 | ✅ `@nexusts/auth` (better-auth) | better-auth가 다수 전략 지원 |
 | 암호화 | ⚠️ DIY (또는 `nestjs-crypto`) | ✅ `@nexusts/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
 | Feature flags | ⚠️ DIY (first-party 없음) | ⚠️ DIY | 둘 다 first-party 없음 |
-| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 (code-first SDL 합성 v0.8 예정). v0.6.9 출시. |
+| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 + 전역 클래스 레지스트리 (v0.7.6). Code-first SDL 합성 v0.8 예정. |
 | gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection 기반, unary 메소드 (streaming v2 예정). v0.5 출시. |
 | Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, exponential-jitter 백오프. v0.7.0 출시. **새 의존성 0.** |
 
@@ -237,31 +237,46 @@ v0.5–v0.6.8에서 출시:
   **새 의존성 0.** 순수 TypeScript.
 - **example 33** (`resilience-calls`).
 
-### v0.7.1 — DX polish (계획)
+### v0.7.3 — Exception Filters, Interceptors, Guards (출시)
 
-- Inertia `<Form>` SDK 안정화, code-first GraphQL SDL 합성,
-  eager `applyResilience()` 래핑, 서킷 브레이커 `forceOpen`/`forceClose`
-  관리 API.
+- `@UseFilters()`, `@UseInterceptors()`, `@UseGuards()` 데코레이터.
+- Lifecycle Hooks (`OnModuleInit` 등).
+
+### v0.7.4 — REPL & DX 개선 (출시)
+
+- REPL `.services`, `.modules`, `.routes` 수정.
+- Logger pino 직접 의존성으로 변경.
+- Schedule 핫리로드 지원.
+
+### v0.7.5 — Circuit Breaker Admin API (출시)
+
+- `metrics()`, `forceOpen()`, `forceClose()`, `reset()`, `listCircuits()`.
+- `make:repository` CLI 명령어 추가.
+- `route:list` 프리픽스 수정, `db:seed` 경로 수정.
+
+### v0.7.6 — Global @Resolver Registry (출시)
+
+- `@Resolver` 전역 클래스 레지스트리.
+- `drizzle.config.ts` 자동 생성.
+- DB 드라이버 deps 자동 추가.
 
 ### v0.8 — Hardening + Feature flags (계획)
 
-- 안정적인 public API surface (semver 보장)
-- 다중 런타임 CI (Bun + Node + Cloudflare Workers)
-- 성능 벤치마크 + 크로스-런타임 패리티 테스트
-- 장기 LTS 지원 계획
-- **`@nexusts/feature-flag`** — 카나리 / A/B 테스팅
-- **Cross-pod circuit breakers** (Redis / Drizzle 백업 resilience)
-- **Code-first GraphQL SDL 합성** (@Resolver/@Query 데코레이터에서 SDL 자동 생성)
+- **Code-first GraphQL SDL 합성**.
+- **`@nexusts/feature-flag`**.
+- **Cross-pod circuit breakers**.
+- 안정적인 public API surface (semver 보장).
+- 다중 런타임 CI.
 
 ### v1.0 — Production-ready LTS
 
-- 동결된 API surface
-- NestJS / AdonisJS에서의 마이그레이션 가이드
-- LTS 브랜치 (12개월 보안 백포트)
+- 동결된 API surface.
+- 마이그레이션 가이드.
+- LTS 브랜치 (12개월).
 
 ---
 
-## 8. 정직한 평가 (v0.7.0)
+## 8. 정직한 평가 (v0.7.6)
 
 NexusTS v0.7.0는 **대부분의 백엔드 서비스를 위한 production-ready** 상태:
 

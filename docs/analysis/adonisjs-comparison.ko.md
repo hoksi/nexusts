@@ -1,9 +1,9 @@
 # NexusTS vs AdonisJS — 기능 격차 분석
 
 > English version: [`adonisjs-comparison.md`](./adonisjs-comparison.md)
-> 분석 일자: 2026-06-23 · 기준: NexusTS **v0.7.0**
+> 분석 일자: 2026-06-24 · 기준: NexusTS **v0.7.6**
 
-이 문서는 NexusTS v0.7.0와 [AdonisJS v6](https://adonisjs.com)를 비교하여
+이 문서는 NexusTS v0.7.6와 [AdonisJS v6](https://adonisjs.com)를 비교하여
 어떤 AdonisJS 스타일 "battery" (관례 기반, "그냥 동작" 기능)가
 **있음**, **부분적**, **없음** 상태인지 식별한다. v0.3–v0.7.0 마일스톤이
 모든 Tier 1, Tier 2, Tier 3 격차를 해소했다. 이제 프레임워크는
@@ -58,15 +58,15 @@ AdonisJS가 출시하는 모든 battery를 다루며, 그 이상을 제공한다
 | REPL | ✅ `node ace repl` | ✅ `nx repl` | v0.5에 출시됨 (DI-resolved 객체, exec expression, introspection) |
 | Inspector | ✅ `@adonisjs/inspector` | ❌ 출시 안 됨 | 디버깅 전용 |
 | Admin panel | ✅ `@adonisjs/admin` | ❌ 출시 안 됨 | 낮은 우선순위 |
-| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 (code-first SDL 합성 v0.8). v0.6.9 출시. |
+| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 + 전역 클래스 레지스트리 (v0.7.6). Code-first SDL 합성 v0.8. |
 | gRPC | ❌ DIY | ✅ `@nexusts/grpc` | v0.5에 출시됨 (reflection-based, unary / streaming v2) |
 | Feature flags | ❌ DIY | ❌ 없음 | v0.8 예정 |
 | Resilience (서킷 브레이커, retry) | ❌ DIY | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, exponential-jitter 백오프. v0.7.0 출시. **새 의존성 0.** |
 
-**헤드라인**: NexusTS v0.7.0는 **모든** AdonisJS v6 battery를
+**헤드라인**: NexusTS v0.7.6는 **모든** AdonisJS v6 battery를
 커버하며, 모던 기능 (GraphQL, WebSockets, OpenAPI, SSE,
 tracing, metrics, gRPC, resilience)에서 AdonisJS가 battery로
-출시하지 않는 것을 능가한다. 모든 **30개** 모듈이 first-party.
+출시하지 않는 것을 능가한다. 모든 **31개** 모듈이 first-party.
 
 ---
 
@@ -272,33 +272,40 @@ NexusTS의 쿠키 기반 세션은 본질적으로 stateless이므로 다중 리
   Bulkhead. **새 의존성 0.**
 - **example 33** (`resilience-calls`).
 
-### v0.7.1 — DX polish (계획)
+### v0.7.3 — Exception Filters, Interceptors, Guards (출시)
 
-- Inertia `<Form>` SDK 안정화, code-first GraphQL SDL 합성,
-  eager `applyResilience()` 래핑, 서킷 브레이커 admin API.
+### v0.7.4 — REPL & DX 개선 (출시)
+
+### v0.7.5 — Circuit Breaker Admin API (출시)
+
+- `metrics()`, `forceOpen()`, `forceClose()`, `listCircuits()`.
+- `make:repository` CLI 명령어.
+
+### v0.7.6 — Global @Resolver Registry (출시)
+
+- `@Resolver` 전역 클래스 레지스트리.
+- `drizzle.config.ts` 자동 생성.
 
 ### v0.8 — Hardening + Feature flags (계획)
 
-- 안정 public API surface (semver 보장)
-- 다중 런타임 CI (Bun + Node + Cloudflare Workers)
-- 성능 벤치마크
-- 장기 LTS 지원 계획
-- **`@nexusts/feature-flag`** — 카나리 / A/B 테스팅
-- **Cross-pod circuit breakers** (Redis / Drizzle 백업 resilience)
-- **Code-first GraphQL SDL 합성**
+- **Code-first GraphQL SDL 합성**.
+- **`@nexusts/feature-flag`**.
+- **Cross-pod circuit breakers**.
+- 안정 public API surface (semver).
+- 다중 런타임 CI.
 
 ### v1.0 — Production-ready LTS
 
-- 동결 API surface
-- AdonisJS에서의 마이그레이션 가이드
-- LTS 브랜치 (12개월 보안 백포트)
+- 동결 API surface.
+- 마이그레이션 가이드.
+- LTS 브랜치 (12개월).
 
 ---
 
-## 8. 정직한 평가 (v0.7.0)
+## 8. 정직한 평가 (v0.7.6)
 
-v0.7.0 릴리스는 **모든 AdonisJS v6 battery 격차를 해소**.
-AdonisJS에서 NexusTS v0.7.0로 마이그레이션하는 팀:
+v0.7.6 릴리스는 **모든 AdonisJS v6 battery 격차를 해소**.
+AdonisJS에서 NexusTS v0.7.6로 마이그레이션하는 팀:
 
 - 모든 first-party battery에 NexusTS v0.7.0에 동등한 것 있음.
 - **GraphQL** 출시 (`@nexusts/graphql`, v0.6.9).
