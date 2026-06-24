@@ -12,7 +12,10 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "bin": {
     "nx": "./dist/cli/index.js"
   },
@@ -40,5 +43,14 @@
     "reflect-metadata": "^0.2.2",
     "rendu": "^0.1.0",
     "zod": "^3.23.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nexus-ts/nexusts.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/nexus-ts/nexusts#readme",
+  "bugs": {
+    "url": "https://github.com/nexus-ts/nexusts/issues"
   }
 }

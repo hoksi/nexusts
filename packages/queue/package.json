@@ -12,15 +12,41 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "bun run ../../build.ts"
   },
-  "keywords": ["nexusts", "framework", "bun"],
+  "keywords": [
+    "nexusts",
+    "framework",
+    "bun"
+  ],
   "license": "MIT",
-  "peerDependencies": { "bullmq": "^5.79.0", "ioredis": "^5.11.1" },
-  "peerDependenciesMeta": { "bullmq": { "optional": true }, "ioredis": { "optional": true } },
+  "peerDependencies": {
+    "bullmq": "^5.79.0",
+    "ioredis": "^5.11.1"
+  },
+  "peerDependenciesMeta": {
+    "bullmq": {
+      "optional": true
+    },
+    "ioredis": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@nexusts/core": "file:../core"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nexus-ts/nexusts.git",
+    "directory": "packages/queue"
+  },
+  "homepage": "https://github.com/nexus-ts/nexusts#readme",
+  "bugs": {
+    "url": "https://github.com/nexus-ts/nexusts/issues"
   }
 }

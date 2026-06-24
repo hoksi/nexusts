@@ -16,15 +16,37 @@
       "import": "./dist/validation/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "bun run ../../build.ts"
   },
-  "keywords": ["nexusts", "framework", "bun"],
+  "keywords": [
+    "nexusts",
+    "framework",
+    "bun"
+  ],
   "license": "MIT",
-  "peerDependencies": { "drizzle-orm": "^0.45.0" },
-  "peerDependenciesMeta": { "drizzle-orm": { "optional": true } },
+  "peerDependencies": {
+    "drizzle-orm": "^0.45.0"
+  },
+  "peerDependenciesMeta": {
+    "drizzle-orm": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@nexusts/core": "file:../core"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nexus-ts/nexusts.git",
+    "directory": "packages/drizzle"
+  },
+  "homepage": "https://github.com/nexus-ts/nexusts#readme",
+  "bugs": {
+    "url": "https://github.com/nexus-ts/nexusts/issues"
   }
 }
