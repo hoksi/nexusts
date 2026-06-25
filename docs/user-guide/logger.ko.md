@@ -56,7 +56,7 @@ import { Logger, LoggerModule } from '@nexusts/logger';
 
 ## 서비스에서 사용
 
-DI 토큰을 통해 `Logger` 클래스를 주입합니다:
+DI 토큰을 통해 `Logger` 클래스를 주입합니다 (필드 인젝션):
 
 ```ts
 import { Inject, Injectable } from '@nexusts/core';
@@ -64,7 +64,7 @@ import { Logger } from '@nexusts/logger';
 
 @Injectable()
 class UserService {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async signUp(email: string) {
     this.logger.info({ email }, '회원 가입 완료');
@@ -78,6 +78,12 @@ class UserService {
   }
 }
 ```
+
+> **레거시 참고**: `experimentalDecorators: true`를 사용한다면 생성자 인젝션도 가능합니다:
+>
+> ```ts
+> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+> ```
 
 ### 로그 메서드
 
@@ -150,7 +156,7 @@ import { Logger } from '@nexusts/logger';
 import { randomUUID } from 'node:crypto';
 
 class RequestHandler {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async handle(request: Request) {
     await this.logger.with(
@@ -183,7 +189,7 @@ import { randomUUID } from 'node:crypto';
 
 @Injectable()
 class RequestLoggerMiddleware implements NestMiddleware {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   use(req: any, _res: any, next: () => void) {
     this.logger.with(
@@ -331,7 +337,7 @@ Pino 트랜스포트는 비동기적으로 초기화됩니다. 첫 로그를
 ```ts
 @Injectable()
 class AppBootstrap {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async onStart() {
     await this.logger.ready();
@@ -356,7 +362,7 @@ import { Logger } from '@nexusts/logger';
 
 @Controller('/users')
 class UserController {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   @Get()
   list() {
@@ -388,7 +394,7 @@ import { Inject } from '@nexusts/core';
 import { Logger } from '@nexusts/logger';
 
 class CleanupJob {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   @Cron('0 3 * * *')
   async nightlyCleanup() {

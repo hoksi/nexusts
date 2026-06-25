@@ -55,7 +55,7 @@ output in development, optionally install `pino-pretty`.
 
 ## Usage in services
 
-Inject the `Logger` class via its DI token:
+Inject the `Logger` class via its DI token using field injection:
 
 ```ts
 import { Inject, Injectable } from '@nexusts/core';
@@ -63,7 +63,7 @@ import { Logger } from '@nexusts/logger';
 
 @Injectable()
 class UserService {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async signUp(email: string) {
     this.logger.info({ email }, 'user signed up');
@@ -77,6 +77,13 @@ class UserService {
   }
 }
 ```
+
+> **Legacy note**: If you're using `experimentalDecorators: true`, you can
+> also use constructor injection:
+>
+> ```ts
+> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+> ```
 
 ### Log methods
 
@@ -148,7 +155,7 @@ import { Logger } from '@nexusts/logger';
 import { randomUUID } from 'node:crypto';
 
 class RequestHandler {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async handle(request: Request) {
     await this.logger.with(
@@ -178,7 +185,7 @@ import { randomUUID } from 'node:crypto';
 
 @Injectable()
 class RequestLoggerMiddleware implements NestMiddleware {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   use(req: any, _res: any, next: () => void) {
     this.logger.with(
@@ -327,7 +334,7 @@ ensure the transport is fully ready before emitting the first log
 ```ts
 @Injectable()
 class AppBootstrap {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async onStart() {
     await this.logger.ready();
@@ -352,7 +359,7 @@ import { Logger } from '@nexusts/logger';
 
 @Controller('/users')
 class UserController {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   @Get()
   list() {
@@ -384,7 +391,7 @@ import { Inject } from '@nexusts/core';
 import { Logger } from '@nexusts/logger';
 
 class CleanupJob {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   @Cron('0 3 * * *')
   async nightlyCleanup() {
