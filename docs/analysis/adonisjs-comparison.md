@@ -1,7 +1,7 @@
 # NexusTS vs AdonisJS — Feature Gap Analysis
 
 > 한국어 버전: [`adonisjs-comparison.ko.md`](./adonisjs-comparison.ko.md)
-> 분석 일자: 2026-06-25 · 기준: NexusTS **v0.9.0**
+> 분석 일자: 2026-06-25 · 기준: NexusTS **v0.9.3**
 
 This document compares NexusTS v0.8.4 against [AdonisJS v6](https://adonisjs.com)
 to identify which AdonisJS-style "batteries" (convention-driven,

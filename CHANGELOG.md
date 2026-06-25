@@ -15,33 +15,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.3] — 2026-06-25
 
-### Added
-
-
-- (none)
-
-
 ### Fixed
 
-
-- (none)
-
-
----
-
-## [0.9.3] — 2026-06-25
-
-### Added
-
-
-- (none)
-
-
-### Fixed
-
-
-- (none)
-
+- **Cross-bundle metadata sharing**: `safeDefineMeta` now stores metadata
+  on `Class.__nexus_meta__` in ADDITION to the internal Map. `safeGetMeta`
+  reads from `__nexus_meta__` as fallback. This fixes DI resolution when
+  decorators and the container run from different package bundles
+  (e.g., `@nexusts/drizzle` → `@nexusts/core`).
+- **`DrizzleService` constructor injection**: `@Inject("DRIZZLE_CONFIG")`
+  parameter decorator on `DrizzleService` now resolves correctly when
+  the service is instantiated via `DrizzleModule.forRoot()`.
+- **CRUD scaffold compatibility**: `nx make:crud` generated repositories
+  now properly receive the `DrizzleService` dependency.
+- **`@Module` decorator legacy mode**: Stores module metadata on
+  `Class.__nexus_meta__` in addition to `safeDefineMeta`, ensuring
+  cross-bundle scanner compatibility.
+- **`@Inject` field decorator (legacy)**: Now properly handles property
+  decorator mode (`@Inject(Token) declare field: Type`) in addition to
+  parameter decorator mode, fixing `nx init` scaffolded Inertia controllers.
 
 ---
 
@@ -49,15 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-
 - (none)
-
 
 ### Fixed
 
-
 - (none)
-
 
 ### Added
 

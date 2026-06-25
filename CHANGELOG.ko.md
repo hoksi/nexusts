@@ -15,33 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.3] — 2026-06-25
 
-### 추가
-
-
-- (없음)
-
-
 ### 수정
 
-
-- (없음)
-
-
----
-
-## [0.9.3] — 2026-06-25
-
-### 추가
-
-
-- (없음)
-
-
-### 수정
-
-
-- (없음)
-
+- **번들 간 메타데이터 공유**: `safeDefineMeta`가 `Class.__nexus_meta__`에도
+  메타데이터를 저장하도록 변경. `safeGetMeta`가 `__nexus_meta__`를 폴백으로
+  조회하여, 서로 다른 패키지 번들 간의 DI 해석 문제를 해결.
+- **`DrizzleService` 생성자 인젝션**: `@Inject("DRIZZLE_CONFIG")` 파라미터
+  데코레이터가 `DrizzleModule.forRoot()`를 통해 정상 해석됨.
+- **CRUD 스캐폴드 호환성**: `nx make:crud` 생성 리포지토리가 `DrizzleService`
+  의존성을 정상 주입받음.
+- **`@Module` 데코레이터**: 레거시 모드에서도 `__nexus_meta__`에 메타데이터 저장.
+- **`@Inject` 필드 데코레이터**: 프로퍼티 데코레이터 모드 지원 추가.
 
 ---
 
@@ -49,15 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 추가
 
-
 - (없음)
-
 
 ### 수정
 
-
 - (없음)
-
 
 ### 추가
 
