@@ -94,11 +94,7 @@ class UserService {
   }
 }
 ```
-
-> **Legacy note**: With `experimentalDecorators: true`, use constructor injection:
-> ```ts
-> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
-> ```ts
+ts
 > @Inject(Logger.TOKEN) declare logger: Logger;
 > ```
 

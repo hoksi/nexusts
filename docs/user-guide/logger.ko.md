@@ -95,11 +95,7 @@ class UserService {
   }
 }
 ```
-
-> **레거시 참고**: `experimentalDecorators: true`를 사용한다면 생성자 인젝션도 가능합니다:
-> ```ts
-> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
-> ```ts
+ts
 > @Inject(Logger.TOKEN) declare logger: Logger;
 > ```
 
