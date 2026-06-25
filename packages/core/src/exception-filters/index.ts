@@ -26,7 +26,7 @@
  * class ApiController { ... }
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { HttpException } from "./http-exception.js";
 import {
 	ValidationError,
@@ -229,8 +229,8 @@ export function UseFilters(...filters: ExceptionFilter[]): any {
 		if (args.length === 1 && typeof args[0] === "function") {
 			const target = args[0] as Function;
 			const existing: ExceptionFilter[] =
-				Reflect.getMetadata(CONTROLLER_EXCEPTION_FILTERS_METADATA, target) ?? [];
-			Reflect.defineMetadata(
+				safeGetMeta(CONTROLLER_EXCEPTION_FILTERS_METADATA, target) ?? [];
+			safeDefineMeta(
 				CONTROLLER_EXCEPTION_FILTERS_METADATA,
 				[...existing, ...filters],
 				target,
@@ -241,8 +241,8 @@ export function UseFilters(...filters: ExceptionFilter[]): any {
 		// ---- Method decorator ----
 		const [target, propertyKey] = args as [object, string | symbol, PropertyDescriptor];
 		const existingFilters: ExceptionFilter[] =
-			Reflect.getMetadata(EXCEPTION_FILTERS_METADATA, target, propertyKey) ?? [];
-		Reflect.defineMetadata(
+			safeGetMeta(EXCEPTION_FILTERS_METADATA, target, propertyKey) ?? [];
+		safeDefineMeta(
 			EXCEPTION_FILTERS_METADATA,
 			[...existingFilters, ...filters],
 			target,
@@ -261,7 +261,7 @@ export function getControllerExceptionFilters(
 	target: Function,
 ): ExceptionFilter[] {
 	return (
-		Reflect.getMetadata(CONTROLLER_EXCEPTION_FILTERS_METADATA, target) ?? []
+		safeGetMeta(CONTROLLER_EXCEPTION_FILTERS_METADATA, target) ?? []
 	);
 }
 
@@ -271,6 +271,6 @@ export function getRouteExceptionFilters(
 	propertyKey: string | symbol,
 ): ExceptionFilter[] {
 	return (
-		Reflect.getMetadata(EXCEPTION_FILTERS_METADATA, target, propertyKey) ?? []
+		safeGetMeta(EXCEPTION_FILTERS_METADATA, target, propertyKey) ?? []
 	);
 }

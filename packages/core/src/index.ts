@@ -17,6 +17,10 @@ export * from "./di/index.js";
 // HTTP
 export * from "./http/index.js";
 
+// Re-export CtxInput helper for ergonomic access in standard decorator mode
+export { getInputHelper, attachInputHelper, type CtxInput, INPUT_HELPER_KEY } from "./http/ctx-input.js";
+export { inputValue, type InputValueChain } from "./http/input-value.js";
+
 // Validation
 export * from "./validation/index.js";
 

@@ -10,7 +10,6 @@
  * Run: bun benchmarks/servers/nexusts.ts [port]
  */
 
-import "reflect-metadata";
 import {
   Application,
   Controller,

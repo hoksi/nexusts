@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import path from "node:path";
 import { Application, Module, Injectable, Controller, Get, Inject } from "@nexusts/core";
 import {
@@ -26,9 +25,11 @@ class GreeterServiceImpl {
 @Injectable()
 class GreeterClient {
   private client: any;
+
   constructor(@Inject(GRPC_SERVICE_TOKEN) grpc: GrpcService) {
     this.client = grpc.client("GreeterService", { url: "localhost:50051" });
   }
+
   async sayHello(name: string) {
     return this.client.SayHello({ name });
   }
@@ -37,7 +38,7 @@ class GreeterClient {
 @Injectable()
 @Controller("/")
 class GreeterController {
-  constructor(@Inject(GreeterClient) private client: GreeterClient) {}
+  @Inject(GreeterClient) declare client: GreeterClient;
 
   @Get("/hello")
   async hello() {

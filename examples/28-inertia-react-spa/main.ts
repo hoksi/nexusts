@@ -1,8 +1,8 @@
-import "reflect-metadata";
 import path from "node:path";
-import { Application, Module, Controller, Get, Post, Body, Inject, Ctx, Injectable } from "@nexusts/core";
+import { Application, Module, Controller, Get, Post, Inject, Injectable } from "@nexusts/core";
 import { StaticModule } from "@nexusts/static";
 import { Inertia } from "@nexusts/view";
+import type { Context } from "hono";
 
 /**
  * 28-inertia-react-spa — Inertia.js v3 with React (client-side only).
@@ -34,7 +34,7 @@ function bumpCount() { _count += 1; }
 @Injectable()
 @Controller("/")
 class HomeController {
-  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}
+  @Inject(Inertia.TOKEN) declare inertia: Inertia;
 
   @Get("/")
   home() {
@@ -52,10 +52,11 @@ class HomeController {
   }
 
   @Post("/greet")
-  greet(@Ctx() c: any, @Body() body: { name?: string }) {
+  async greet(ctx: Context) {
+    const body = await ctx.req.json() as { name?: string };
     // Inertia v3 form errors: 422 with `{ errors: {...} }` in props.
     if (!body?.name || body.name.trim().length === 0) {
-      c.status(422);
+      ctx.status(422);
       return this.inertia.render("Home", {
         greeting: "Hello from Inertia + React!",
         count: readCount(),

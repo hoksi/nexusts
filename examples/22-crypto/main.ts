@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Post, Body, Inject, Injectable } from "@nexusts/core";
+import { Application, Module, Controller, Post, Inject, Injectable } from "@nexusts/core";
 import { EncryptionService, HashService, CryptoModule } from "@nexusts/crypto";
+import type { Context } from "hono";
 
 /**
  * 22-crypto — encryption + password hashing.
@@ -16,29 +16,31 @@ import { EncryptionService, HashService, CryptoModule } from "@nexusts/crypto";
 @Injectable()
 @Controller("/")
 class CryptoController {
-  constructor(
-    @Inject(EncryptionService.TOKEN) private enc: EncryptionService,
-    @Inject(HashService.TOKEN) private hash: HashService,
-  ) {}
+  @Inject(EncryptionService.TOKEN) declare enc: EncryptionService;
+  @Inject(HashService.TOKEN) declare hashService: HashService;
 
   @Post("/encrypt")
-  encrypt(@Body() body: { plain: string }) {
+  async encrypt(ctx: Context) {
+    const body = await ctx.req.json() as { plain: string };
     return { value: this.enc.encrypt(body.plain) };
   }
 
   @Post("/decrypt")
-  decrypt(@Body() body: { value: string }) {
+  async decrypt(ctx: Context) {
+    const body = await ctx.req.json() as { value: string };
     return { plain: this.enc.decrypt(body.value) };
   }
 
   @Post("/hash")
-  async hash(@Body() body: { password: string }) {
-    return { value: await this.hash.make(body.password) };
+  async hash(ctx: Context) {
+    const body = await ctx.req.json() as { password: string };
+    return { value: await this.hashService.make(body.password) };
   }
 
   @Post("/verify")
-  async verify(@Body() body: { password: string; value: string }) {
-    return { valid: await this.hash.verify(body.password, body.value) };
+  async verify(ctx: Context) {
+    const body = await ctx.req.json() as { password: string; value: string };
+    return { valid: await this.hashService.verify(body.password, body.value) };
   }
 }
 

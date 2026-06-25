@@ -20,7 +20,7 @@
  * slowRoute() { ... }
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import {
 	INTERCEPTORS_METADATA,
 	CONTROLLER_INTERCEPTORS_METADATA,
@@ -231,8 +231,8 @@ export function UseInterceptors(...interceptors: (Function | Interceptor)[]): an
 		if (args.length === 1 && typeof args[0] === "function") {
 			const target = args[0] as Function;
 			const existing: (Function | Interceptor)[] =
-				Reflect.getMetadata(CONTROLLER_INTERCEPTORS_METADATA, target) ?? [];
-			Reflect.defineMetadata(
+				safeGetMeta(CONTROLLER_INTERCEPTORS_METADATA, target) ?? [];
+			safeDefineMeta(
 				CONTROLLER_INTERCEPTORS_METADATA,
 				[...existing, ...interceptors],
 				target,
@@ -243,8 +243,8 @@ export function UseInterceptors(...interceptors: (Function | Interceptor)[]): an
 		// ---- Method decorator ----
 		const [target, propertyKey] = args as [object, string | symbol, PropertyDescriptor];
 		const existingInterceptors: (Function | Interceptor)[] =
-			Reflect.getMetadata(INTERCEPTORS_METADATA, target, propertyKey) ?? [];
-		Reflect.defineMetadata(
+			safeGetMeta(INTERCEPTORS_METADATA, target, propertyKey) ?? [];
+		safeDefineMeta(
 			INTERCEPTORS_METADATA,
 			[...existingInterceptors, ...interceptors],
 			target,
@@ -263,7 +263,7 @@ export function getControllerInterceptors(
 	target: Function,
 ): (Function | Interceptor)[] {
 	return (
-		Reflect.getMetadata(CONTROLLER_INTERCEPTORS_METADATA, target) ?? []
+		safeGetMeta(CONTROLLER_INTERCEPTORS_METADATA, target) ?? []
 	);
 }
 
@@ -273,7 +273,7 @@ export function getRouteInterceptors(
 	propertyKey: string | symbol,
 ): (Function | Interceptor)[] {
 	return (
-		Reflect.getMetadata(INTERCEPTORS_METADATA, target, propertyKey) ?? []
+		safeGetMeta(INTERCEPTORS_METADATA, target, propertyKey) ?? []
 	);
 }
 

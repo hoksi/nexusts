@@ -8,15 +8,15 @@
  *
  * Run with: bun main.ts
  */
-
-import "reflect-metadata";
 import {
   Application,
   Controller,
   Get,
   Injectable,
+  Inject,
   Module,
 } from "@nexusts/core";
+import "reflect-metadata";
 import {
   GrpcModule,
   GrpcService as GrpcSvcClass,
@@ -29,13 +29,10 @@ import {
 import { writeFile, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-
 // ── Proto definition ──────────────────────────────────────────────────────────
-
 const PROTO = `
 syntax = "proto3";
 package demo;
-
 // Unary + streaming mix
 service DemoService {
   // Unary
@@ -47,7 +44,6 @@ service DemoService {
   // Bidirectional — echo service
   rpc Echo   (stream EchoMsg) returns (stream EchoMsg);
 }
-
 message PingRequest  { string name = 1; }
 message PingResponse { string pong = 1; }
 message CountRequest { int32  up_to = 1; }
@@ -55,9 +51,7 @@ message NumberMsg    { int32  n     = 1; }
 message SumResponse  { int32  total = 1; }
 message EchoMsg      { string text  = 1; }
 `;
-
 // ── Service implementation ────────────────────────────────────────────────────
-
 @Injectable()
 @GrpcServiceDecorator("DemoService")
 class DemoServiceImpl {
@@ -66,7 +60,6 @@ class DemoServiceImpl {
   async ping(req: { name: string }) {
     return { pong: `Hello, ${req.name}!` };
   }
-
   // ── Server streaming ──────────────────────────────────────────────────────
   @GrpcServerStream("Count")
   async *count(req: { upTo: number }): AsyncIterable<{ n: number }> {
@@ -74,7 +67,6 @@ class DemoServiceImpl {
       yield { n: i };
     }
   }
-
   // ── Client streaming ──────────────────────────────────────────────────────
   @GrpcClientStream("Sum")
   async sum(
@@ -86,7 +78,6 @@ class DemoServiceImpl {
     }
     return { total };
   }
-
   // ── Bidirectional ─────────────────────────────────────────────────────────
   @GrpcBidiStream("Echo")
   async *echo(
@@ -97,13 +88,14 @@ class DemoServiceImpl {
     }
   }
 }
-
 // ── NexusTS HTTP controller — drives the demo ────────────────────────────────
-
 @Controller("/demo")
 @Injectable()
 class DemoController {
-  constructor(private readonly grpc: GrpcSvcClass) {}
+  private readonly grpc: GrpcSvcClass;
+  constructor(@Inject(GrpcSvcClass) grpc: GrpcSvcClass) {
+    this.grpc = grpc;
+  }
 
   @Get("/ping")
   async ping() {
@@ -112,7 +104,6 @@ class DemoController {
     }>("DemoService");
     return client.ping({ name: "world" });
   }
-
   @Get("/count")
   async count() {
     const client = this.grpc.client<{
@@ -124,7 +115,6 @@ class DemoController {
     }
     return { numbers };
   }
-
   @Get("/sum")
   async sum() {
     const client = this.grpc.client<{
@@ -135,7 +125,6 @@ class DemoController {
     }
     return client.sum(nums());
   }
-
   @Get("/echo")
   async echo() {
     const client = this.grpc.client<{
@@ -151,14 +140,11 @@ class DemoController {
     return { replies };
   }
 }
-
 // ── Bootstrap ────────────────────────────────────────────────────────────────
-
 // Write the proto to a temp file for this example
 const tmpDir = await mkdtemp(join(tmpdir(), "grpc-streaming-"));
 const protoPath = join(tmpDir, "demo.proto");
 await writeFile(protoPath, PROTO, "utf-8");
-
 @Module({
   controllers: [DemoController],
   imports: [
@@ -171,29 +157,22 @@ await writeFile(protoPath, PROTO, "utf-8");
   ],
 })
 class AppModule {}
-
 const app = new Application(AppModule);
-
 const httpPort = Number(process.env.PORT ?? 3000);
 await app.listen(httpPort);
-
 // Start the gRPC server
 const grpc = app.container.resolve(GrpcSvcClass);
 await grpc.start();
-
 console.log(`
 ✓ HTTP server: http://localhost:${httpPort}
 ✓ gRPC server: localhost:50051
-
 Try:
   curl http://localhost:${httpPort}/demo/ping   # unary
   curl http://localhost:${httpPort}/demo/count  # server streaming
   curl http://localhost:${httpPort}/demo/sum    # client streaming
   curl http://localhost:${httpPort}/demo/echo   # bidirectional
-
 Press Ctrl+C to stop.
 `);
-
 // Cleanup temp dir on exit
 process.on("SIGINT", async () => {
   await grpc.stop();

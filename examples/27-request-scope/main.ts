@@ -1,5 +1,5 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Get, Injectable, Inject, Ctx } from "@nexusts/core";
+import { Application, Module, Controller, Get, Injectable, Inject } from "@nexusts/core";
+import type { Context } from "hono";
 
 /**
  * 27-request-scope — per-request provider instances.
@@ -17,7 +17,7 @@ class RequestContext {
 @Injectable()
 @Controller("/")
 class AppController {
-  constructor(@Inject(RequestContext) private ctx: RequestContext) {}
+  @Inject(RequestContext) declare ctx: RequestContext;
 
   @Get("/counter")
   counter() {
@@ -26,11 +26,11 @@ class AppController {
   }
 
   @Get("/info")
-  info(@Ctx() c: any) {
+  info(ctx: Context) {
     return {
       requestId: this.ctx.requestId,
-      url: c.req.url,
-      method: c.req.method,
+      url: ctx.req.url,
+      method: ctx.req.method,
     };
   }
 }

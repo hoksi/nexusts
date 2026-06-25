@@ -1,5 +1,5 @@
 /**
- * @Global() decorator.
+ * @Global() decorator — dual-mode (TC39 standard + legacy).
  *
  * Marks a module as global — its exported providers are automatically
  * available in all modules without explicit import. This is useful
@@ -16,8 +16,9 @@
  * class DatabaseModule {}
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
+import { initNexusMeta } from "../di/standard-meta.js";
 
 /**
  * Global module metadata storage.
@@ -36,10 +37,21 @@ function getGlobalModules(): Set<Function> {
  * @Global() decorator — marks a module as global.
  * Global modules export their providers to all modules automatically.
  */
-export function Global(): ClassDecorator {
-	return (target: object) => {
+export function Global(): any {
+	return function (this: any, target: any, context?: any): void {
+		// ── Standard decorator mode (TC39) ──
+		if (context?.kind === "class" && context?.metadata) {
+			context.metadata[METADATA_KEY.GLOBAL] = true;
+			if (typeof target === "function") {
+				getGlobalModules().add(target as Function);
+				initNexusMeta(target as Function, context.metadata);
+			}
+			return;
+		}
+
+		// ── Legacy decorator mode ──
 		getGlobalModules().add(target as Function);
-		Reflect.defineMetadata(METADATA_KEY.GLOBAL, true, target);
+		safeDefineMeta(METADATA_KEY.GLOBAL, true, target);
 	};
 }
 

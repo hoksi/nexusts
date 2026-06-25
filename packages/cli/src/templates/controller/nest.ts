@@ -1,8 +1,8 @@
 /**
- * NestJS-style controller template.
+ * NestJS-style controller template (standard decorator mode).
  *
- * Renders an `@Controller(prefix)` class with `@Get` / `@Post` /
- * `@Put` / `@Delete` routes that delegate to an injected service.
+ * Uses field injection (@Inject on fields) instead of constructor params,
+ * and the method receives `ctx` (Hono Context) instead of @Param/@Body.
  *
  * Context keys used:
  *   name       — PascalCase class name (e.g. "User")
@@ -14,36 +14,42 @@
  */
 
 export default `
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nexusts/core';
+import { Controller, Delete, Get, Inject, Post, Put, inputValue } from '@nexusts/core';
+import type { Context } from 'hono';
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
 
 @Controller('/{{ kebab }}s')
 export class {{ name }}Controller {
-  constructor(@Inject({{ service }}) private readonly {{ serviceCamel }}: {{ service }}) {}
+  @Inject({{ service }}) declare {{ serviceCamel }}: {{ service }};
 
   @Get('/')
-  async index() {
+  async index(ctx: Context) {
     return this.{{ serviceCamel }}.findAll();
   }
 
   @Get('/:id')
-  async show(@Param('id') id: string) {
-    return this.{{ serviceCamel }}.findOne(Number(id));
+  async show(ctx: Context) {
+    const id = inputValue(ctx.req.param('id')).number().required().value();
+    return this.{{ serviceCamel }}.findOne(id);
   }
 
   @Post('/')
-  async create(@Body() body: any) {
-    return { status: 201, body: this.{{ serviceCamel }}.create(body) };
+  async create(ctx: Context) {
+    const body = await ctx.req.json();
+    return { status: 201, body: await this.{{ serviceCamel }}.create(body) };
   }
 
   @Put('/:id')
-  async update(@Param('id') id: string, @Body() body: any) {
-    return this.{{ serviceCamel }}.update(Number(id), body);
+  async update(ctx: Context) {
+    const id = inputValue(ctx.req.param('id')).number().required().value();
+    const body = await ctx.req.json();
+    return this.{{ serviceCamel }}.update(id, body);
   }
 
   @Delete('/:id')
-  async destroy(@Param('id') id: string) {
-    return this.{{ serviceCamel }}.delete(Number(id));
+  async destroy(ctx: Context) {
+    const id = inputValue(ctx.req.param('id')).number().required().value();
+    return this.{{ serviceCamel }}.delete(id);
   }
 }
 `.trimStart();

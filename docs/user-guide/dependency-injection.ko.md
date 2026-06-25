@@ -4,7 +4,50 @@
 
 NexusTS는 NestJS 스타일의 의존성 주입을 사용합니다. 서비스, 리포지토리, 어댑터는 `@Module({ providers, exports })`을 통해 연결되며, 생성 시점에 자동으로 해석됩니다.
 
-## 1. 기본
+## 0. 두 가지 인젝션 패턴
+
+NexusTS는 두 가지 DI 패턴을 함께 지원합니다:
+
+### 필드 인젝션 (표준 데코레이터, v0.9+)
+
+```ts
+import { Injectable, Inject } from '@nexusts/core';
+
+@Injectable()
+export class UserService {
+  @Inject('LOG') declare log: { info: (msg: string) => void };
+
+  findAll() {
+    this.log.info('UserService.findAll');
+    return [{ id: 1, name: 'Alice' }];
+  }
+}
+```
+
+이 패턴은 TC39 표준 ES 데코레이터와 함께 동작합니다 —
+`experimentalDecorators`나 `reflect-metadata`가 필요 없습니다.
+
+### 생성자 인젝션 (레거시, v0.8 이하)
+
+```ts
+@Injectable()
+export class UserService {
+  constructor(
+    @Inject('LOG') private readonly log: { info: (msg: string) => void },
+  ) {}
+  // ...
+}
+```
+
+생성자 인젝션은 `experimentalDecorators: true`와 각 파라미터에
+명시적인 `@Inject(Token)`이 필요합니다 (Bun의 TS 트랜스파일러가
+`design:paramtypes`를 내보내지 않기 때문).
+
+> **마이그레이션 팁**: `constructor(@Inject(T) private t: T) {}`를
+> `@Inject(T) declare t: T;`로 바꾸고 생성자를 제거하세요. DI
+> 컨테이너가 자동으로 필드 인젝션을 감지합니다.
+
+---
 
 서비스는 `@Injectable()`이 붙은 일반 클래스입니다.
 

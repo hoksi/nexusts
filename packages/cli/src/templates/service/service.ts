@@ -1,5 +1,7 @@
 /**
- * Service template.
+ * Service template (standard decorator mode).
+ *
+ * Uses field injection (@Inject on fields) instead of constructor params.
  *
  * Context:
  *   name          — PascalCase class name
@@ -9,16 +11,14 @@
  */
 
 export default `
-import { Inject, Injectable } from '@nexusts/core';
+import { Injectable, Inject } from '@nexusts/core';
 {{#hasRepo}}import { eq } from '@nexusts/drizzle';
 import { {{ repository }} } from '../repositories/{{ kebab }}.repository.js';
 import { {{ snake }} } from '../models/{{ kebab }}.model.js';{{/hasRepo}}
 
 @Injectable()
 export class {{ name }}Service {
-  constructor({{#hasRepo}}
-    @Inject({{ repository }}) private readonly {{ repositoryCamel }}: {{ repository }},
-  {{/hasRepo}}) {}
+  {{#hasRepo}}@Inject({{ repository }}) declare {{ repositoryCamel }}: {{ repository }};{{/hasRepo}}
 
   async findAll() {
     {{#hasRepo}}return this.{{ repositoryCamel }}.findAll();{{/hasRepo}}

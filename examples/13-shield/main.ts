@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Post, Body, Injectable } from "@nexusts/core";
+import { Application, Module, Controller, Post, Injectable } from "@nexusts/core";
 import { ShieldModule } from "@nexusts/shield";
+import type { Context } from "hono";
 
 /**
  * 13-shield — security headers + CSRF protection.
@@ -13,7 +13,8 @@ import { ShieldModule } from "@nexusts/shield";
 @Controller("/transfer")
 class TransferController {
   @Post("/")
-  transfer(@Body() body: { amount: number }) {
+  async transfer(ctx: Context) {
+    const body = await ctx.req.json() as { amount: number };
     return { ok: true, amount: body.amount };
   }
 }

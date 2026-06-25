@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { ResilienceModule, ResilienceService } from "@nexusts/resilience";
 
@@ -15,10 +14,8 @@ class FlakyService {
 @Injectable()
 @Controller("/")
 class AppController {
-  constructor(
-    @Inject(FlakyService) private flaky: FlakyService,
-    @Inject(ResilienceService.TOKEN) private r: ResilienceService,
-  ) {}
+  @Inject(FlakyService) declare flaky: FlakyService;
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
 
   @Get("/retry")
   retryRoute() {

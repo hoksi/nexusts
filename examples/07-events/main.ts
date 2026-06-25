@@ -1,8 +1,8 @@
-import "reflect-metadata";
 import {
-  Application, Controller, Get, Post, Body, Module, Inject, Injectable, Param,
+  Application, Controller, Get, Post, Module, Inject, Injectable,
 } from "@nexusts/core";
 import { EventService, EventsModule, OnEvent } from "@nexusts/events";
+import type { Context } from "hono";
 
 /**
  * 07-events — typed event emitter with wildcards, priorities, guards.
@@ -38,17 +38,19 @@ class UserListener {
 
 @Controller("/")
 class EventController {
-  constructor(@Inject(EventService) private events: EventService) {}
+  @Inject(EventService) declare events: EventService;
 
   @Post("/emit/:type")
-  async emit(@Body() body: any, @Param("type") type: string) {
+  async emit(ctx: Context) {
+    const type = ctx.req.param("type");
+    const body = await ctx.req.json();
     const event = `${type}.created`;
     const results = await this.events.emit(event, body);
     return { event, fired: results.length };
   }
 
   @Get("/listeners")
-  listeners() {
+  listeners(ctx: Context) {
     return { events: this.events.eventNames() };
   }
 }

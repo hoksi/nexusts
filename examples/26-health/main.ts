@@ -1,14 +1,11 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Injectable } from "@nexusts/core";
 import { HealthModule, HealthIndicator } from "@nexusts/health";
-
 /**
  * 26-health — liveness + readiness endpoints with a custom indicator.
  *
  *   Run: bun main.ts
  *   Try: curl http://localhost:3000/health
  */
-
 @Injectable()
 class MemoryIndicator extends HealthIndicator {
   readonly name = "memory";
@@ -20,14 +17,12 @@ class MemoryIndicator extends HealthIndicator {
     };
   }
 }
-
 @Injectable()
 @Controller("/")
 class RootController {
   @Get("/")
   home() { return { service: "demo" }; }
 }
-
 @Module({
   imports: [
     HealthModule.forRoot(),
@@ -36,7 +31,6 @@ class RootController {
   providers: [MemoryIndicator],
 })
 class AppModule {}
-
 const app = new Application(AppModule);
 const port = Number(process.env.PORT ?? 3000);
 await app.listen(port);

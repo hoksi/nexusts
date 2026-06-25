@@ -148,7 +148,6 @@ async function runStatus(
 		return 1;
 	}
 	const script = `
-import 'reflect-metadata';
 import { DrizzleService } from '@nexusts/drizzle';
 
 const url = ${JSON.stringify(url)};

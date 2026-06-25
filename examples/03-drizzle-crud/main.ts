@@ -1,10 +1,10 @@
-import "reflect-metadata";
 import { sql } from "drizzle-orm";
 import {
-  Application, Module, Controller, Get, Post, Param, Body, Inject, Injectable,
+  Application, Module, Controller, Get, Post, Inject, Injectable, inputValue,
 } from "@nexusts/core";
 import { DrizzleModule, DrizzleRepository, DrizzleService } from "@nexusts/drizzle";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import type { Context } from "hono";
 
 /**
  * 03-drizzle-crud — type-safe SQLite CRUD with Drizzle.
@@ -26,30 +26,31 @@ export const users = sqliteTable("users", {
 // ─── 2. Repository — Lucid-style typed CRUD ───────────────────────
 @Injectable()
 export class UserRepository extends DrizzleRepository<typeof users> {
-  constructor() { super(users); }
+  @Inject(DrizzleService.TOKEN) declare db: DrizzleService;
+  protected readonly table = users;
 }
 
 // ─── 3. Controller ────────────────────────────────────────────────
 @Injectable()
 @Controller("/users")
 export class UserController {
-  constructor(
-    @Inject(UserRepository) private users: UserRepository,
-    @Inject(DrizzleService.TOKEN) private db: DrizzleService,
-  ) {}
+  @Inject(UserRepository) declare users: UserRepository;
+  @Inject(DrizzleService.TOKEN) declare db: DrizzleService;
 
   @Get("/")
-  list() {
+  list(ctx: Context) {
     return this.users.findAll();
   }
 
   @Get("/:id")
-  find(@Param("id") id: string) {
-    return this.users.findById(Number(id));
+  find(ctx: Context) {
+    const id = inputValue(ctx.req.param("id")).number().required().value();
+    return this.users.findById(id);
   }
 
   @Post("/")
-  create(@Body() body: { email: string; name: string }) {
+  async create(ctx: Context) {
+    const body = await ctx.req.json() as { email: string; name: string };
     return this.users.create(body);
   }
 }

@@ -8,7 +8,7 @@
  * Server.start() chooses the correct runtime adapter (Bun, Node, or
  * Cloudflare) automatically based on the global environment.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { Hono } from "hono";
 import type { ApplicationContainer } from "../di/container.js";
 import { errorHandler, logger } from "./middleware.js";

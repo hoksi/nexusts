@@ -1,76 +1,94 @@
-import "reflect-metadata";
 import {
-  Application, Module, Controller, Get, Post, Param, Body, Inject, Injectable,
+  Application,
+  Module,
+  Controller,
+  Get,
+  Post,
+  Inject,
+  Injectable,
 } from "@nexusts/core";
-import {
-  OpenAPIModule, OpenAPIService,
-  ApiTags, ApiOperation, ApiResponse, ApiParam,
-} from "@nexusts/openapi";
+import { OpenAPIModule, ApiResponse, ApiBody } from "@nexusts/openapi";
 import { z } from "zod";
+import type { Context } from "hono";
 
 /**
- * 05-openapi — OpenAPI 3.1 spec + Scalar UI from controller decorators.
+ * 05-openapi — auto-generated OpenAPI (Swagger) spec.
  *
- *   GET  /docs         → Scalar interactive UI
- *   GET  /docs/json    → raw spec
- *   GET  /users/:id    → documented endpoint
- *   POST /users        → documented endpoint
+ * Run: bun main.ts
+ * Visit: http://localhost:3000/openapi
  *
- *   Run: bun main.ts
- *   Then: open http://localhost:3000/docs
+ * This example demonstrates:
+ *   - @ApiResponse({ status, description, schema })
+ *   - @ApiBody({ description, schema }) using Zod
+ *   - Automatic OpenAPI spec generation via @nexusts/openapi
  */
 
-const CreateUser = z.object({
-  name: z.string().min(1),
+// ─── Schemas ────────────────────────────────────────────────────────
+const User = z.object({
+  id: z.number(),
+  name: z.string(),
   email: z.string().email(),
 });
 
-@ApiTags("Users")
-@Controller("/users")
-class UserController {
-  @Get("/:id")
-  @ApiOperation({ summary: "Get user by ID", operationId: "getUser" })
-  @ApiParam({ name: "id", type: "integer" })
-  @ApiResponse(200, { description: "User object" })
-  @ApiResponse(404, { description: "User not found" })
-  find(@Param("id") id: string) {
-    return { id: Number(id), name: `User ${id}` };
+const CreateUser = User.omit({ id: true });
+
+// ─── Service ─────────────────────────────────────────────────────────
+@Injectable()
+export class UserService {
+  findAll() {
+    return [{ id: 1, name: "Alice", email: "alice@example.com" }];
   }
 
-  @Post("/")
-  @ApiOperation({ summary: "Create user", operationId: "createUser" })
-  @ApiResponse(201, { description: "User created" })
-  @ApiResponse(400, { description: "Invalid input" })
-  create(@Body() body: z.infer<typeof CreateUser>) {
-    // In a real app: persist to DB, then return { status: 201, body: created }
-    return { status: 201, body };
+  findOne(id: number) {
+    return { id, name: "Alice", email: "alice@example.com" };
+  }
+
+  create(data: z.infer<typeof CreateUser>) {
+    return { id: Date.now(), ...data };
   }
 }
 
+// ─── Controller ──────────────────────────────────────────────────────
+@Controller("/users")
+export class UserController {
+  @Inject(UserService) declare userService: UserService;
+
+  @Get("/")
+  @ApiResponse({ status: 200, description: "List of users", schema: User.array() })
+  index(ctx: Context) {
+    return this.userService.findAll();
+  }
+
+  @Get("/:id")
+  @ApiResponse({ status: 200, description: "A single user", schema: User })
+  show(ctx: Context) {
+    const id = Number(ctx.req.param("id"));
+    return this.userService.findOne(id);
+  }
+
+  @Post("/")
+  @ApiBody({ description: "User data", schema: CreateUser })
+  @ApiResponse({ status: 201, description: "Created user", schema: User })
+  async create(ctx: Context) {
+    const body = CreateUser.parse(await ctx.req.json());
+    return { status: 201, body: this.userService.create(body) };
+  }
+}
+
+// ─── Module ──────────────────────────────────────────────────────────
 @Module({
   imports: [
     OpenAPIModule.forRoot({
-      info: { title: "Example API", version: "1.0.0", description: "OpenAPI demo" },
-      path: "/docs",
-      specPath: "/docs/json",
+      title: "My API",
+      version: "1.0.0",
+      path: "/openapi",
     }),
   ],
   controllers: [UserController],
+  providers: [UserService],
 })
 class AppModule {}
 
+// ─── Bootstrap ──────────────────────────────────────────────────────
 const app = new Application(AppModule);
-
-// Feed registered routes to the spec generator.
-const openapi = app.container.resolve(OpenAPIService.TOKEN) as OpenAPIService;
-openapi.setRoutes(app.server.router.getRoutes());
-
-// Mount Scalar UI + JSON spec endpoint on the Hono app.
-OpenAPIModule.mount(app.server.app, openapi, {
-  info: { title: "Example API", version: "1.0.0" },
-  path: "/docs",
-  specPath: "/docs/json",
-});
-
-const port = Number(process.env.PORT ?? 3000);
-await app.listen(port);
+await app.listen(Number(process.env.PORT ?? 3000));

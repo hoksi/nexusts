@@ -1,38 +1,50 @@
 /**
- * @Controller decorator.
+ * @Controller decorator — dual-mode (TC39 standard + legacy).
  *
  * Marks a class as a controller and registers a route prefix.
  * Routes inside the controller class are decorated with @Get/@Post/etc.
  *
- * @example
+ * Standard mode:
  * ```ts
  * @Controller('/users')
  * class UserController {
  *   @Get('/')
- *   list() { ... }
+ *   list(ctx: Context) { ... }
  * }
  * ```
+ *
+ * Legacy mode (experimentalDecorators: true) continues to work identically.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
+import { initNexusMeta, getMeta, hasMeta } from "../di/standard-meta.js";
 import type { ControllerMetadata } from "../di/tokens.js";
 
-export function Controller(prefix: string = "/"): ClassDecorator {
-	return (target: object) => {
+export function Controller(prefix: string = "/"): any {
+	return function (this: any, target: any, context?: any): void {
 		const normalized = normalizePrefix(prefix);
 		const meta: ControllerMetadata = { prefix: normalized };
-		Reflect.defineMetadata(METADATA_KEY.CONTROLLER, meta, target);
+
+		// ── Standard decorator mode (TC39) ──
+		if (context?.kind === "class" && context?.metadata) {
+			context.metadata[METADATA_KEY.CONTROLLER] = meta;
+			if (typeof target === "function") {
+				initNexusMeta(target as Function, context.metadata);
+			}
+			return;
+		}
+
+		// ── Legacy decorator mode ──
+		safeDefineMeta(METADATA_KEY.CONTROLLER, meta, target);
 	};
 }
 
 export function getControllerMetadata(target: any): ControllerMetadata {
-	return (
-		Reflect.getMetadata(METADATA_KEY.CONTROLLER, target) ?? { prefix: "/" }
-	);
+	return getMeta(target, METADATA_KEY.CONTROLLER) ?? { prefix: "/" };
 }
 
 export function isController(target: any): boolean {
-	return Reflect.hasMetadata(METADATA_KEY.CONTROLLER, target);
+	return hasMeta(target, METADATA_KEY.CONTROLLER);
 }
 
 /**

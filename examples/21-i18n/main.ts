@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Get, Ctx, Inject, Injectable } from "@nexusts/core";
+import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { I18nModule, I18nService, I18N_SERVICE_TOKEN } from "@nexusts/i18n";
+import type { Context } from "hono";
 
 /**
  * 21-i18n — multi-language messages.
@@ -21,12 +21,12 @@ const messages = {
 @Injectable()
 @Controller("/")
 class AppController {
-  constructor(@Inject(I18N_SERVICE_TOKEN) private i18n: I18nService) {}
+  @Inject(I18N_SERVICE_TOKEN) declare i18n: I18nService;
 
   @Get("/greet")
-  greet(@Ctx() c: any) {
-    const name = c.req.query("name") || "world";
-    const lang = c.req.query("lang") || c.get?.("locale") || "en";
+  greet(ctx: Context) {
+    const name = ctx.req.query("name") || "world";
+    const lang = ctx.req.query("lang") || (ctx as any).get?.("locale") || "en";
     return { message: this.i18n.t("greeting", { name }, lang) };
   }
 }

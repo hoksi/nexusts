@@ -12,7 +12,6 @@
  * 8. Command registration: name, aliases
  */
 
-import "reflect-metadata";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdir, mkdtemp, readFile, rm, writeFile, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -171,7 +170,6 @@ describe("nx init — fresh install", () => {
 				name: "already-had-kabyeon",
 				dependencies: {
 					"@nexusts/core": "../nexusjs/dist/nexusjs-0.6.5.tgz",
-					"reflect-metadata": "^0.2.2",
 					hono: "^4.6.0",
 					zod: "^3.23.8",
 				},

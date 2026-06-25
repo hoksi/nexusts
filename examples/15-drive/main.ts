@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Get, Post, Param, Body, Inject, Injectable } from "@nexusts/core";
+import { Application, Module, Controller, Get, Post, Inject, Injectable } from "@nexusts/core";
 import { DriveService, DriveModule } from "@nexusts/drive";
+import type { Context } from "hono";
 
 /**
  * 15-drive — local disk file storage.
@@ -11,17 +11,20 @@ import { DriveService, DriveModule } from "@nexusts/drive";
 @Injectable()
 @Controller("/files")
 class FileController {
-  constructor(@Inject(DriveService) private drive: DriveService) {}
+  @Inject(DriveService) declare drive: DriveService;
 
   @Post("/:name")
-  async upload(@Param("name") name: string, @Body() content: any) {
+  async upload(ctx: Context) {
+    const name = ctx.req.param("name");
+    const content = await ctx.req.json();
     const path = `uploads/${name}`;
     await this.drive.put(path, content);
     return { ok: true, path };
   }
 
   @Get("/:name")
-  async read(@Param("name") name: string) {
+  async read(ctx: Context) {
+    const name = ctx.req.param("name");
     const path = `uploads/${name}`;
     if (!await this.drive.exists(path)) return { ok: false };
     const content = await this.drive.get(path);

@@ -10,6 +10,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./di/safe-reflect": {
+      "types": "./src/di/safe-reflect.ts",
+      "import": "./src/di/safe-reflect.ts"
+    },
+    "./di/standard-inject": {
+      "types": "./src/di/standard-inject.ts",
+      "import": "./src/di/standard-inject.ts"
     }
   },
   "files": [
@@ -40,9 +48,8 @@
     "@nexusts/cli": "file:../cli",
     "@nexusts/view": "file:../view",
     "hono": "^4.6.0",
-    "reflect-metadata": "^0.2.2",
     "rendu": "^0.1.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
   },
   "repository": {
     "type": "git",

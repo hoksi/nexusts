@@ -8,10 +8,11 @@
  * Supports @Global() modules: a module decorated with @Global() exports
  * its providers to ALL modules automatically without explicit import.
  */
-import { METADATA_KEY } from "../constants.js";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "./safe-reflect.js";
 import type { ApplicationContainer, DIContainer } from "./container.js";
 import type { InjectionToken, ModuleOptions, Provider, Type } from "./tokens.js";
 import { isGlobalModule } from "../decorators/global.js";
+import { getModuleOptions } from "../decorators/module.js";
 
 interface ScanResult {
 	/** The original module class constructor. */
@@ -142,15 +143,17 @@ export class ModuleScanner {
 	}
 
 	private readModuleOptions(moduleClass: Type<any>): ModuleOptions {
-		const meta = Reflect.getMetadata(METADATA_KEY.MODULE, moduleClass) as
-			| ModuleOptions
-			| undefined;
-		if (!meta) {
+		// Check both standard (__nexus_meta__) and legacy (reflect-metadata) stores.
+		const hasStandard = !!(
+			(moduleClass as any).__nexus_meta__?.["nexus:module"]
+		);
+		const hasLegacy = safeHasMeta("nexus:module", moduleClass);
+		if (!hasStandard && !hasLegacy) {
 			throw new Error(
 				`Class "${moduleClass.name}" is missing the @Module() decorator.`,
 			);
 		}
-		return meta;
+		return getModuleOptions(moduleClass);
 	}
 
 	/** Get a previously-scanned module's result (debug aid). */
@@ -163,4 +166,3 @@ export class ModuleScanner {
 		return new Map(this.globalExports);
 	}
 }
-

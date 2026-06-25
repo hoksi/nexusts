@@ -1,9 +1,9 @@
-import "reflect-metadata";
 import {
-  Application, Controller, Get, Module, Param,
+  Application, Controller, Get, Module,
 } from "@nexusts/core";
 import { StaticModule } from "@nexusts/static";
 import { setViewPaths } from "@nexusts/view";
+import type { Context } from "hono";
 
 /**
  * 06-rendu-views — server-rendered HTML with the Rendu template engine.
@@ -34,7 +34,8 @@ class PageController {
   }
 
   @Get("/users/:id")
-  user(@Param("id") id: string) {
+  user(ctx: Context) {
+    const id = ctx.req.param("id");
     return {
       view: "user.html",
       data: {

@@ -1,7 +1,5 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Injectable } from "@nexusts/core";
 import { LimiterModule } from "@nexusts/limiter";
-
 /**
  * 12-rate-limit — protect endpoints from abuse.
  *
@@ -9,14 +7,12 @@ import { LimiterModule } from "@nexusts/limiter";
  *   Try:
  *     for i in 1 2 3 4 5 6 7; do curl -s -w "[%{http_code}]\n" http://localhost:3000/api/data; done
  */
-
 @Injectable()
 @Controller("/api")
 class ApiController {
   @Get("/data")
   data() { return { items: [1, 2, 3] }; }
 }
-
 @Module({
   imports: [
     LimiterModule.forRoot({
@@ -28,7 +24,6 @@ class ApiController {
   controllers: [ApiController],
 })
 class AppModule {}
-
 const app = new Application(AppModule);
 const port = Number(process.env.PORT ?? 3000);
 await app.listen(port);
