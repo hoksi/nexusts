@@ -17,6 +17,17 @@
  * subsequent calls use `Reflect.getMetadata`/`Reflect.defineMetadata`.
  */
 
+// Type declarations for Reflect metadata API (loaded from reflect-metadata
+// when available, but declared here so tsc doesn't error without it).
+declare namespace Reflect {
+	function getMetadata(key: any, target: any, propertyKey?: string | symbol): any;
+	function defineMetadata(key: any, value: any, target: any, propertyKey?: string | symbol): void;
+	function hasMetadata(key: any, target: any, propertyKey?: string | symbol): boolean;
+	function getOwnMetadata(key: any, target: any, propertyKey?: string | symbol): any;
+	function decorate(decorators: any[], target: any, key?: any, desc?: any): any;
+	function metadata(key: any, value: any): (target: any, propertyKey?: string | symbol) => void;
+}
+
 /**
  * Synchronous fallback: a Map-based metadata store.
  * Used when reflect-metadata hasn't been loaded yet (dynamic import
