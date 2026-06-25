@@ -39,22 +39,15 @@ export default defineConfig({
               { text: 'Getting Started', link: '/getting-started' },
             ],
           },
-          {
-            text: 'Ecosystem',
-            items: [
-              { text: 'Module Overview', link: '/modules' },
-              { text: 'CLI Reference', link: '/cli' },
-            ],
-          },
-          {
-            text: 'Resources',
-            items: [
-              { text: 'GitHub Repository', link: 'https://github.com/nexus-ts/nexusts' },
-              { text: 'User Guide', link: 'https://github.com/nexus-ts/nexusts/tree/main/docs/user-guide' },
-              { text: 'API Reference', link: 'https://github.com/nexus-ts/nexusts/blob/main/docs/api-reference.md' },
-              { text: 'Changelog', link: 'https://github.com/nexus-ts/nexusts/blob/main/CHANGELOG.md' },
-            ],
-          },
+          { text: 'Ecosystem', items: [
+            { text: 'Module Overview', link: '/modules' },
+            { text: 'CLI Reference', link: '/cli' },
+          ]},
+          { text: 'Resources', items: [
+            { text: 'GitHub', link: 'https://github.com/nexus-ts/nexusts' },
+            { text: 'Docs', link: 'https://github.com/nexus-ts/nexusts/tree/main/docs/user-guide' },
+            { text: 'Changelog', link: 'https://github.com/nexus-ts/nexusts/blob/main/CHANGELOG.md' },
+          ]},
         ],
       },
     },
@@ -74,30 +67,20 @@ export default defineConfig({
           { text: 'GitHub', link: 'https://github.com/nexus-ts/nexusts' },
         ],
         sidebar: [
-          {
-            text: '소개',
-            items: [
-              { text: 'NexusTS란?', link: '/ko/' },
-              { text: '기능', link: '/ko/features' },
-              { text: '시작하기', link: '/ko/getting-started' },
-            ],
-          },
-          {
-            text: '생태계',
-            items: [
-              { text: '모듈 개요', link: '/ko/modules' },
-              { text: 'CLI 레퍼런스', link: '/ko/cli' },
-            ],
-          },
-          {
-            text: '자료',
-            items: [
-              { text: 'GitHub 저장소', link: 'https://github.com/nexus-ts/nexusts' },
-              { text: '사용자 가이드', link: 'https://github.com/nexus-ts/nexusts/tree/main/docs/user-guide' },
-              { text: 'API 레퍼런스', link: 'https://github.com/nexus-ts/nexusts/blob/main/docs/api-reference.md' },
-              { text: '변경 로그', link: 'https://github.com/nexus-ts/nexusts/blob/main/CHANGELOG.md' },
-            ],
-          },
+          { text: '소개', items: [
+            { text: 'NexusTS란?', link: '/ko/' },
+            { text: '기능', link: '/ko/features' },
+            { text: '시작하기', link: '/ko/getting-started' },
+          ]},
+          { text: '생태계', items: [
+            { text: '모듈 개요', link: '/ko/modules' },
+            { text: 'CLI 레퍼런스', link: '/ko/cli' },
+          ]},
+          { text: '자료', items: [
+            { text: 'GitHub', link: 'https://github.com/nexus-ts/nexusts' },
+            { text: '문서', link: 'https://github.com/nexus-ts/nexusts/tree/main/docs/user-guide' },
+            { text: '변경 로그', link: 'https://github.com/nexus-ts/nexusts/blob/main/CHANGELOG.md' },
+          ]},
         ],
       },
     },
@@ -131,5 +114,22 @@ export default defineConfig({
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'NexusTS' }],
     ['meta', { property: 'og:description', content: 'Bun-native fullstack framework — 32 modular packages under @nexusts/*' }],
+    ['script', {}, `
+(function(){
+  var en="/nexusts/", ko=en+"ko/";
+  function fix(){
+    var m=document.querySelector(".VPNavBarTranslations .menu .items");
+    if(!m||(m.querySelector(".VPMenuLink")&&!m.querySelector(".title")))return;
+    m.innerHTML='<div class="VPMenuLink"><a class="VPLink link" href="'+en+'"><span>English</span></a></div>'+
+      '<div class="VPMenuLink"><a class="VPLink link" href="'+ko+'"><span>\uD55C\uAD6D\uC5B4</span></a></div>';
+  }
+  setTimeout(fix,200);
+  var obs=new MutationObserver(fix);
+  setTimeout(function(){
+    var e=document.querySelector(".VPNavBarTranslations");
+    if(e)obs.observe(e,{childList:true,subtree:true});
+  },300);
+})();
+`],
   ],
 });
