@@ -56,7 +56,30 @@ import { Logger, LoggerModule } from '@nexusts/logger';
 
 ## 서비스에서 사용
 
-DI 토큰을 통해 `Logger` 클래스를 주입합니다 (필드 인젝션):
+### 방법 1: 직접 생성 (DI 불필요)
+
+가장 간단한 방법 — 인젝션 필요 없음:
+
+```ts
+import { Injectable } from '@nexusts/core';
+import { Logger } from '@nexusts/logger';
+
+@Injectable()
+class UserService {
+  private logger = new Logger();
+
+  async signUp(email: string) {
+    this.logger.info({ email }, '회원 가입 완료');
+    // ...
+  }
+}
+```
+
+`Logger`는 내부적으로 단일 Pino 인스턴스를 공유하므로 `new Logger()`를
+여러 번 호출해도 가볍습니다. 요청 스코프 컨텍스트(`AsyncLocalStorage`)도
+인젝션 없이 자동으로 동작합니다.
+
+### 방법 2: 필드 인젝션 (표준 데코레이터)
 
 ```ts
 import { Inject, Injectable } from '@nexusts/core';
@@ -68,19 +91,14 @@ class UserService {
 
   async signUp(email: string) {
     this.logger.info({ email }, '회원 가입 완료');
-
-    try {
-      // 비즈니스 로직 …
-    } catch (err) {
-      this.logger.error({ err, email }, '회원 가입 실패');
-      throw err;
-    }
+    // ...
   }
 }
 ```
 
 > **레거시 참고**: `experimentalDecorators: true`를 사용한다면 생성자 인젝션도 가능합니다:
->
+> ```ts
+> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
 > ```ts
 > @Inject(Logger.TOKEN) declare logger: Logger;
 > ```

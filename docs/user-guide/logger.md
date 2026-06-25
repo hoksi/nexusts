@@ -55,7 +55,30 @@ output in development, optionally install `pino-pretty`.
 
 ## Usage in services
 
-Inject the `Logger` class via its DI token using field injection:
+### Option 1: Direct instantiation (no DI)
+
+The simplest way — no injection needed:
+
+```ts
+import { Injectable } from '@nexusts/core';
+import { Logger } from '@nexusts/logger';
+
+@Injectable()
+class UserService {
+  private logger = new Logger();
+
+  async signUp(email: string) {
+    this.logger.info({ email }, 'user signed up');
+    // ...
+  }
+}
+```
+
+`Logger` internally shares a single Pino instance, so calling `new Logger()`
+multiple times is lightweight. Request-scoped context (`AsyncLocalStorage`)
+works automatically without injection.
+
+### Option 2: Field injection (standard decorators)
 
 ```ts
 import { Inject, Injectable } from '@nexusts/core';
@@ -67,20 +90,14 @@ class UserService {
 
   async signUp(email: string) {
     this.logger.info({ email }, 'user signed up');
-
-    try {
-      // business logic …
-    } catch (err) {
-      this.logger.error({ err, email }, 'sign-up failed');
-      throw err;
-    }
+    // ...
   }
 }
 ```
 
-> **Legacy note**: If you're using `experimentalDecorators: true`, you can
-> also use constructor injection:
->
+> **Legacy note**: With `experimentalDecorators: true`, use constructor injection:
+> ```ts
+> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
 > ```ts
 > @Inject(Logger.TOKEN) declare logger: Logger;
 > ```
