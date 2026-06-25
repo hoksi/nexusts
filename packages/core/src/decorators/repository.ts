@@ -14,27 +14,27 @@
  * }
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 import type { InjectionToken } from "../di/tokens.js";
 
 export function Repository(entityToken?: InjectionToken<any>): ClassDecorator {
 	return (target: object) => {
-		Reflect.defineMetadata(
+		safeDefineMeta(
 			METADATA_KEY.REPOSITORY,
 			{ entity: entityToken },
 			target,
 		);
-		Reflect.defineMetadata(METADATA_KEY.INJECTABLE, true, target);
+		safeDefineMeta(METADATA_KEY.INJECTABLE, true, target);
 	};
 }
 
 export function getRepositoryMetadata(
 	target: any,
 ): { entity?: InjectionToken<any> } | undefined {
-	return Reflect.getMetadata(METADATA_KEY.REPOSITORY, target);
+	return safeGetMeta(METADATA_KEY.REPOSITORY, target);
 }
 
 export function isRepository(target: any): boolean {
-	return Reflect.hasMetadata(METADATA_KEY.REPOSITORY, target);
+	return safeHasMeta(METADATA_KEY.REPOSITORY, target);
 }

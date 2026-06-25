@@ -12,7 +12,7 @@
  * The class is intentionally small — every feature (DI, HTTP, ORM, view)
  * is a separate concern with its own module. Application composes them.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "./di/safe-reflect.js";
 import { ApplicationContainer } from "./di/container.js";
 import { ModuleScanner } from "./di/scanner.js";
 import { NexusServer, type NexusServerOptions } from "./http/server.js";

@@ -44,7 +44,6 @@
     "@nexusts/cli": "file:../cli",
     "@nexusts/view": "file:../view",
     "hono": "^4.6.0",
-    "reflect-metadata": "^0.2.2",
     "rendu": "^0.1.0",
     "zod": "^3.23.8"
   },

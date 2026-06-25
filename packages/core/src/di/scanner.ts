@@ -8,6 +8,7 @@
  * Supports @Global() modules: a module decorated with @Global() exports
  * its providers to ALL modules automatically without explicit import.
  */
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "./safe-reflect.js";
 import type { ApplicationContainer, DIContainer } from "./container.js";
 import type { InjectionToken, ModuleOptions, Provider, Type } from "./tokens.js";
 import { isGlobalModule } from "../decorators/global.js";
@@ -146,7 +147,7 @@ export class ModuleScanner {
 		const hasStandard = !!(
 			(moduleClass as any).__nexus_meta__?.["nexus:module"]
 		);
-		const hasLegacy = Reflect.hasMetadata("nexus:module", moduleClass);
+		const hasLegacy = safeHasMeta("nexus:module", moduleClass);
 		if (!hasStandard && !hasLegacy) {
 			throw new Error(
 				`Class "${moduleClass.name}" is missing the @Module() decorator.`,

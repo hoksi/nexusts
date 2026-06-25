@@ -13,7 +13,7 @@
  * The router does NOT own the Hono instance; it just adds routes to
  * the Hono app passed to `Router.create(app, container)`.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import type { Hono } from "hono";
 import { PARAM_TYPES } from "../constants.js";
 import type { ApplicationContainer, DIContainer } from "../di/container.js";

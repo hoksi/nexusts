@@ -16,7 +16,7 @@
  * class AdminController { ... }
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import {
 	HTTP_GUARDS_METADATA,
 	CONTROLLER_GUARDS_METADATA,
@@ -162,8 +162,8 @@ export function UseGuards(...guards: (Function | HttpGuard)[]): any {
 		if (args.length === 1 && typeof args[0] === "function") {
 			const target = args[0] as Function;
 			const existing: (Function | HttpGuard)[] =
-				Reflect.getMetadata(CONTROLLER_GUARDS_METADATA, target) ?? [];
-			Reflect.defineMetadata(
+				safeGetMeta(CONTROLLER_GUARDS_METADATA, target) ?? [];
+			safeDefineMeta(
 				CONTROLLER_GUARDS_METADATA,
 				[...existing, ...guards],
 				target,
@@ -174,8 +174,8 @@ export function UseGuards(...guards: (Function | HttpGuard)[]): any {
 		// ---- Method decorator ----
 		const [target, propertyKey] = args as [object, string | symbol, PropertyDescriptor];
 		const existingGuards: (Function | HttpGuard)[] =
-			Reflect.getMetadata(HTTP_GUARDS_METADATA, target, propertyKey) ?? [];
-		Reflect.defineMetadata(
+			safeGetMeta(HTTP_GUARDS_METADATA, target, propertyKey) ?? [];
+		safeDefineMeta(
 			HTTP_GUARDS_METADATA,
 			[...existingGuards, ...guards],
 			target,
@@ -193,7 +193,7 @@ export function UseGuards(...guards: (Function | HttpGuard)[]): any {
 export function getControllerGuards(
 	target: Function,
 ): (Function | HttpGuard)[] {
-	return Reflect.getMetadata(CONTROLLER_GUARDS_METADATA, target) ?? [];
+	return safeGetMeta(CONTROLLER_GUARDS_METADATA, target) ?? [];
 }
 
 /** Get route-level guards for a method. */
@@ -201,7 +201,7 @@ export function getRouteGuards(
 	target: object,
 	propertyKey: string | symbol,
 ): (Function | HttpGuard)[] {
-	return Reflect.getMetadata(HTTP_GUARDS_METADATA, target, propertyKey) ?? [];
+	return safeGetMeta(HTTP_GUARDS_METADATA, target, propertyKey) ?? [];
 }
 
 // ============================================================================

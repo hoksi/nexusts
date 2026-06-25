@@ -14,7 +14,7 @@
  * create(@Body() body: z.infer<typeof UserSchema>) { ... }
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 import type { ValidationMetadata } from "../di/tokens.js";
 
@@ -24,7 +24,7 @@ export function Validate(options: ValidationMetadata): MethodDecorator {
 		propertyKey: string | symbol,
 		descriptor: PropertyDescriptor,
 	) => {
-		Reflect.defineMetadata(
+		safeDefineMeta(
 			METADATA_KEY.VALIDATE,
 			options,
 			target.constructor,
@@ -37,5 +37,5 @@ export function getValidationMetadata(
 	target: any,
 	propertyKey: string | symbol,
 ): ValidationMetadata | undefined {
-	return Reflect.getMetadata(METADATA_KEY.VALIDATE, target, propertyKey);
+	return safeGetMeta(METADATA_KEY.VALIDATE, target, propertyKey);
 }

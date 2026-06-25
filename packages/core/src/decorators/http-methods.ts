@@ -16,7 +16,7 @@
  *
  * Legacy mode (experimentalDecorators: true) continues to work identically.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { HTTP_METHODS, METADATA_KEY, type HttpMethod } from "../constants.js";
 import type { RouteMetadata } from "../di/tokens.js";
 
@@ -51,9 +51,9 @@ function defineRoute(method: HttpMethod, path: string): any {
 		route.handler = arguments[2]?.value ?? target;
 
 		const routes: RouteMetadata[] =
-			Reflect.getMetadata(METADATA_KEY.ROUTES, target.constructor) ?? [];
+			safeGetMeta(METADATA_KEY.ROUTES, target.constructor) ?? [];
 		routes.push(route);
-		Reflect.defineMetadata(METADATA_KEY.ROUTES, routes, target.constructor);
+		safeDefineMeta(METADATA_KEY.ROUTES, routes, target.constructor);
 	};
 }
 
@@ -82,7 +82,7 @@ export function getRoutes(target: any): RouteMetadata[] {
 		if (routes) return routes;
 	}
 	// Legacy: reflect-metadata
-	return Reflect.getMetadata(METADATA_KEY.ROUTES, target) ?? [];
+	return safeGetMeta(METADATA_KEY.ROUTES, target) ?? [];
 }
 
 export { HTTP_METHODS };

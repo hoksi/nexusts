@@ -15,7 +15,7 @@
  * class AppModule {}
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 import { initNexusMeta, getMeta } from "../di/standard-meta.js";
 import type { ModuleOptions, Type } from "../di/tokens.js";
@@ -32,7 +32,7 @@ export function Module(options: ModuleOptions = {}): any {
 		}
 
 		// ── Legacy decorator mode ──
-		Reflect.defineMetadata(METADATA_KEY.MODULE, options, target);
+		safeDefineMeta(METADATA_KEY.MODULE, options, target);
 	};
 }
 

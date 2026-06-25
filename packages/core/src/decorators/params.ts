@@ -15,7 +15,7 @@
  * The metadata is read by the router at mount time to build the
  * handler invocation list.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY, PARAM_TYPES } from "../constants.js";
 import type { ParamMetadata } from "../di/tokens.js";
 
@@ -32,24 +32,24 @@ export function createParamDecorator(
 		// Constructor parameter: target is the class, propertyKey is undefined.
 		if (propertyKey !== undefined) {
 			const params: ParamMetadata[] =
-				Reflect.getMetadata(METADATA_KEY.PARAMS, target, propertyKey) ?? [];
+				safeGetMeta(METADATA_KEY.PARAMS, target, propertyKey) ?? [];
 			params.push({
 				index: parameterIndex,
 				type,
 				name: typeof data === "string" ? data : undefined,
 				data: typeof data === "object" ? data : undefined,
 			});
-			Reflect.defineMetadata(METADATA_KEY.PARAMS, params, target, propertyKey);
+			safeDefineMeta(METADATA_KEY.PARAMS, params, target, propertyKey);
 		} else {
 			const params: ParamMetadata[] =
-				Reflect.getMetadata(METADATA_KEY.PARAMS, target) ?? [];
+				safeGetMeta(METADATA_KEY.PARAMS, target) ?? [];
 			params.push({
 				index: parameterIndex,
 				type,
 				name: typeof data === "string" ? data : undefined,
 				data: typeof data === "object" ? data : undefined,
 			});
-			Reflect.defineMetadata(METADATA_KEY.PARAMS, params, target);
+			safeDefineMeta(METADATA_KEY.PARAMS, params, target);
 		}
 	};
 }
@@ -72,7 +72,7 @@ export function getParamMetadata(
 	target: any,
 	propertyKey: string | symbol,
 ): ParamMetadata[] {
-	return Reflect.getMetadata(METADATA_KEY.PARAMS, target, propertyKey) ?? [];
+	return safeGetMeta(METADATA_KEY.PARAMS, target, propertyKey) ?? [];
 }
 
 export { PARAM_TYPES };

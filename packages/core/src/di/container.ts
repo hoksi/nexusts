@@ -12,7 +12,7 @@
  *   container for global providers. Exports propagate tokens upward.
  * - The container is lazy: nothing is instantiated until first resolve.
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "./safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 import {
 	getScope as getScopeStandard,
@@ -113,7 +113,7 @@ export class DIContainer {
 			// Read scope from @Injectable({ scope }) metadata if present.
 			// Checks both legacy (reflect-metadata) and standard (Symbol.metadata).
 			const classScope =
-				(Reflect.getMetadata("nexus:di:scope", provider) as
+				(safeGetMeta("nexus:di:scope", provider) as
 					| ProviderScope
 					| undefined) ?? getScopeStandard(provider);
 			return {
@@ -142,7 +142,7 @@ export class DIContainer {
 
 		// Legacy: design:paramtypes (requires emitDecoratorMetadata).
 		const paramTypes: any[] =
-			Reflect.getMetadata(METADATA_KEY.PARAMTYPES, cls) || [];
+			safeGetMeta(METADATA_KEY.PARAMTYPES, cls) || [];
 		for (const t of paramTypes) {
 			if (t && t !== Object) set.add(t);
 		}
@@ -280,13 +280,13 @@ export class DIContainer {
 
 			// ── Legacy constructor injection ──
 			const paramTypes: any[] =
-				Reflect.getMetadata(METADATA_KEY.PARAMTYPES, provider) || [];
+				safeGetMeta(METADATA_KEY.PARAMTYPES, provider) || [];
 			// Bun's TypeScript transformer does NOT emit `design:paramtypes`,
 			// so we also accept explicit @Inject() tokens per parameter as a
 			// portable fallback. If @Inject metadata exists for a given index,
 			// it overrides the (missing) type metadata.
 			const injectMap: Map<number, any> =
-				Reflect.getMetadata(METADATA_KEY.INJECT, provider) ?? new Map();
+				safeGetMeta(METADATA_KEY.INJECT, provider) ?? new Map();
 
 			// Use the larger of paramTypes.length and the highest @Inject key,
 			// because esbuild/Bun may emit empty paramTypes while @Inject metadata
@@ -338,9 +338,9 @@ export class DIContainer {
 
 			// ── Legacy constructor injection (useClass) ──
 			const paramTypes: any[] =
-				Reflect.getMetadata(METADATA_KEY.PARAMTYPES, ClassRef) || [];
+				safeGetMeta(METADATA_KEY.PARAMTYPES, ClassRef) || [];
 			const injectMap: Map<number, any> =
-				Reflect.getMetadata(METADATA_KEY.INJECT, ClassRef) ?? new Map();
+				safeGetMeta(METADATA_KEY.INJECT, ClassRef) ?? new Map();
 			const maxInjectIndex =
 				injectMap.size > 0 ? Math.max(...Array.from(injectMap.keys())) + 1 : 0;
 			const totalParams = Math.max(paramTypes.length, maxInjectIndex);

@@ -18,7 +18,7 @@
  * }
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 
 export interface InjectableOptions {
@@ -27,9 +27,9 @@ export interface InjectableOptions {
 
 export function Injectable(options: InjectableOptions = {}): ClassDecorator {
 	return (target: object) => {
-		Reflect.defineMetadata(METADATA_KEY.INJECTABLE, true, target);
+		safeDefineMeta(METADATA_KEY.INJECTABLE, true, target);
 		if (options.scope) {
-			Reflect.defineMetadata(
+			safeDefineMeta(
 				"nexus:di:scope",
 				options.scope,
 				target,
@@ -39,7 +39,7 @@ export function Injectable(options: InjectableOptions = {}): ClassDecorator {
 }
 
 export function isInjectable(target: any): boolean {
-	return Reflect.hasMetadata(METADATA_KEY.INJECTABLE, target);
+	return safeHasMeta(METADATA_KEY.INJECTABLE, target);
 }
 
 /**
@@ -49,7 +49,7 @@ export function isInjectable(target: any): boolean {
 export function getScope(
 	target: any,
 ): "singleton" | "request" | "transient" | undefined {
-	return Reflect.getMetadata("nexus:di:scope", target);
+	return safeGetMeta("nexus:di:scope", target);
 }
 
 /**
@@ -68,8 +68,8 @@ export function Inject<T = any>(token: any): ParameterDecorator {
 		parameterIndex: number,
 	) => {
 		const existing: Map<number, any> =
-			Reflect.getMetadata(METADATA_KEY.INJECT, target) ?? new Map();
+			safeGetMeta(METADATA_KEY.INJECT, target) ?? new Map();
 		existing.set(parameterIndex, token);
-		Reflect.defineMetadata(METADATA_KEY.INJECT, existing, target);
+		safeDefineMeta(METADATA_KEY.INJECT, existing, target);
 	};
 }

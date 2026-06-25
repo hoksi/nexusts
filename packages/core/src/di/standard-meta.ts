@@ -9,6 +9,7 @@
  * These helpers abstract the storage/retrieval so decorator files don't
  * duplicate the dual-mode logic.
  */
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "./safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 
 /** Property name on the constructor that holds the metadata object. */
@@ -47,7 +48,7 @@ export function getMeta(target: any, key: string | symbol): any {
 		if (key in meta) return meta[key];
 	}
 	// Legacy: reflect-metadata
-	return Reflect.getMetadata(key, target);
+	return safeGetMeta(key, target);
 }
 
 /**
@@ -57,5 +58,5 @@ export function hasMeta(target: any, key: string | symbol): boolean {
 	if (typeof target === "function" && (target as any)[META_PROP]) {
 		if (key in (target as any)[META_PROP]) return true;
 	}
-	return Reflect.hasMetadata(key, target);
+	return safeHasMeta(key, target);
 }

@@ -16,7 +16,7 @@
  * class DatabaseModule {}
  * ```
  */
-import "reflect-metadata";
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "../di/safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 import { initNexusMeta } from "../di/standard-meta.js";
 
@@ -51,7 +51,7 @@ export function Global(): any {
 
 		// ── Legacy decorator mode ──
 		getGlobalModules().add(target as Function);
-		Reflect.defineMetadata(METADATA_KEY.GLOBAL, true, target);
+		safeDefineMeta(METADATA_KEY.GLOBAL, true, target);
 	};
 }
 

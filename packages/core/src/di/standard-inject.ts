@@ -24,6 +24,7 @@
  * }
  * ```
  */
+import { safeGetMeta, safeDefineMeta, safeHasMeta, safeParamTypes } from "./safe-reflect.js";
 import { METADATA_KEY } from "../constants.js";
 
 // ---- Runtime metadata key (stored on constructor) ----
@@ -110,9 +111,9 @@ export function Injectable(options: InjectableOptions = {}): any {
 
 		// ── Legacy decorator mode: use reflect-metadata ──
 		if (typeof target === "function") {
-			Reflect.defineMetadata(METADATA_KEY.INJECTABLE, true, target);
+			safeDefineMeta(METADATA_KEY.INJECTABLE, true, target);
 			if (options.scope) {
-				Reflect.defineMetadata("nexus:di:scope", options.scope, target);
+				safeDefineMeta("nexus:di:scope", options.scope, target);
 			}
 			return;
 		}
@@ -164,9 +165,9 @@ export function Inject(token: any): any {
 						? context
 						: String(context);
 				const existing: Record<string | symbol, any> =
-					Reflect.getMetadata(FIELDS_KEY, cls) ?? {};
+					safeGetMeta(FIELDS_KEY, cls) ?? {};
 				existing[key] = token;
-				Reflect.defineMetadata(FIELDS_KEY, existing, cls);
+				safeDefineMeta(FIELDS_KEY, existing, cls);
 			}
 			return;
 		}
@@ -178,9 +179,9 @@ export function Inject(token: any): any {
 		const key = target; // target is prototype (method) or class (constructor)
 
 		const existing: Map<number, any> =
-			Reflect.getMetadata(METADATA_KEY.INJECT, key) ?? new Map();
+			safeGetMeta(METADATA_KEY.INJECT, key) ?? new Map();
 		existing.set(parameterIndex, token);
-		Reflect.defineMetadata(METADATA_KEY.INJECT, existing, key);
+		safeDefineMeta(METADATA_KEY.INJECT, existing, key);
 		return;
 	};
 }
@@ -198,7 +199,7 @@ export function isInjectableStandard(target: any): boolean {
 		// ignore
 	}
 	try {
-		if (Reflect.hasMetadata?.(METADATA_KEY.INJECTABLE, target)) return true;
+		if (safeHasMeta(METADATA_KEY.INJECTABLE, target)) return true;
 	} catch {
 		// reflect-metadata may not be loaded
 	}
@@ -216,7 +217,7 @@ export function getScope(target: any): InjectableScope | undefined {
 		// ignore
 	}
 	try {
-		const s = Reflect.getMetadata?.("nexus:di:scope", target) as
+		const s = safeGetMeta("nexus:di:scope", target) as
 			| InjectableScope
 			| undefined;
 		if (s) return s;
@@ -247,7 +248,7 @@ export function getFieldInjections(
 	}
 	try {
 		// Legacy: reflect-metadata (stored by @Inject in legacy property decorator mode)
-		const fields = Reflect.getMetadata(FIELDS_KEY, target) as
+		const fields = safeGetMeta(FIELDS_KEY, target) as
 			| Record<string | symbol, any>
 			| undefined;
 		if (fields) return fields;
