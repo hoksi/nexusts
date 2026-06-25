@@ -2,7 +2,7 @@
 
 > A working guide for AI agents (and humans) developing, testing, and
 > extending the NexusTS framework. The conventions here were derived
-> from the v0.6 → v0.7 development cycle. Follow them — they exist
+> from the v0.9 development cycle. Follow them — they exist
 > because something broke when we didn't.
 
 ---
@@ -145,9 +145,7 @@ import { Inject, Injectable } from "../core/decorators/index.js";
 @Injectable()
 export class <Name>Service {
   static readonly TOKEN = Symbol.for("nexus:<Name>");
-  constructor(@Inject("<NAME>_CONFIG") config: <Name>Config = {}) {
-    // ...
-  }
+  @Inject("<NAME>_CONFIG") declare config: <Name>Config;
   // public methods
 }
 ```
@@ -165,7 +163,7 @@ export class <Name>Module {
   static forRoot(config: <Name>Config) {
     @Module({
       providers: [
-        { provide: <Name>Service.TOKEN, useFactory: () => new <Name>Service(config) },
+        { provide: <Name>Service.TOKEN, useValue: new <Name>Service(config) },
         { provide: "<NAME>_CONFIG", useValue: config },
       ],
       exports: [<Name>Service.TOKEN, "<NAME>_CONFIG"],
@@ -353,7 +351,7 @@ find module`).
 
 ### Tier 2 — Smoke tests (`tests/examples/smoke.test.ts`)
 
-Already present. Covers all 33 examples in `examples/`. Tests that:
+Already present. Covers all 34 examples in `examples/`. Tests that:
 
 - A README.md exists in each example folder (≥200 chars, contains
   `How to run`).
@@ -598,10 +596,7 @@ corresponding `.ko.md` section.
 @Injectable()
 export class FooService {
   static readonly TOKEN = Symbol.for("nexus:Foo");
-  readonly config: Required<FooConfig>;
-  constructor(@Inject("FOO_CONFIG") config: FooConfig = {}) {
-    this.config = { /* defaults */ ...config };
-  }
+  @Inject("FOO_CONFIG") declare config: FooConfig;
 }
 ```
 
@@ -616,7 +611,7 @@ export class FooModule {
   static forRoot(config: FooConfig) {
     @Module({
       providers: [
-        { provide: FooService.TOKEN, useFactory: () => new FooService(config) },
+        { provide: FooService.TOKEN, useValue: new FooService(config) },
         { provide: "FOO_CONFIG", useValue: config },
       ],
       exports: [FooService.TOKEN, "FOO_CONFIG"],
@@ -807,7 +802,7 @@ bun x vitest run tests/examples/ -t "33-resilience"  # one example
 bun x vitest run tests/graphql/ tests/examples/ tests/resilience/  # subset
 
 # Smoke test lifecycle
-bun run examples:smoke         # 67 vitest tests, ~2s
+bun run examples:smoke         # 70 vitest tests, ~2s
 bun run examples:clean         # bash scripts/clean-examples.sh
 
 # CLI
