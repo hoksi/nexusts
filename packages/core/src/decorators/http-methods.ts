@@ -29,14 +29,15 @@ function defineRoute(method: HttpMethod, path: string): any {
 				context?.kind === "method"
 					? context.name
 					: (arguments[1] as string | symbol),
-			handler:
-				context?.kind === "method"
-					? (target as any)[context.name]
-					: arguments[2]?.value,
+			handler: target as (...args: any[]) => any, // placeholder
 		};
 
 		// ── Standard decorator mode (TC39) ──
 		if (context?.kind === "method" && context?.metadata) {
+			// Note: in standard mode, `target` IS the method function,
+			// NOT the prototype. (TC39: (value, context) signature).
+			route.handler = target;
+
 			const routes: RouteMetadata[] =
 				(context.metadata[METADATA_KEY.ROUTES] as RouteMetadata[]) ?? [];
 			routes.push(route);
@@ -45,6 +46,10 @@ function defineRoute(method: HttpMethod, path: string): any {
 		}
 
 		// ── Legacy decorator mode ──
+		// In legacy mode, target is the prototype, and the actual handler
+		// is in arguments[2]?.value (the MethodDecorator descriptor).
+		route.handler = arguments[2]?.value ?? target;
+
 		const routes: RouteMetadata[] =
 			Reflect.getMetadata(METADATA_KEY.ROUTES, target.constructor) ?? [];
 		routes.push(route);

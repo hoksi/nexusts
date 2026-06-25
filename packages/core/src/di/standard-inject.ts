@@ -153,6 +153,24 @@ export function Inject(token: any): any {
 			return;
 		}
 
+		// ── Legacy property decorator mode ──
+		// (experimentalDecorators: true, @Inject on a field)
+		// target = prototype, context = propertyKey (string | symbol)
+		if (typeof context === "string" || typeof context === "symbol") {
+			const cls = target?.constructor;
+			if (cls) {
+				const key =
+					typeof context === "symbol"
+						? context
+						: String(context);
+				const existing: Record<string | symbol, any> =
+					Reflect.getMetadata(FIELDS_KEY, cls) ?? {};
+				existing[key] = token;
+				Reflect.defineMetadata(FIELDS_KEY, existing, cls);
+			}
+			return;
+		}
+
 		// ── Legacy mode: ParameterDecorator ──
 		const parameterIndex = arguments[2] as number | undefined;
 		if (parameterIndex === undefined) return;
@@ -218,12 +236,23 @@ export function getFieldInjections(
 	target: any,
 ): Record<string | symbol, any> {
 	try {
+		// Standard: __nexus_meta__ or Symbol.metadata
 		const meta = getMeta(target);
 		const fields = meta[FIELDS_KEY] as
 			| Record<string | symbol, any>
 			| undefined;
-		return fields ?? {};
+		if (fields && Object.keys(fields).length > 0) return fields;
 	} catch {
-		return {};
+		// ignore
 	}
+	try {
+		// Legacy: reflect-metadata (stored by @Inject in legacy property decorator mode)
+		const fields = Reflect.getMetadata(FIELDS_KEY, target) as
+			| Record<string | symbol, any>
+			| undefined;
+		if (fields) return fields;
+	} catch {
+		// ignore
+	}
+	return {};
 }

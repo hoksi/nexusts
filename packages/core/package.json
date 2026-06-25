@@ -10,6 +10,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./di/standard-inject": {
+      "types": "./src/di/standard-inject.ts",
+      "import": "./src/di/standard-inject.ts"
     }
   },
   "files": [
