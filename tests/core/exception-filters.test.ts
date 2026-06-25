@@ -3,12 +3,14 @@
  */
 import "reflect-metadata";
 import { describe, it, expect } from "vitest";
+import { z } from "zod";
 import {
 	HttpException,
 	createExceptionFilter,
 	createDefaultExceptionFilter,
 	executeExceptionFilters,
 } from "@nexusts/core";
+import { ValidationError } from "@nexusts/core/validation/validator";
 
 
 /** Minimal execution context shape for testing. */
@@ -129,6 +131,20 @@ describe("defaultExceptionFilter", () => {
 		const body = await res.json();
 		expect(body).toHaveProperty("error", "Something broke");
 		expect(body).toHaveProperty("statusCode", 500);
+	});
+
+	it("handles ValidationError as 400 with Zod issues", async () => {
+		const schema = z.object({ name: z.string().min(1) });
+		const result = schema.safeParse({ name: "" });
+		const filter = createDefaultExceptionFilter();
+		const ctx = makeMockContext();
+		const res = await filter.catch(new ValidationError((result as any).error), ctx);
+		expect(res.status).toBe(400);
+		const body = await res.json();
+		expect(body).toHaveProperty("error", "Validation failed");
+		expect(body).toHaveProperty("issues");
+		expect(Array.isArray(body.issues)).toBe(true);
+		expect(body.issues.length).toBeGreaterThan(0);
 	});
 
 	it("does not include stack in production-like env", async () => {
