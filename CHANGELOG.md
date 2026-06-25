@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.1] — 2026-06-25
+
+### Fixed
+
+- **npm publish**: Include `src/di/` directory in `@nexusts/core` package so deep imports like `@nexusts/core/di/safe-reflect` resolve correctly when installed from npm. Fixes `bunx create-nexusts` scaffolding error.
+
+### Added
+
+- (none)
+
+### Fixed
+
+- (none)
+
+---
+
 ## [0.9.0] — 2026-06-25
 
 ### Added

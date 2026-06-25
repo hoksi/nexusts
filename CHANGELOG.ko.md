@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.1] — 2026-06-25
+
+### 수정
+
+- **npm 퍼블리시**: `@nexusts/core` 패키지에 `src/di/` 디렉토리를 포함시켜 `@nexusts/core/di/safe-reflect` 같은 deep import가 npm에서 설치 시 정상 작동하도록 수정. `bunx create-nexusts` 스캐폴딩 오류 해결.
+
+### 추가
+
+- (없음)
+
+### 수정
+
+- (없음)
+
+---
+
 ## [0.9.0] — 2026-06-25
 
 ### 추가
