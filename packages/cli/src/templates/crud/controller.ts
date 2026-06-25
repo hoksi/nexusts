@@ -1,13 +1,14 @@
 /**
- * Controller template for `make:crud` (Nest style, with optional Inertia).
+ * Controller template for `make:crud` — standard decorator mode.
  *
- * Renders all five RESTful actions + an Inertia page if `view === 'inertia'`.
+ * All five RESTful actions receive `ctx` (Hono Context) and use
+ * `inputValue()` for typed param extraction + inline JSON body parsing.
  */
 
 export default `
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nexusts/core';
+import { Controller, Delete, Get, Inject, Post, Put, inputValue } from '@nexusts/core';
 import { z } from 'zod';
-import { Validate } from '@nexusts/core';
+import type { Context } from 'hono';
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
 {{#hasInertia}}import { Inertia } from '@nexusts/view';{{/hasInertia}}
 
@@ -18,13 +19,11 @@ const Create{{ name }}Schema = z.object({
 
 @Controller('/{{ kebab }}s')
 export class {{ controller }} {
-  constructor(
-    @Inject({{ service }}) private readonly {{ camel }}Service: {{ service }},
-{{#hasInertia}}    @Inject(Inertia.TOKEN) private readonly inertia: Inertia,{{/hasInertia}}
-  ) {}
+  @Inject({{ service }}) declare {{ camel }}Service: {{ service }};
+{{#hasInertia}}  @Inject(Inertia.TOKEN) declare inertia: Inertia;{{/hasInertia}}
 
   @Get('/')
-  async index() {
+  async index(ctx: Context) {
     const items = await this.{{ camel }}Service.findAll();
 {{#hasInertia}}
     return this.inertia.render('{{ viewComponent }}', { items });
@@ -35,8 +34,9 @@ export class {{ controller }} {
   }
 
   @Get('/:id')
-  async show(@Param('id') id: string) {
-    const item = await this.{{ camel }}Service.findOne(Number(id));
+  async show(ctx: Context) {
+    const id = inputValue(ctx.req.param('id')).number().required().value();
+    const item = await this.{{ camel }}Service.findOne(id);
 {{#hasInertia}}
     return this.inertia.render('{{ viewShowComponent }}', { item });
 {{/hasInertia}}
@@ -46,23 +46,22 @@ export class {{ controller }} {
   }
 
   @Post('/')
-  @Validate({ body: Create{{ name }}Schema })
-  async create(@Body() body: z.infer<typeof Create{{ name }}Schema>) {
+  async create(ctx: Context) {
+    const body = Create{{ name }}Schema.parse(await ctx.req.json());
     return { status: 201, body: await this.{{ camel }}Service.create(body) };
   }
 
   @Put('/:id')
-  @Validate({ body: Create{{ name }}Schema.partial() })
-  async update(
-    @Param('id') id: string,
-    @Body() body: Partial<z.infer<typeof Create{{ name }}Schema>>,
-  ) {
-    return await this.{{ camel }}Service.update(Number(id), body);
+  async update(ctx: Context) {
+    const id = inputValue(ctx.req.param('id')).number().required().value();
+    const body = Create{{ name }}Schema.partial().parse(await ctx.req.json());
+    return await this.{{ camel }}Service.update(id, body);
   }
 
   @Delete('/:id')
-  async destroy(@Param('id') id: string) {
-    return await this.{{ camel }}Service.delete(Number(id));
+  async destroy(ctx: Context) {
+    const id = inputValue(ctx.req.param('id')).number().required().value();
+    return await this.{{ camel }}Service.delete(id);
   }
 }
 `.trimStart();

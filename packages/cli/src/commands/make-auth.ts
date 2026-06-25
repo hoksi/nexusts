@@ -26,7 +26,6 @@ const AUTH_INSTANCE_TEMPLATE = `/**
  *
  * Edit \`nx.config.ts\` (\`auth\` section) instead of this file when possible.
  */
-import 'reflect-metadata';
 import { createAuth } from '@nexusts/auth';
 
 export const auth = createAuth({

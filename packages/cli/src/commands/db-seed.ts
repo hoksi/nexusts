@@ -201,7 +201,6 @@ export const dbSeedCommand: Command = {
 			.join("\n");
 
 		const script = `
-import 'reflect-metadata';
 import { DrizzleService } from '@nexusts/drizzle';
 import { Logger } from '@nexusts/logger';
 

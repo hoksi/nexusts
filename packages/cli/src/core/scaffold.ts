@@ -52,7 +52,6 @@ export function computeDeps(
 ): { deps: Record<string, string>; devDeps: Record<string, string> } {
 	const deps: Record<string, string> = {
 		"@nexusts/core": "*",
-		"reflect-metadata": "^0.2.2",
 		hono: "^4.6.0",
 		zod: "^3.23.8",
 	};
@@ -249,7 +248,7 @@ export function generateProjectFiles(target: string, opts: ScaffoldOptions): str
 			: '';
 		const staticOpt = hasView ? '\n  middleware: [staticMiddleware],' : '';
 		write("app/main.ts",
-			`import 'reflect-metadata';\nimport { Application } from '@nexusts/core';\n${staticMw}import { AppModule } from './app.module.js';\n\nconst app = new Application(AppModule, {\n  logging: true,\n  port: Number(process.env['PORT'] ?? 3000),${staticOpt}\n});\n\nawait app.listen();\nconsole.log('[nexus] Listening on http://localhost:' + (process.env['PORT'] ?? 3000));\n`);
+			`import { Application } from '@nexusts/core';\n${staticMw}import { AppModule } from './app.module.js';\n\nconst app = new Application(AppModule, {\n  logging: true,\n  port: Number(process.env['PORT'] ?? 3000),${staticOpt}\n});\n\nawait app.listen();\nconsole.log('[nexus] Listening on http://localhost:' + (process.env['PORT'] ?? 3000));\n`);
 	}
 
 	// app/app.module.ts
@@ -273,7 +272,7 @@ export function generateProjectFiles(target: string, opts: ScaffoldOptions): str
 	{
 		if (opts.view === "inertia") {
 			write("app/controllers/home.controller.ts",
-				`import { Controller, Get, Inject } from '@nexusts/core';\nimport { Inertia } from '@nexusts/view';\n\n@Controller('/')\nexport class HomeController {\n  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}\n\n  @Get('/')\n  index() {\n    return this.inertia.render('Welcome', { name: 'NexusTS' });\n  }\n}\n`);
+				`import { Controller, Get, Inject } from '@nexusts/core';\nimport { Inertia } from '@nexusts/view';\n\n@Controller('/')\nexport class HomeController {\n  @Inject(Inertia.TOKEN) private inertia!: Inertia;\n\n  @Get('/')\n  index() {\n    return this.inertia.render('Welcome', { name: 'NexusTS' });\n  }\n}\n`);
 		} else if (opts.view !== "none") {
 			write("app/controllers/home.controller.ts",
 				`import { Controller, Get } from '@nexusts/core';\n\n@Controller('/')\nexport class HomeController {\n  @Get('/')\n  index() {\n    return {\n      view: 'welcome.html',\n      data: { year: new Date().getFullYear() },\n    };\n  }\n}\n`);
