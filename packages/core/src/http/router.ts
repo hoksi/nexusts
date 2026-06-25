@@ -23,6 +23,7 @@ import {
 } from "../decorators/controller.js";
 import { getRoutes } from "../decorators/http-methods.js";
 import { getParamMetadata } from "../decorators/params.js";
+import { attachInputHelper } from "./ctx-input.js";
 import { getValidationMetadata } from "../decorators/validate.js";
 import {
 	validateRequest,
@@ -380,11 +381,23 @@ class NexusRouterImpl implements NexusRouter {
 					// Lazy: resolve the controller from the container for each request.
 					// This is important for transient/request-scoped controllers.
 					const instance = container.resolve(controller);
-					const args = await this.buildArgs(c, paramMeta, validation);
 
-					const result = await Promise.resolve(
-						finalHandler.call(instance, ...args),
-					);
+					// Standard decorator mode: no @Param/@Body/@Query decorators →
+					// pass the Hono context directly as the sole argument.
+					// The method uses ctx.param(), ctx.query(), ctx.body() etc.
+					const isStandardMode = paramMeta.length === 0;
+					let result: any;
+					if (isStandardMode) {
+						attachInputHelper(c);
+						result = await Promise.resolve(
+							finalHandler.call(instance, c),
+						);
+					} else {
+						const args = await this.buildArgs(c, paramMeta, validation);
+						result = await Promise.resolve(
+							finalHandler.call(instance, ...args),
+						);
+					}
 
 					return await this.serialize(c, result);
 				} catch (err) {
