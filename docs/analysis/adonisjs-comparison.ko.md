@@ -3,31 +3,31 @@
 > English version: [`adonisjs-comparison.md`](./adonisjs-comparison.md)
 > 분석 일자: 2026-06-25 · 기준: NexusTS **v0.9.0**
 
-이 문서는 NexusTS v0.8.4와 [AdonisJS v6](https://adonisjs.com)를 비교하여
+이 문서는 NexusTS **v0.9.0**과 [AdonisJS v6](https://adonisjs.com)를 비교하여
 어떤 AdonisJS 스타일 "battery" (관례 기반, "그냥 동작" 기능)가
-**있음**, **부분적**, **없음** 상태인지 식별한다. v0.3–v0.7.0 마일스톤이
-모든 Tier 1, Tier 2, Tier 3 격차를 해소했다. 이제 프레임워크는
-AdonisJS가 출시하는 모든 battery를 다루며, 그 이상을 제공한다.
+**있음**, **부분적**, **없음** 상태인지 식별한다. 모든 Tier 1, Tier 2,
+Tier 3 격차가 해소되었다. 이제 프레임워크는 AdonisJS가 출시하는
+모든 battery를 다루며, 그 이상을 제공한다.
 
 > **중요**: AdonisJS는 9년 된 프레임워크로 NexusTS보다 5년 앞서 있다.
 > 매우 관용적인 수십 개의 first-party 패키지 (`@adonisjs/*`)를
 > 보유. NexusTS는 더 작은 코어와 "스택을 직접 조합"하는 철학을
-> 의도적으로 출시한다. 따라서 "격차"는 기능 패리티보다
-> **battery 커버리지** — AdonisJS가 알려진 "그냥 동작" 수준.
+> 의도적으로 출시한다.
 
 ---
 
-## 1. 요약 표 (v0.8.4)
+## 1. 요약 표 (v0.9.0)
 
 범례: ✅ 출시 · ⚠️ 부분적 · ❌ 없음 · 🔵 third-party 필요
 
-| 카테고리 | AdonisJS | NexusTS v0.8.4 | 비고 |
+| 카테고리 | AdonisJS | NexusTS v0.9.0 | 비고 |
 |----------|----------|--------------|-------|
+| **표준 데코레이터** | ❌ experimentalDecorators only | ✅ **TC39 표준 ES 데코레이터** | `experimentalDecorators` 불필요, `reflect-metadata` 불필요. 듀얼모드 레거시 폴백. |
 | HTTP 서버 | ✅ Custom (Node & Workers) | ✅ Hono (Bun / Node / Workers) | Nexus는 Hono를 기반 서버로 사용 |
 | 라우팅 | ✅ Route groups, resources, subdomains | ✅ 클래스 데코레이터 + functional | 세 가지 스타일: Nest, Adonis, Functional |
 | 컨트롤러 | ✅ "thin" (Adonis 관례) | ✅ "fat" (DI와 함께 Nest 스타일) | 둘 다 작동; 스타일 선택 |
 | 미들웨어 | ✅ 클래스 기반, 순서 지정 | ✅ Hono 미들웨어 (타입됨) | `app.use('*', mw)` |
-| DI | ✅ IoC 컨테이너, 데코레이터 | ✅ 클래스 기반 + `@Inject()` | Nest 스타일 + Adonis 스타일 모두 |
+| DI | ✅ IoC 컨테이너, 데코레이터 | ✅ 클래스 기반 + `@Inject()` | Nest 스타일 + Adonis 스타일 모두 + 필드 인젝션 |
 | 검증 | ✅ Vine (Zod에서 영감) | ✅ Zod | Nexus는 `@Validate`로 직접 Zod 사용 |
 | ORM | ✅ Lucid (내장) | ✅ `@nexusts/drizzle` | Drizzle가 기본 ORM |
 | 마이그레이션 | ✅ 내장 | ✅ `nx db:migrate` (drizzle-kit 래퍼) | 같은 DX |
@@ -55,15 +55,15 @@ AdonisJS가 출시하는 모든 battery를 다루며, 그 이상을 제공한다
 | Tracing | ❌ DIY | ✅ `@nexusts/tracing` | lazy SDK를 갖춘 OpenTelemetry |
 | Metrics | ❌ DIY | ✅ `@nexusts/metrics` | Prometheus / OpenMetrics |
 | Bodyparser | ✅ 내장 | ✅ Hono의 `c.req.parseBody()` + `@nexusts/upload` | |
-| REPL | ✅ `node ace repl` | ✅ `nx repl` | v0.5에 출시됨 (DI-resolved 객체, exec expression, introspection) |
+| REPL | ✅ `node ace repl` | ✅ `nx repl` | v0.5에 출시됨 |
 | Inspector | ✅ `@adonisjs/inspector` | ❌ 출시 안 됨 | 디버깅 전용 |
 | Admin panel | ✅ `@adonisjs/admin` | ❌ 출시 안 됨 | 낮은 우선순위 |
-| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 + 전역 클래스 레지스트리 (v0.7.6). Code-first SDL 합성 v0.8. |
-| gRPC | ❌ DIY | ✅ `@nexusts/grpc` | v0.5에 출시됨 (reflection-based, unary / streaming v2) |
+| GraphQL | ✅ `@adonisjs/graphql` (legacy) | ✅ `@nexusts/graphql` | SDL-first + code-first (`autoSchema: true`). 전체 SDL 합성. v0.7.6 출시. |
+| gRPC | ❌ DIY | ✅ `@nexusts/grpc` | Reflection 기반, 4개 call 타입: unary + server/client/bidi streaming. v0.5 출시; streaming v0.8.2. |
 | Feature flags | ❌ DIY | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` 데코레이터. v0.8.0 출시. |
 | Resilience (서킷 브레이커, retry) | ❌ DIY | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, exponential-jitter 백오프. v0.7.0 출시. **새 의존성 0.** |
 
-**헤드라인**: NexusTS v0.7.6는 **모든** AdonisJS v6 battery를
+**헤드라ine**: NexusTS **v0.9.0**이 **모든** AdonisJS v6 battery를
 커버하며, 모던 기능 (GraphQL, WebSockets, OpenAPI, SSE,
 tracing, metrics, gRPC, resilience)에서 AdonisJS가 battery로
 출시하지 않는 것을 능가한다. 모든 **32개** 모듈이 first-party.

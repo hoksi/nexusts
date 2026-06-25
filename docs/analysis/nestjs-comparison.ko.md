@@ -3,26 +3,26 @@
 > English version: [`nestjs-comparison.md`](./nestjs-comparison.md)
 > 분석 일자: 2026-06-25 · 기준: NexusTS **v0.9.0**
 
-이 문서는 NexusTS v0.8.4와 [NestJS](https://nestjs.com)를 비교하여
+이 문서는 NexusTS **v0.9.0**과 [NestJS](https://nestjs.com)를 비교하여
 프로덕션 등급 백엔드 기능이 **있음**, **부분적**, **없음** 상태를
-식별한다. v0.3, v0.4, v0.5, v0.6.x, v0.7.0 마일스톤이 모든 Tier 1과
-Tier 2 격차를 모두 해소했다. 이 분석은 v0.8+ 로드맵을 위한
-Tier 3+ 잔존 격차에 집중한다.
+식별한다. 모든 Tier 1과 Tier 2 격차가 해소되었다. 이 분석은 잔존
+Tier 3+ 격차에 집중한다.
 
 > **중요**: NestJS는 7년 된 프레임워크로 주당 ~1000만 다운로드를
 > 기록하며 수십 개의 first-party 패키지를 보유. NexusTS는
-> 어린 프레임워크다 (v0.7.6, 개발 기간 약 6개월). 프로덕션
-> 백엔드에 "지금" 필요한 것만 출시하며, 잔존 격차는 v0.8+
-> 로드맵 우선순위를 정하기 위해 여기에 문서화된다.
+> 어린 프레임워크다 (v0.9.0, 개발 기간 약 6개월). 프로덕션
+> 백엔드에 필요한 것만 출시하며, 잔존 격차는 로드맵 우선순위를
+> 정하기 위해 여기에 문서화된다.
 
 ---
 
-## 1. 요약 표 (v0.8.4)
+## 1. 요약 표 (v0.9.0)
 
 범례: ✅ 출시 · ⚠️ 부분적 · ❌ 없음 · 🔵 third-party 필요
 
-| 카테고리 | NestJS | NexusTS v0.7.0 | 비고 |
+| 카테고리 | NestJS | NexusTS v0.9.0 | 비고 |
 |----------|--------|--------------|-------|
+| **표준 데코레이터** | ⚠️ experimentalDecorators only | ✅ **TC39 표준 ES 데코레이터** | `experimentalDecorators` 불필요, `reflect-metadata` 불필요. 듀얼모드 레거시 폴백. |
 | HTTP / 라우팅 | ✅ GraphQL, WebSockets, gRPC, SSE, Fastify | ✅ Hono + SSE + WS + gRPC + GraphQL | REST + functional + Nest/Adonis 스타일 |
 | DI | ✅ Request-scoped, 순환 자동 해결 | ✅ Singleton + transient + request | `AsyncLocalStorage`로 request scope; `@Injectable({ scope: 'request' })` |
 | Config | ✅ @nestjs/config, .env 검증 | ✅ `@nexusts/config` | Zod 검증, 레이어 로딩 |
@@ -31,7 +31,7 @@ Tier 3+ 잔존 격차에 집중한다.
 | 캐시 | ✅ cache-manager (in-memory / Redis) | ✅ `@nexusts/cache` (memory / Drizzle) | tag-based invalidation; Redis는 커스텀 store |
 | 로깅 | ✅ 내장 Logger (Winston / Pino 어댑터) | ✅ `@nexusts/logger` (Pino) | dev에서 pretty, prod에서 JSON, ALS로 request-scoped |
 | 실시간 | ✅ WebSocket, SSE, gRPC streaming | ✅ WebSocket + SSE + gRPC | `@nexusts/ws` (Bun + Node) + `@nexusts/sse` + `@nexusts/grpc` |
-| 마이크로서비스 | ✅ TCP, Redis, NATS, Kafka, MQTT | ⚠️ `@nexusts/queue` (BullMQ / Cloudflare) | 잡 큐만; service-mesh 전송 없음 |
+| 마이크로서비스 | ✅ TCP, Redis, NATS, Kafka, MQTT | ⚠️ `@nexusts/queue` (BullMQ / Cloudflare) + gRPC | 잡 큐 + gRPC; service-mesh 전송 없음 |
 | API 문서 | ✅ @nestjs/swagger | ✅ `@nexusts/openapi` | Zod에서 OpenAPI 3.1 + Scalar UI |
 | 헬스 체크 | ✅ @nestjs/terminus | ✅ `@nexusts/health` | 내장 indicator (memory/disk/http/db) |
 | 이메일 | ✅ @nestjs/mailer | ✅ `@nexusts/mail` (SMTP / File / Null) | MJML (옵션 peer) |
@@ -42,12 +42,13 @@ Tier 3+ 잔존 격차에 집중한다.
 | Metrics | ✅ Prometheus 통합 | ✅ `@nexusts/metrics` | Counter / Gauge / Histogram / Summary |
 | Auth | ✅ @nestjs/passport + 다수 전략 | ✅ `@nexusts/auth` (better-auth) | better-auth가 다수 전략 지원 |
 | 암호화 | ⚠️ DIY (또는 `nestjs-crypto`) | ✅ `@nexusts/crypto` | AES-256-GCM + HMAC + scrypt/argon2 |
-| Feature flags | ⚠️ DIY (first-party 없음) | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` 데코레이터. v0.8.0 출시. |
-| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first; `@Resolver`/`@Query`/`@Mutation` 데코레이터 + 전역 클래스 레지스트리 (v0.7.6). Code-first SDL 합성 v0.8 예정. |
-| gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection 기반, unary 메소드 (streaming v2 예정). v0.5 출시. |
-| Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, exponential-jitter 백오프. v0.7.0 출시. **새 의존성 0.** |
+| Feature flags | ⚠️ DIY (first-party 없음) | ✅ `@nexusts/feature-flag` | Rollout, allowlist, denylist, `@FeatureFlag` 데코레이터, memory backend. v0.8.0 출시. |
+| GraphQL | ✅ @nestjs/graphql | ✅ `@nexusts/graphql` | SDL-first + code-first (`autoSchema: true`). `@Resolver`/`@Query`/`@Mutation` 데코레이터, SDL 합성. v0.7.6 출시. |
+| gRPC | ✅ @nestjs/microservices | ✅ `@nexusts/grpc` | Reflection 기반, 4개 call 타입: unary + server/client/bidi streaming. v0.5 출시; streaming v0.8.2. |
+| Resilience | ⚠️ nestjs-recq | ✅ `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead, 공유 명명 레지스트리, HTTP 관리 API (`ResilienceAdminModule`), eager `applyResilience()` 자동 래핑. **새 의존성 0.** |
 
-**헤드라인**: NexusTS v0.7.0는 v0.2 분석의 **모든 Tier 1 및 Tier 2 격차**를 해소했다. 출시된 **32개** 모듈 모두 first-party.
+**헤드라인**: NexusTS **v0.9.0**이 모든 Tier 1 및 Tier 2 격차를 해소했다.
+출시된 **32개** 모듈 모두 first-party.
 
 ---
 
