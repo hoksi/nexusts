@@ -8,14 +8,15 @@
  *
  * Run with: bun main.ts
  */
-import "reflect-metadata";
 import {
   Application,
   Controller,
   Get,
   Injectable,
+  Inject,
   Module,
 } from "@nexusts/core";
+import "reflect-metadata";
 import {
   GrpcModule,
   GrpcService as GrpcSvcClass,
@@ -91,7 +92,11 @@ class DemoServiceImpl {
 @Controller("/demo")
 @Injectable()
 class DemoController {
-  constructor(private readonly grpc: GrpcSvcClass) {}
+  private readonly grpc: GrpcSvcClass;
+  constructor(@Inject(GrpcSvcClass) grpc: GrpcSvcClass) {
+    this.grpc = grpc;
+  }
+
   @Get("/ping")
   async ping() {
     const client = this.grpc.client<{

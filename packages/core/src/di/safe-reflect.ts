@@ -28,6 +28,9 @@ const fallbackStore = new Map<string, any>();
 let fallbackId = 0;
 
 function keyId(key: any, target: any, prop?: any): string {
+	if (target === null || target === undefined) {
+		return `${String(key)}|__null__|${prop !== undefined ? String(prop) : ""}`;
+	}
 	const tid = (target as any)?.__fallback_id ?? (() => {
 		const id = ++fallbackId;
 		Object.defineProperty(target, "__fallback_id", {
