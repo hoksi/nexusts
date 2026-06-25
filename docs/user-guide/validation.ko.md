@@ -4,7 +4,41 @@
 
 검증은 옵트인, Zod 기반이며 `@Validate(...)` 데코레이터를 통해 적용됩니다. 컨트롤러 메서드가 호출되기 **전에** 실행되므로, 실패한 요청은 비즈니스 로직에 도달하지 않습니다.
 
-## 1. `@Validate` 데코레이터
+## 0. 표준 데코레이터 검증 (v0.9+)
+
+표준 데코레이터 모드에서는 Zod 스키마를 `ctx.req.json()` / `ctx.req.param()`과
+함께 인라인으로 사용합니다:
+
+```ts
+import { z } from 'zod';
+import { Controller, Post, Get } from '@nexusts/core';
+import type { Context } from 'hono';
+
+const CreateUserSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+});
+
+@Controller('/users')
+export class UserController {
+  @Post('/')
+  async create(ctx: Context) {
+    const body = CreateUserSchema.parse(await ctx.req.json());
+    return this.users.create(body);
+  }
+
+  @Get('/:id')
+  async show(ctx: Context) {
+    const id = z.coerce.number().int().positive().parse(ctx.req.param('id'));
+    return this.users.findById(id);
+  }
+}
+```
+
+> `@Validate` 데코레이터(레거시)는 `experimentalDecorators: true` 설정 시
+> 계속 동작합니다. 아래 섹션들은 레거시 API를 설명합니다.
+
+---
 
 ```ts
 import { z } from 'zod';

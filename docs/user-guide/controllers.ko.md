@@ -4,7 +4,65 @@
 
 컨트롤러는 HTTP 요청의 진입점입니다. URL을 메서드에 매핑하고, 입력을 검증하며, 응답(JSON, 뷰, 또는 Inertia 페이지)을 반환합니다.
 
-## 1. 세 가지 라우팅 스타일
+## 0. 표준 데코레이터 모드 (v0.9+)
+
+NexusTS v0.9는 **TC39 표준 ES 데코레이터**를 기본으로 사용합니다.
+컨트롤러 메서드는 Hono `Context`를 직접 받고, `ctx.req.*` 메서드로
+요청 데이터에 접근합니다 (`@Body`/`@Param` 파라미터 데코레이터 대신).
+
+### 표준 컨트롤러 패턴
+
+```ts
+import { Controller, Get, Post, Inject } from '@nexusts/core';
+import { UserService } from '../services/user.service.js';
+import type { Context } from 'hono';
+import { z } from 'zod';
+
+const CreateUserSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+});
+
+@Controller('/users')
+export class UserController {
+  @Inject(UserService) declare users: UserService;
+
+  @Get('/')
+  async index(ctx: Context) {
+    const q = ctx.req.query('q');
+    const limit = Number(ctx.req.query('limit') ?? '10');
+    return this.users.findAll({ q, limit });
+  }
+
+  @Get('/:id')
+  async show(ctx: Context) {
+    const id = Number(ctx.req.param('id'));
+    return this.users.findById(id);
+  }
+
+  @Post('/')
+  async create(ctx: Context) {
+    const body = CreateUserSchema.parse(await ctx.req.json());
+    return this.users.create(body);
+  }
+}
+```
+
+### 주요 차이점
+
+| 항목 | 레거시 (v0.8) | 표준 (v0.9+) |
+|--------|--------------|------------------|
+| 인젝션 | `constructor(@Inject(Svc) private svc: Svc)` | `@Inject(Svc) declare svc: Svc` |
+| 경로 파라미터 | `@Param('id') id: string` | `ctx.req.param('id')` |
+| 쿼리 파라미터 | `@Query('q') q: string` | `ctx.req.query('q')` |
+| 요청 본문 | `@Body() body: DTO` | `await ctx.req.json()` |
+| Hono context | `@Ctx() c: Context` | `ctx: Context` (첫 번째 인자) |
+
+> **하위 호환**: 레거시 파라미터 데코레이터(`@Body`, `@Param`, `@Query`, `@Ctx`)는
+> `experimentalDecorators: true` 설정 시 계속 동작합니다. 라우터가
+> `paramMeta.length`를 확인하여 모드를 자동 감지합니다.
+
+---
 
 NexusTS는 **세 가지** 스타일을 나란히 지원합니다 — 각 라우트에 맞는 것을 선택하세요.
 

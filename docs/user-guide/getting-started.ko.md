@@ -23,11 +23,9 @@
 새 프로젝트에서:
 
 ```bash
-bun add @nexusts/core reflect-metadata zod hono
+bun add @nexusts/core zod hono
 bun add -d @types/bun typescript vitest
 ```
-
-> `reflect-metadata`는 peer dependency이며 애플리케이션 진입점에서 한 번 import되어야 합니다. `zod`와 `hono`는 NexusTS에 번들되어 있지만 타입 해석을 위해 명시적으로 설치하는 것을 권장합니다.
 
 ---
 
