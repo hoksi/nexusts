@@ -464,7 +464,7 @@ Bun 1.3.14에서 **다음 패턴은 안 됨**:
 ```ts
 @Injectable()
 class Foo {
-  constructor(@Inject(Bar) private bar: Bar) {}   // ❌ decorator가 무시됨
+  @Inject(Bar) declare bar: Bar;   // ❌ decorator가 무시됨
 }
 ```
 

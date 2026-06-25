@@ -53,7 +53,7 @@ import { CacheService } from '@nexusts/cache';
 
 @Injectable()
 class UserService {
-  constructor(@Inject(CacheService.TOKEN) private cache: CacheService) {}
+  @Inject(CacheService.TOKEN) declare cache: CacheService;
 
   async findById(id: string) {
     return this.cache.wrap(

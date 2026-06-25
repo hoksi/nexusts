@@ -45,7 +45,7 @@ Constructor injection requires `experimentalDecorators: true` and an
 explicit `@Inject(Token)` for each parameter (Bun's native TS
 transformer doesn't emit `design:paramtypes`).
 
-> **Migration tip**: Replace `constructor(@Inject(T) private t: T) {}`
+> **Migration tip**: Replace `@Inject(T) declare t: T;`
 > with `@Inject(T) declare t: T;` and remove the constructor. The DI
 > container automatically detects field injection and switches to the
 > no-arg constructor path.
@@ -72,7 +72,7 @@ Bun, and Deno.
 
 ```ts
 // Always portable — recommended.
-constructor(@Inject(UserRepository) private repo: UserRepository) {}
+@Inject(UserRepository) declare repo: UserRepository;
 
 // Works under tsc, ignored by Bun's transformer.
 constructor(private repo: UserRepository) {}
@@ -113,7 +113,7 @@ Inject as:
 ```ts
 @Injectable()
 class UserRepository {
-  constructor(@Inject('DB') private db: any) {}
+  @Inject('DB') declare db: any;
 }
 ```
 
@@ -188,8 +188,8 @@ export class UserService {
 Now both work:
 
 ```ts
-constructor(@Inject(UserService) private users: UserService) {}     // class form
-constructor(@Inject(UserService.TOKEN) private users: UserService) {} // token form
+@Inject(UserService) declare users: UserService;     // class form
+@Inject(UserService.TOKEN) declare users: UserService; // token form
 ```
 
 > ⚠️ **Why this matters**: If you only register `UserService` and try

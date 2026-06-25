@@ -105,7 +105,7 @@ use S3.
 ```ts
 @Injectable()
 class AvatarService {
-  constructor(@Inject(DriveService.TOKEN) private drive: DriveService) {}
+  @Inject(DriveService.TOKEN) declare drive: DriveService;
 
   async upload(userId: string, bytes: Buffer) {
     const key = `avatars/${userId}.png`;

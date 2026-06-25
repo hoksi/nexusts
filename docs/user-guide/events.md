@@ -38,7 +38,7 @@ import { EventService, OnEvent } from '@nexusts/events';
 
 @Injectable()
 export class EmailListeners {
-  constructor(@Inject(EventService.TOKEN) private events: EventService) {}
+  @Inject(EventService.TOKEN) declare events: EventService;
 
   @OnEvent('user.created')
   async onUserCreated(payload: { userId: string; email: string }) {
@@ -146,7 +146,7 @@ manually unless you want to.
 
 ```ts
 class WebhookController {
-  constructor(@Inject(EventService.TOKEN) private events: EventService) {}
+  @Inject(EventService.TOKEN) declare events: EventService;
 
   @Post('/incoming')
   async incoming(@Body() body: any) {
@@ -240,7 +240,7 @@ The events system pairs naturally with:
 ```ts
 @Injectable()
 class EmailWorker {
-  constructor(@Inject(QueueService.TOKEN) private queue: QueueService) {}
+  @Inject(QueueService.TOKEN) declare queue: QueueService;
 
   @OnQueueReady()
   async register() {

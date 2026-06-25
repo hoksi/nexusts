@@ -42,7 +42,7 @@ class AppModule {}
 
 @Injectable()
 class RateLimiter {
-  constructor(@Inject(REDIS_CLIENT_TOKEN) private redis: RedisClient) {}
+  @Inject(REDIS_CLIENT_TOKEN) declare redis: RedisClient;
 
   async check(key: string, limit: number): Promise<boolean> {
     const v = await this.redis.incr(key, 1, { ex: 60 });

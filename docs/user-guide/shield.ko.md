@@ -87,7 +87,7 @@ ShieldModule.forRoot({
 
 ```ts
 class ContactController {
-  constructor(@Inject(ShieldService.TOKEN) private shield: ShieldService) {}
+  @Inject(ShieldService.TOKEN) declare shield: ShieldService;
 
   @Get('/contact')
   contactPage(@Res() res: any) {
@@ -239,7 +239,7 @@ import { Inject } from '@nexusts/core';
 import { ShieldService } from '@nexusts/shield';
 
 class FormController {
-  constructor(@Inject(ShieldService.TOKEN) private shield: ShieldService) {}
+  @Inject(ShieldService.TOKEN) declare shield: ShieldService;
 
   @Get('/contact')
   contactPage(@Res() res: any) {

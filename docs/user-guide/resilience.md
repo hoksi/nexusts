@@ -25,7 +25,7 @@ import {
 class AppModule {}
 
 class AppController {
-  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
 
   // Inline retry — no decorator needed.
   @Get("/user/:id")
@@ -279,7 +279,7 @@ in one path protects all other paths.
 
 ```ts
 class OrderService {
-  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
   async charge(order: Order) {
     const cb = this.r.getOrCreateCircuit("stripe", { threshold: 0.5 });
     return cb.execute(() => stripe.charge(order));
@@ -289,7 +289,7 @@ class OrderService {
 class SubscriptionService {
   // Same circuit, same state — one Stripe outage opens the circuit
   // for both OrderService and SubscriptionService.
-  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
   async renew(sub: Subscription) {
     const cb = this.r.getOrCreateCircuit("stripe");
     return cb.execute(() => stripe.updateSubscription(sub));

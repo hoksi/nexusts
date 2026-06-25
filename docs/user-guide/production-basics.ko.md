@@ -75,7 +75,7 @@ import type { HealthIndicatorResult } from '@nexusts/health';
 @Injectable()
 export class DatabaseHealthIndicator implements HealthIndicator {
   readonly name = 'database';
-  constructor(@Inject('DB') private db: Db) {}
+  @Inject('DB') declare db: Db;
   async check(): Promise<HealthIndicatorResult> {
     await this.db.ping();
     return { status: 'up' };
@@ -239,7 +239,7 @@ import { Logger } from '@nexusts/logger';
 
 @Injectable()
 class UserService {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   async signUp(email: string) {
     this.logger.info({ email }, 'user signed up');
@@ -322,7 +322,7 @@ import { Hono } from 'hono';
 
 @Injectable()
 class WebServer {
-  constructor(@Inject(StaticService.TOKEN) private static: StaticService) {}
+  @Inject(StaticService.TOKEN) declare static: StaticService;
 
   build(): Hono {
     const app = new Hono();

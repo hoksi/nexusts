@@ -127,7 +127,7 @@ async startup() { /* 등록 후 5초 뒤 실행 */ }
 
 ```ts
 class MyService {
-  constructor(@Inject(ScheduleService.TOKEN) private schedule: ScheduleService) {}
+  @Inject(ScheduleService.TOKEN) declare schedule: ScheduleService;
 
   async init() {
     // Cron

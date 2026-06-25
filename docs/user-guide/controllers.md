@@ -135,7 +135,7 @@ export class UserController {
 > constructor(@Inject(Svc) svc: Svc) { this.svc = svc; }
 >
 > // ⚠ Unstable on Bun
-> constructor(@Inject(Svc) private svc: Svc) {}
+> @Inject(Svc) declare svc: Svc;
 > ```
 >
 > See [`common-pitfalls.md §7`](./common-pitfalls.md).

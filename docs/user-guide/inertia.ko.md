@@ -38,7 +38,7 @@ import { Inertia } from '@nexusts/view/inertia';
 
 @Controller('/users')
 class UserController {
-  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}
+  @Inject(Inertia.TOKEN) declare inertia: Inertia;
 
   @Get('/')
   index() {
@@ -154,7 +154,7 @@ const UserSchema = z.object({
 
 @Controller('/users')
 class UserController {
-  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}
+  @Inject(Inertia.TOKEN) declare inertia: Inertia;
 
   @Post('/')
   async store(@Body() input: Record<string, any>) {

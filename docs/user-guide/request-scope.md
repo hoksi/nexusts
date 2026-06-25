@@ -35,7 +35,7 @@ class RequestContext {
 class AuditService {
   // Same `RequestContext` instance is shared across all consumers
   // in one request — even deep in the call tree.
-  constructor(@Inject(RequestContext) private ctx: RequestContext) {}
+  @Inject(RequestContext) declare ctx: RequestContext;
 
   log(event: string) {
     console.log(`[${this.ctx.id}] ${event}`);

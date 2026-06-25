@@ -21,7 +21,7 @@ raw query API로 감싼다.
 })
 
 class UserService {
-  constructor(@Inject(DrizzleService.TOKEN) private db: DrizzleService) {}
+  @Inject(DrizzleService.TOKEN) declare db: DrizzleService;
   list() { return this.db.select().from(users).all(); }
 }
 ```
@@ -97,7 +97,7 @@ import { users } from './db/schema';
 
 @Injectable()
 class UserService {
-  constructor(@Inject(DrizzleService.TOKEN) private db: DrizzleService) {}
+  @Inject(DrizzleService.TOKEN) declare db: DrizzleService;
 
   async findById(id: number) {
     return this.db.select().from(users).where(eq(users.id, id)).get();

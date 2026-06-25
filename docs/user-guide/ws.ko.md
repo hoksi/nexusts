@@ -32,7 +32,7 @@ import {
 @Injectable()
 @WebSocketGateway("/ws")
 class ChatGateway {
-  constructor(@Inject(WEBSOCKET_SERVICE_TOKEN) private ws: WebSocketService) {}
+  @Inject(WEBSOCKET_SERVICE_TOKEN) declare ws: WebSocketService;
 
   @OnWebSocketOpen()
   onOpen(client: WebSocketClient) {

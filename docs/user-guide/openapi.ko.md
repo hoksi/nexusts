@@ -86,7 +86,7 @@ const UserSchema = z.object({
 @ApiTags('Users')
 @Controller('/users')
 class UserController {
-  constructor(@Inject('UserService') private users: any) {}
+  @Inject('UserService') declare users: any;
 
   @Get('/')
   @ApiOperation({ summary: '사용자 목록', operationId: 'listUsers' })

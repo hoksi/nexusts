@@ -111,7 +111,7 @@ console.log(transport.sent.length);  // -> 1
 ```ts
 @Injectable()
 class AuthMailer {
-  constructor(@Inject(MailService.TOKEN) private mail: MailService) {}
+  @Inject(MailService.TOKEN) declare mail: MailService;
 
   async sendWelcome(to: string, name: string) {
     await this.mail.send({

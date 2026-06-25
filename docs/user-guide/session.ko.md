@@ -153,7 +153,7 @@ LRU 축출 `Map`. 테스트, `bunx nx dev`, 단일 인스턴스 배포에 적합
 
 ```ts
 class MyService {
-  constructor(@Inject(SessionService.TOKEN) private sessions: SessionService) {}
+  @Inject(SessionService.TOKEN) declare sessions: SessionService;
 
   async login(userId: string) {
     const s = await this.sessions.create({

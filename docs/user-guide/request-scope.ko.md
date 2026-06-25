@@ -35,7 +35,7 @@ class RequestContext {
 class AuditService {
   // 같은 `RequestContext` 인스턴스가 한 요청 내 모든 consumer에 공유됨
   // — 호출 트리 깊숙이 있더라도.
-  constructor(@Inject(RequestContext) private ctx: RequestContext) {}
+  @Inject(RequestContext) declare ctx: RequestContext;
 
   log(event: string) {
     console.log(\`[\${this.ctx.id}] \${event}\`);

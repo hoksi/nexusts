@@ -164,7 +164,7 @@ If the `kv` field is omitted, the adapter auto-detects
 
 ```ts
 class MyService {
-  constructor(@Inject(SessionService.TOKEN) private sessions: SessionService) {}
+  @Inject(SessionService.TOKEN) declare sessions: SessionService;
 
   async login(userId: string) {
     const s = await this.sessions.create({

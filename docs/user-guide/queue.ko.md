@@ -57,7 +57,7 @@ import { Controller, Post, Body } from '@nexusts/core';
 
 @Controller('/signup')
 class SignupController {
-  constructor(@Inject(QueueService.TOKEN) private queue: QueueService) {}
+  @Inject(QueueService.TOKEN) declare queue: QueueService;
 
   @Post('/')
   async signup(@Body() body: { email: string }) {
@@ -75,7 +75,7 @@ import { QueueService, OnQueueReady } from '@nexusts/queue';
 
 @Injectable()
 class EmailWorker {
-  constructor(@Inject(QueueService.TOKEN) private queue: QueueService) {}
+  @Inject(QueueService.TOKEN) declare queue: QueueService;
 
   @OnQueueReady()
   async register() {
@@ -246,7 +246,7 @@ add(name, data)
 ```ts
 @Injectable()
 class EmailWorker {
-  constructor(@Inject(QueueService.TOKEN) private queue: QueueService) {}
+  @Inject(QueueService.TOKEN) declare queue: QueueService;
 
   @OnQueueReady()
   async register() {

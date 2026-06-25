@@ -130,7 +130,7 @@ export class UserController {
 > constructor(@Inject(Svc) svc: Svc) { this.svc = svc; }
 >
 > // ⚠ Bun에서 불안정
-> constructor(@Inject(Svc) private svc: Svc) {}
+> @Inject(Svc) declare svc: Svc;
 > ```
 >
 > 자세한 내용: [`common-pitfalls.ko.md §7`](./common-pitfalls.ko.md).

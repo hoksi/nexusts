@@ -25,7 +25,7 @@ import {
 class AppModule {}
 
 class AppController {
-  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
 
   // 인라인 재시도 — 데코레이터 없이.
   @Get("/user/:id")
@@ -273,7 +273,7 @@ bulkhead → circuit → retry → 원래 메서드
 
 ```ts
 class OrderService {
-  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
   async charge(order: Order) {
     const cb = this.r.getOrCreateCircuit("stripe", { threshold: 0.5 });
     return cb.execute(() => stripe.charge(order));
@@ -283,7 +283,7 @@ class OrderService {
 class SubscriptionService {
   // 같은 회로, 같은 state — Stripe outage 하나가 OrderService와
   // SubscriptionService 모두의 회로를 open한다.
-  constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+  @Inject(ResilienceService.TOKEN) declare r: ResilienceService;
   async renew(sub: Subscription) {
     const cb = this.r.getOrCreateCircuit("stripe");
     return cb.execute(() => stripe.updateSubscription(sub));

@@ -55,7 +55,7 @@ import { GrpcService, GrpcMethod } from "@nexusts/grpc";
 @Injectable()
 @GrpcService("UserService")
 export class UserServiceImpl {
-  constructor(@Inject("DATABASE") private db: Database) {}
+  @Inject("DATABASE") declare db: Database;
 
   @GrpcMethod("FindById")
   async findById(req: { id: number }) {

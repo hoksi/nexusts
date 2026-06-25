@@ -37,7 +37,7 @@ import { Cron, Interval, ScheduleService } from '@nexusts/schedule';
 
 @Injectable()
 export class CleanupTask {
-  constructor(@Inject(ScheduleService.TOKEN) private schedule: ScheduleService) {}
+  @Inject(ScheduleService.TOKEN) declare schedule: ScheduleService;
 
   @Cron('0 * * * *')                     // every hour
   async hourly() {
@@ -135,7 +135,7 @@ async startup() { /* runs 5s after register */ }
 
 ```ts
 class MyService {
-  constructor(@Inject(ScheduleService.TOKEN) private schedule: ScheduleService) {}
+  @Inject(ScheduleService.TOKEN) declare schedule: ScheduleService;
 
   async init() {
     // Cron

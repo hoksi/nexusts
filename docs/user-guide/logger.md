@@ -82,7 +82,7 @@ class UserService {
 > also use constructor injection:
 >
 > ```ts
-> constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+> @Inject(Logger.TOKEN) declare logger: Logger;
 > ```
 
 ### Log methods

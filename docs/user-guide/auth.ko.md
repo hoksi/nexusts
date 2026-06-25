@@ -119,7 +119,7 @@ import type { Context } from 'hono';
 
 @Controller('/me')
 export class MeController {
-  constructor(@Inject(AuthService.TOKEN) private auth: AuthService) {}
+  @Inject(AuthService.TOKEN) declare auth: AuthService;
 
   @Get('/')
   async me(@Req() c: Context) {
@@ -266,7 +266,7 @@ app.use(
 
 ```ts
 class SignupController {
-  constructor(@Inject(AuthService.TOKEN) private auth: AuthService) {}
+  @Inject(AuthService.TOKEN) declare auth: AuthService;
 
   @Post('/register')
   async register(@Body() body: SignupDto) {
