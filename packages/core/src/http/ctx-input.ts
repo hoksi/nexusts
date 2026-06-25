@@ -36,6 +36,17 @@ export type CtxInput = {
 	 * Otherwise returns the raw parsed body.
 	 */
 	body: BodyHelper;
+	/**
+	 * Get a single uploaded file from a multipart request.
+	 * The upload middleware must be active (UploadModule.forRoot).
+	 * Returns undefined when no file was uploaded for the given field.
+	 */
+	uploadedFile(name: string): any;
+	/**
+	 * Get all uploaded files for a multipart field.
+	 * Returns empty array when no files were uploaded.
+	 */
+	uploadedFiles(name: string): any[];
 };
 
 type BodyHelper = {
@@ -93,6 +104,29 @@ export function attachInputHelper(c: HonoContext): CtxInput {
 				return parsed as T;
 			};
 			return bodyFn as BodyHelper;
+		},
+
+		/**
+		 * Get a single uploaded file from a multipart request.
+		 * Reads from the storage key set by @nexusts/upload middleware.
+		 */
+		uploadedFile(name: string): any {
+			const stored = (c as any).get?.("nexus:upload:files") ??
+				(c as any).var?.nexus?.upload?.files;
+			if (!stored) return undefined;
+			const v = stored[name];
+			return Array.isArray(v) ? v[0] : v;
+		},
+
+		/**
+		 * Get all uploaded files for a multipart field.
+		 */
+		uploadedFiles(name: string): any[] {
+			const stored = (c as any).get?.("nexus:upload:files") ??
+				(c as any).var?.nexus?.upload?.files;
+			if (!stored) return [];
+			const v = stored[name];
+			return Array.isArray(v) ? v : v ? [v] : [];
 		},
 	};
 

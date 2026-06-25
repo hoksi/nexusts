@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Post, Injectable } from "@nexusts/core";
-import { UploadModule, UploadedFile } from "@nexusts/upload";
+import { Application, Module, Controller, Post, Injectable, getInputHelper } from "@nexusts/core";
+import { UploadModule, Upload } from "@nexusts/upload";
+import type { Context } from "hono";
 
 /**
  * 24-upload — file upload via multipart form data.
@@ -16,7 +16,9 @@ import { UploadModule, UploadedFile } from "@nexusts/upload";
 @Controller("/upload")
 class UploadController {
   @Post("/")
-  async upload(@UploadedFile("file") file: any) {
+  @Upload("file")
+  async upload(ctx: Context) {
+    const file = getInputHelper(ctx).uploadedFile("file");
     return {
       name: file?.name ?? file?.filename,
       type: file?.type,
@@ -25,7 +27,11 @@ class UploadController {
   }
 
   @Post("/multi")
-  async multi(@UploadedFile("avatar") avatar: any, @UploadedFile("resume") resume: any) {
+  @Upload("avatar")
+  @Upload("resume")
+  async multi(ctx: Context) {
+    const avatar = getInputHelper(ctx).uploadedFile("avatar");
+    const resume = getInputHelper(ctx).uploadedFile("resume");
     return {
       avatar: { name: avatar?.name, size: avatar?.size },
       resume: { name: resume?.name, size: resume?.size },
