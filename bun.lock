@@ -36,7 +36,7 @@
     },
     "packages/auth": {
       "name": "@nexusts/auth",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -49,7 +49,7 @@
     },
     "packages/cache": {
       "name": "@nexusts/cache",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -62,7 +62,7 @@
     },
     "packages/cli": {
       "name": "@nexusts/cli",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "bin": {
         "nx": "./dist/index.js",
       },
@@ -72,14 +72,14 @@
     },
     "packages/config": {
       "name": "@nexusts/config",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/core": {
       "name": "@nexusts/core",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "bin": {
         "nx": "./dist/cli/index.js",
       },
@@ -94,28 +94,28 @@
     },
     "packages/create-nexusts": {
       "name": "create-nexusts",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "bin": {
         "create-nexusts": "index.js",
       },
     },
     "packages/crypto": {
       "name": "@nexusts/crypto",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/drive": {
       "name": "@nexusts/drive",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/drizzle": {
       "name": "@nexusts/drizzle",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -128,21 +128,21 @@
     },
     "packages/events": {
       "name": "@nexusts/events",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/feature-flag": {
       "name": "@nexusts/feature-flag",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/graphql": {
       "name": "@nexusts/graphql",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -155,35 +155,35 @@
     },
     "packages/grpc": {
       "name": "@nexusts/grpc",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/health": {
       "name": "@nexusts/health",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/i18n": {
       "name": "@nexusts/i18n",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/limiter": {
       "name": "@nexusts/limiter",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/logger": {
       "name": "@nexusts/logger",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
         "pino": "^9.0.0",
@@ -191,28 +191,28 @@
     },
     "packages/mail": {
       "name": "@nexusts/mail",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/metrics": {
       "name": "@nexusts/metrics",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/openapi": {
       "name": "@nexusts/openapi",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/queue": {
       "name": "@nexusts/queue",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -227,7 +227,7 @@
     },
     "packages/redis": {
       "name": "@nexusts/redis",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -240,49 +240,49 @@
     },
     "packages/resilience": {
       "name": "@nexusts/resilience",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/schedule": {
       "name": "@nexusts/schedule",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/session": {
       "name": "@nexusts/session",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/shield": {
       "name": "@nexusts/shield",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/sse": {
       "name": "@nexusts/sse",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/static": {
       "name": "@nexusts/static",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/tracing": {
       "name": "@nexusts/tracing",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
@@ -295,21 +295,21 @@
     },
     "packages/upload": {
       "name": "@nexusts/upload",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/view": {
       "name": "@nexusts/view",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
     },
     "packages/ws": {
       "name": "@nexusts/ws",
-      "version": "0.8.1",
+      "version": "0.8.4",
       "dependencies": {
         "@nexusts/core": "file:../core",
       },
