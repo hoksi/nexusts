@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Injectable, Inject } from "@nexusts/core";
 import {
   WebSocketService, WebSocketModule,
@@ -25,7 +24,7 @@ class AppController {
 @Injectable()
 @WebSocketGateway("/chat")
 class ChatGateway {
-  constructor(@Inject(WebSocketService) private ws: WebSocketService) {}
+  @Inject(WebSocketService) declare ws: WebSocketService;
 
   @OnWebSocketOpen()
   onOpen(socket: any) {

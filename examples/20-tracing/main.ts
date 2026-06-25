@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { TracingModule, TracingService } from "@nexusts/tracing";
 
@@ -12,7 +11,7 @@ import { TracingModule, TracingService } from "@nexusts/tracing";
 
 @Injectable()
 class WorkService {
-  constructor(@Inject(TracingService) private trace: TracingService) {}
+  @Inject(TracingService) declare trace: TracingService;
 
   async run() {
     return this.trace.withSpan("do-work", async (span) => {
@@ -26,7 +25,7 @@ class WorkService {
 @Injectable()
 @Controller("/")
 class AppController {
-  constructor(@Inject(WorkService) private svc: WorkService) {}
+  @Inject(WorkService) declare svc: WorkService;
 
   @Get("/work")
   async work() {

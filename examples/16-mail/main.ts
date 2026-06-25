@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Application, Module, Controller, Post, Body, Inject, Injectable } from "@nexusts/core";
+import { Application, Module, Controller, Post, Inject, Injectable } from "@nexusts/core";
 import { MailService, MailModule, FileTransport } from "@nexusts/mail";
+import type { Context } from "hono";
 
 /**
  * 16-mail — send emails via the file transport (writes to ./outbox).
@@ -15,10 +15,11 @@ import { MailService, MailModule, FileTransport } from "@nexusts/mail";
 @Injectable()
 @Controller("/mail")
 class MailController {
-  constructor(@Inject(MailService) private mail: MailService) {}
+  @Inject(MailService) declare mail: MailService;
 
   @Post("/")
-  async send(@Body() body: { to: string; subject: string; text: string }) {
+  async send(ctx: Context) {
+    const body = await ctx.req.json() as { to: string; subject: string; text: string };
     await this.mail.send({
       from: "noreply@example.com",
       to: body.to,

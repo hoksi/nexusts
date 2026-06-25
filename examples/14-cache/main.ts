@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { CacheService, CacheModule } from "@nexusts/cache";
 
@@ -12,7 +11,7 @@ import { CacheService, CacheModule } from "@nexusts/cache";
 @Injectable()
 @Controller("/")
 class PageController {
-  constructor(@Inject(CacheService) private cache: CacheService) {}
+  @Inject(CacheService) declare cache: CacheService;
 
   @Get("/slow")
   async slow() {

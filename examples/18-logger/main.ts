@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { Logger, LoggerModule } from "@nexusts/logger";
 
@@ -12,7 +11,7 @@ import { Logger, LoggerModule } from "@nexusts/logger";
 @Injectable()
 @Controller("/")
 class AppController {
-  constructor(@Inject(Logger.TOKEN) private logger: Logger) {}
+  @Inject(Logger.TOKEN) declare logger: Logger;
 
   @Get("/log")
   log() {

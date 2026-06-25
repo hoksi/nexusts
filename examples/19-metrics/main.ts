@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { MetricsService, MetricsModule } from "@nexusts/metrics";
 
@@ -13,7 +12,7 @@ import { MetricsService, MetricsModule } from "@nexusts/metrics";
 @Injectable()
 @Controller("/orders")
 class OrderController {
-  constructor(@Inject(MetricsService) private metrics: MetricsService) {}
+  @Inject(MetricsService) declare metrics: MetricsService;
 
   @Get("/")
   place() {

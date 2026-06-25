@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get } from "@nexusts/core";
 import {
 	GraphQLModule,
@@ -8,7 +7,6 @@ import {
 	Mutation,
 	Arg,
 } from "@nexusts/graphql";
-
 /**
  * 32-graphql-hello — code-first GraphQL endpoint.
  *
@@ -26,23 +24,19 @@ import {
  *       -H "Content-Type: application/json" \
  *       -d '{"query":"{ hello(name:\"world\") }"}'
  */
-
 // Declare resolver classes BEFORE @Module so the decorator registry is
 // populated when GraphQLModule.forRoot() is called.
-
 @Resolver()
 class HelloResolver {
 	@Query("hello", { returns: "String!" })
 	hello(@Arg("name", "String!") name: string): string {
 		return `Hello, ${name}!`;
 	}
-
 	@Query("add", { returns: "Int!" })
 	add(@Arg("a", "Int!") a: number, @Arg("b", "Int!") b: number): number {
 		return a + b;
 	}
 }
-
 @Resolver()
 class EchoResolver {
 	@Mutation("echo", { returns: "String!" })
@@ -50,7 +44,6 @@ class EchoResolver {
 		return message;
 	}
 }
-
 @Controller("/")
 class HomeController {
 	@Get("/")
@@ -63,7 +56,6 @@ class HomeController {
 		};
 	}
 }
-
 @Module({
 	imports: [
 		GraphQLModule.forRoot({
@@ -75,7 +67,6 @@ class HomeController {
 	controllers: [HomeController],
 })
 class AppModule {}
-
 const app = new Application(AppModule);
 const g = app.container.resolve(GraphQLService) as GraphQLService;
 await GraphQLModule.mount(app.server.app, g);

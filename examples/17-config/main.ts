@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { z } from "zod";
 import { Application, Module, Controller, Get, Inject, Injectable } from "@nexusts/core";
 import { ConfigService, ConfigModule } from "@nexusts/config";
@@ -19,7 +18,7 @@ const schema = z.object({
 @Injectable()
 @Controller("/")
 class AppController {
-  constructor(@Inject(ConfigService) private config: ConfigService) {}
+  @Inject(ConfigService) declare config: ConfigService;
 
   @Get("/info")
   info() {

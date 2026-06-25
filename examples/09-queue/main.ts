@@ -1,47 +1,62 @@
-import "reflect-metadata";
-import { Application, Controller, Post, Body, Module, Inject, Injectable } from "@nexusts/core";
+import {
+  Application, Module, Controller, Get, Post, Inject, Injectable,
+} from "@nexusts/core";
 import { QueueService, QueueModule, OnQueueReady } from "@nexusts/queue";
+import type { Context } from "hono";
 
 /**
- * 09-queue — background jobs with the in-memory backend.
+ * 09-queue — in-process task queue with decorator-based workers.
  *
- *   POST /jobs/email  { "to": "...", "subject": "..." }
+ * Run: bun main.ts
+ * Then: curl http://localhost:3000/email/send -d '{"to":"user@test.com"}' -H "Content-Type: application/json"
  *
- *   Run: bun main.ts
+ * The worker picks up the job from the queue and logs it after a short delay.
  */
 
+// ─── Worker (consumer) ──────────────────────────────────────────────
 @Injectable()
 class EmailWorker {
-  constructor(@Inject(QueueService) private queue: QueueService) {}
+  @Inject(QueueService) declare queue: QueueService;
 
   @OnQueueReady()
-  register() {
-    this.queue.process("send-email", async (data: any) => {
-      console.log(`[worker] sending email to ${data.to}: ${data.subject}`);
+  async start() {
+    await this.queue.consume("email", async (job) => {
+      console.log(`[worker] sending email to ${job.data.to}`);
+      // simulate async send
       await new Promise((r) => setTimeout(r, 100));
-      return { status: "completed" as const, returnvalue: { to: data.to } };
+      console.log(`[worker] done: ${job.data.to}`);
     });
+    console.log("[worker] email queue consumer registered");
   }
 }
 
-@Controller("/jobs")
-class JobController {
-  constructor(@Inject(QueueService) private queue: QueueService) {}
+// ─── Controller (producer) ─────────────────────────────────────────
+@Controller("/email")
+class EmailController {
+  @Inject(QueueService) declare queue: QueueService;
 
-  @Post("/email")
-  async enqueueEmail(@Body() body: { to: string; subject: string }) {
-    const jobId = await this.queue.add("send-email", body);
-    return { jobId, status: "queued" };
+  @Post("/send")
+  async send(ctx: Context) {
+    const body = await ctx.req.json();
+    const job = await this.queue.add("email", body);
+    return { jobId: job.id, status: "queued" };
+  }
+
+  @Get("/")
+  index(ctx: Context) {
+    return { queues: ["email"], status: "running" };
   }
 }
 
+// ─── Module ─────────────────────────────────────────────────────────
 @Module({
-  imports: [QueueModule.forRoot({ backend: "memory" })],
-  controllers: [JobController],
+  imports: [QueueModule.forRoot({ type: "memory" })],
+  controllers: [EmailController],
   providers: [EmailWorker],
 })
 class AppModule {}
 
+// ─── Bootstrap ──────────────────────────────────────────────────────
 const app = new Application(AppModule);
 const port = Number(process.env.PORT ?? 3000);
 await app.listen(port);

@@ -1,5 +1,5 @@
-import "reflect-metadata";
-import { Application, Controller, Get, Module, Param } from "@nexusts/core";
+import { Application, Controller, Get, Module } from "@nexusts/core";
+import type { Context } from "hono";
 
 /**
  * 01-basic-mvc — minimal NexusTS application with a single
@@ -19,7 +19,8 @@ class HelloController {
   }
 
   @Get("/users/:id")
-  user(@Param("id") id: string) {
+  user(ctx: Context) {
+    const id = ctx.req.param("id");
     return { id: Number(id), name: `User #${id}` };
   }
 }

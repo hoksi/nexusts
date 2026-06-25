@@ -1,7 +1,5 @@
-import "reflect-metadata";
 import { Application, Module, Controller, Get, Injectable } from "@nexusts/core";
 import { sse } from "@nexusts/sse";
-
 /**
  * 11-sse — Server-Sent Events with type-safe streaming.
  *
@@ -10,7 +8,6 @@ import { sse } from "@nexusts/sse";
  *   Run: bun main.ts
  *   Try: curl -N http://localhost:3000/events/timeseries
  */
-
 @Injectable()
 @Controller("/events")
 class EventController {
@@ -28,12 +25,10 @@ class EventController {
     });
   }
 }
-
 @Module({
   controllers: [EventController],
 })
 class AppModule {}
-
 const app = new Application(AppModule);
 const port = Number(process.env.PORT ?? 3000);
 await app.listen(port);
