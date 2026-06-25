@@ -116,16 +116,22 @@ export default defineConfig({
     ['meta', { property: 'og:description', content: 'Bun-native fullstack framework — 32 modular packages under @nexusts/*' }],
     ['script', {}, `
 (function(){
-  var en="/nexusts/",ko=en+"ko/",p=window.location.pathname;
+  var en="/nexusts/",ko=en+"ko/";
+  function p(){return window.location.pathname;}
   function fix(){
     var m=document.querySelector(".VPNavBarTranslations .menu .items");
-    if(!m||(m.querySelector(".nx-lang-item")&&!m.querySelector(".title")))return;
-    m.innerHTML='<div class="nx-lang-item'+(p.indexOf(ko)>=0?'':' nx-lang-active')+'"><a class="VPLink link" href="'+en+'"><span class="nx-lang-code">EN</span><span class="nx-lang-name">English</span></a></div><div class="nx-lang-item'+(p.indexOf(ko)>=0?' nx-lang-active':'')+'"><a class="VPLink link" href="'+ko+'"><span class="nx-lang-code">KO</span><span class="nx-lang-name">한국어</span></a></div>';
+    if(!m)return;
+    var pa=p();
+    m.innerHTML='<div class="nx-lang-item'+(pa.indexOf(ko)>=0?'':' nx-lang-active')+'"><a class="VPLink link" href="'+en+'"><span class="nx-lang-code">EN</span><span class="nx-lang-name">English</span></a></div><div class="nx-lang-item'+(pa.indexOf(ko)>=0?' nx-lang-active':'')+'"><a class="VPLink link" href="'+ko+'"><span class="nx-lang-code">KO</span><span class="nx-lang-name">한국어</span></a></div>';
   }
   setTimeout(fix,200);
-  var obs=new MutationObserver(fix);
-  setTimeout(function(){var e=document.querySelector(".VPNavBarTranslations");if(e)obs.observe(e,{childList:true,subtree:true})},300);
-  document.addEventListener('astro:after-swap',fix);
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('a');
+    if(t&&(t.href.indexOf(en)>=0||t.href.indexOf(ko)>=0))setTimeout(fix,300);
+  });
+  window.addEventListener('popstate',function(){setTimeout(fix,100);});
+  var obs=new MutationObserver(function(){setTimeout(fix,50);});
+  setTimeout(function(){var e=document.querySelector(".VPNavBarTranslations");if(e)obs.observe(e,{childList:true,subtree:true,attributes:true})},300);
 })();
 `],
   ],
