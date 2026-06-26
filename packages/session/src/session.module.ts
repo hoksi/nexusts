@@ -39,7 +39,7 @@ export class SessionModule {
 			exports: [SessionService, SessionService.TOKEN],
 		})
 		class ConfiguredSessionModule {
-			constructor(@Inject(SessionService.TOKEN) readonly sessions: SessionService) {}
+			@Inject(SessionService.TOKEN) declare readonly sessions: SessionService;
 		}
 
 		Object.defineProperty(ConfiguredSessionModule, "name", {

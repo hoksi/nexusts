@@ -40,13 +40,17 @@ export class SessionService {
 	/** DI token — use with `@Inject(SessionService.TOKEN)`. */
 	static readonly TOKEN = Symbol.for('nexus:SessionService');
 
+	/** Session config — injected by DI container. */
+	@Inject('SESSION_CONFIG') declare private readonly _config: SessionConfig;
+
 	readonly storage: SessionStorage;
 	#listeners = new Set<SessionEventListener>();
 	#memory: MemorySessionStorage | null = null;
 	#cookie: CookieSessionStorage | null = null;
 
-	constructor(@Inject('SESSION_CONFIG') private readonly config: SessionConfig = {}) {
-		this.storage = this.#createBackend(config);
+	constructor(config?: SessionConfig) {
+		const cfg = config ?? this._config ?? {};
+		this.storage = this.#createBackend(cfg);
 	}
 
 	// ===========================================================================
@@ -67,9 +71,10 @@ export class SessionService {
 	// ===========================================================================
 
 	async create<T = SessionData>(opts: CreateSessionOptions<T> = {}): Promise<SessionRecord<T>> {
+		const cfg = this._config ?? {};
 		const merged = {
-			ttlSeconds: this.config.defaults?.ttlSeconds,
-			absoluteTtlSeconds: this.config.defaults?.absoluteTtlSeconds,
+			ttlSeconds: cfg.defaults?.ttlSeconds,
+			absoluteTtlSeconds: cfg.defaults?.absoluteTtlSeconds,
 			...opts,
 		};
 		const record = await this.storage.create(merged);
