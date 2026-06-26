@@ -23,35 +23,31 @@
  * Most of the actual logic is delegated to `auth.handler` from
  * better-auth. The controller exists to make the routes visible to
  * `nx route:list` and to add NexusTS-style DI.
+ *
+ * Uses standard decorator patterns: field injection and `ctx.req.*`
+ * methods instead of legacy `@Req()`/`@Body()`/`@Res()` parameter
+ * decorators.
  */
 
-import {
-	Body,
-	Controller,
-	Get,
-	Inject,
-	Post,
-	Req,
-	Res,
-} from "@nexusts/core";
+import { Controller, Get, Inject, Post } from "@nexusts/core";
 import type { Context } from "hono";
 import { AuthService } from "./auth.service.js";
 import type { AuthSession } from "./types.js";
 
 @Controller("/api/auth")
 export class AuthController {
-	constructor(@Inject(AuthService.TOKEN) private readonly auth: AuthService) {}
+	@Inject(AuthService.TOKEN) declare private readonly auth: AuthService;
 
 	/**
 	 * GET /api/auth/session
 	 * Returns the current session (or null if unauthenticated).
 	 */
 	@Get("/session")
-	async session(@Req() c: Context) {
+	async session(ctx: Context) {
 		const session: AuthSession = await this.auth.getSession({
-			headers: c.req.raw.headers,
+			headers: ctx.req.raw.headers,
 		});
-		return c.json(session ?? { user: null, session: null });
+		return ctx.json(session ?? { user: null, session: null });
 	}
 
 	/**
@@ -59,9 +55,10 @@ export class AuthController {
 	 * Body: { email, password, name, callbackURL? }
 	 */
 	@Post("/sign-up/email")
-	async signUpEmail(@Req() c: Context, @Body() body: any) {
+	async signUpEmail(ctx: Context) {
+		const body = await ctx.req.json<any>();
 		const result = await this.auth.signUp(body);
-		return c.json(result, 201);
+		return ctx.json(result, 201);
 	}
 
 	/**
@@ -69,18 +66,19 @@ export class AuthController {
 	 * Body: { email, password, callbackURL? }
 	 */
 	@Post("/sign-in/email")
-	async signInEmail(@Req() c: Context, @Body() body: any) {
+	async signInEmail(ctx: Context) {
+		const body = await ctx.req.json<any>();
 		const result = await this.auth.signIn(body);
-		return c.json(result);
+		return ctx.json(result);
 	}
 
 	/**
 	 * POST /api/auth/sign-out
 	 */
 	@Post("/sign-out")
-	async signOut(@Req() c: Context, @Res() _res: Response) {
-		await this.auth.signOut({ headers: c.req.raw.headers });
-		return c.json({ ok: true });
+	async signOut(ctx: Context) {
+		await this.auth.signOut({ headers: ctx.req.raw.headers });
+		return ctx.json({ ok: true });
 	}
 
 	/**
@@ -88,14 +86,11 @@ export class AuthController {
 	 * Returns a redirect to the social provider's auth page.
 	 */
 	@Get("/sign-in/:provider")
-	async socialSignIn(
-		@Req() c: Context,
-		@Body() _body: never,
-	) {
-		const provider = c.req.param("provider") ?? "";
-		const callbackURL = c.req.query("callbackURL") ?? "/";
+	async socialSignIn(ctx: Context) {
+		const provider = ctx.req.param("provider") ?? "";
+		const callbackURL = ctx.req.query("callbackURL") ?? "/";
 		const result = await this.auth.getOAuthUrl({ provider, callbackURL });
-		return c.json(result);
+		return ctx.json(result);
 	}
 
 	/**
@@ -104,12 +99,12 @@ export class AuthController {
 	 * real work; this is a passthrough for `route:list` visibility.
 	 */
 	@Get("/callback/:provider")
-	async oauthCallback(@Req() c: Context) {
+	async oauthCallback(ctx: Context) {
 		const result = await this.auth.handleOAuthCallback({
-			headers: c.req.raw.headers,
-			query: c.req.query() as Record<string, string>,
+			headers: ctx.req.raw.headers,
+			query: ctx.req.query() as Record<string, string>,
 		});
-		return c.json(result);
+		return ctx.json(result);
 	}
 
 	/**
@@ -117,13 +112,13 @@ export class AuthController {
 	 * Issues a JWT for the current user. Requires the JWT plugin.
 	 */
 	@Post("/jwt")
-	async issueJwt(@Req() c: Context) {
+	async issueJwt(ctx: Context) {
 		const session = await this.auth.getSession({
-			headers: c.req.raw.headers,
+			headers: ctx.req.raw.headers,
 		});
-		if (!session) return c.json({ error: "Unauthorized" }, 401);
+		if (!session) return ctx.json({ error: "Unauthorized" }, 401);
 		const token = await this.auth.issueJwt({ userId: session.user.id });
-		return c.json(token);
+		return ctx.json(token);
 	}
 
 	/**
@@ -131,11 +126,11 @@ export class AuthController {
 	 * Start passkey registration. Requires the passkey plugin.
 	 */
 	@Post("/passkey/register")
-	async passkeyRegister(@Req() c: Context) {
+	async passkeyRegister(ctx: Context) {
 		const result = await this.auth.registerPasskey({
-			headers: c.req.raw.headers,
+			headers: ctx.req.raw.headers,
 		});
-		return c.json(result);
+		return ctx.json(result);
 	}
 
 	/**
@@ -143,11 +138,12 @@ export class AuthController {
 	 * Body: passkey assertion
 	 */
 	@Post("/passkey/authenticate")
-	async passkeyAuthenticate(@Req() c: Context, @Body() body: any) {
+	async passkeyAuthenticate(ctx: Context) {
+		const body = await ctx.req.json<any>();
 		const result = await this.auth.authenticatePasskey({
-			headers: c.req.raw.headers,
+			headers: ctx.req.raw.headers,
 			body,
 		});
-		return c.json(result);
+		return ctx.json(result);
 	}
 }

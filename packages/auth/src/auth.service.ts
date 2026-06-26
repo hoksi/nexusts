@@ -30,8 +30,21 @@ export class AuthService {
 	/** DI token — use with `@Inject(AuthService.TOKEN)`. */
 	static readonly TOKEN = Symbol.for("nexus:AuthService");
 
+	/** Auth configuration — injected by the DI container. */
+	@Inject("AUTH_CONFIG") declare private readonly config: AuthConfig;
+
 	/** The underlying better-auth instance. */
-	readonly instance: NexusAuth;
+	private _instance: NexusAuth | null = null;
+
+	/**
+	 * Returns the underlying better-auth instance (lazy-initialized).
+	 */
+	get instance(): NexusAuth {
+		if (!this._instance) {
+			this._instance = createAuth(this.config);
+		}
+		return this._instance;
+	}
 
 	/**
 	 * Optional SessionService binding. When set, `getSession()` will
@@ -44,12 +57,8 @@ export class AuthService {
 	 */
 	#sessionService: SessionService | null = null;
 
-	constructor(
-		@Inject("AUTH_CONFIG") private readonly config: AuthConfig,
-	) {
-		// Lazy: defer construction to the first call so module-load
-		// order doesn't matter.
-		this.instance = createAuth(this.config);
+	constructor() {
+		// No constructor logic — DI sets @Inject fields before first use.
 	}
 
 	// ===========================================================================
