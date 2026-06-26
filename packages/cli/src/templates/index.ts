@@ -14,14 +14,15 @@ import crudModule from "./crud/module.js";
 import crudTest from "./crud/test.js";
 import middleware from "./middleware/middleware.js";
 import migrationDrizzle from "./migration/drizzle.js";
+import migrationKysely from "./migration/kysely.js";
 import migrationSql from "./migration/sql.js";
 import modelDrizzle from "./model/drizzle.js";
 import modelKysely from "./model/kysely.js";
-import modelPrisma from "./model/prisma.js";
 import module from "./module/module.js";
 import projectNxConfig from "./project/nx.config.js";
 import projectDrizzleConfig from "./project/drizzle.config.js";
-import repository from "./repository/repository.js";
+import repositoryDrizzle from "./repository/repository.js";
+import repositoryKysely from "./repository/kysely-repository.js";
 import service from "./service/service.js";
 import validator from "./validator/validator.js";
 
@@ -32,17 +33,20 @@ export const templates = {
 		functional: controllerFunctional,
 	},
 	service,
-	repository,
+	repository: {
+		drizzle: repositoryDrizzle,
+		kysely: repositoryKysely,
+	},
 	module,
 	validator,
 	middleware,
 	model: {
 		drizzle: modelDrizzle,
-		prisma: modelPrisma,
 		kysely: modelKysely,
 	},
 	migration: {
 		drizzle: migrationDrizzle,
+		kysely: migrationKysely,
 		sql: migrationSql,
 	},
 	crud: {

@@ -49,6 +49,9 @@ bun add @nexusts/core reflect-metadata zod hono
 | 31 | [`inertia-vue-ssr`](./31-inertia-vue-ssr) | `@nexusts/view` + Inertia + Vue (SSR) | Advanced |
 | 32 | [`graphql-hello`](./32-graphql-hello) | `@nexusts/graphql` | Intermediate |
 | 33 | [`resilience-calls`](./33-resilience-calls) | `@nexusts/resilience` | Intermediate |
+| 34 | [`grpc-streaming`](./34-grpc-streaming) | `@nexusts/grpc` | Advanced |
+| 35 | [`standard-decorators`](./35-standard-decorators) | Core | Intermediate |
+| 36 | [`kysely-crud`](./36-kysely-crud) | `@nexusts/kysely` | Beginner |
 
 ---
 

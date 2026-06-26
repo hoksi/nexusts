@@ -218,7 +218,7 @@ ApplicationContainer
 ## 15. 향후 작업
 
 - **Redis 백엔드** — 가장 많이 요청되는 백엔드. 같은 인터페이스; `SETEX` + `GET` + 파이프라인된 `MGET`로 `ioredis`를 래핑.
-- **데이터베이스 백엔드** — 이미 DB가 있는 Drizzle / Prisma 사용자용. (Better-auth 테이블 재사용 가능.)
+- **데이터베이스 백엔드** — 이미 DB가 있는 Drizzle / Kysely 사용자용. (Better-auth 테이블 재사용 가능.)
 - **분산 회전** — 다중 인스턴스 배포에서 회전 시 pub/sub으로 모든 인스턴스에 새 id 전파.
 - **CSRF 토큰 통합** — 세션에 CSRF 토큰을 자동으로 바인딩하고 form post에서 검증.
 - **Flash 미들웨어** — `data.flash`를 자동으로 채우고 읽을 때 비우기. Rails / AdonisJS 스타일.

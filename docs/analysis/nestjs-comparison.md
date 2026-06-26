@@ -186,7 +186,7 @@ NestJS relies on `@nestjs/*` community packages. NexusTS ships equivalent functi
 | What you need | NestJS | NexusTS |
 |---------------|--------|---------|
 | HTTP framework | Express / Fastify (via platform adapter) | **Hono** (built-in, Bun/Node/Workers) |
-| ORM | TypeORM / Prisma / MikroORM / Mongoose / Sequelize | `@nexusts/drizzle` (5 dialects) |
+| ORM | TypeORM / Prisma / MikroORM / Mongoose / Sequelize | `@nexusts/drizzle` (5 dialects) + `@nexusts/kysely` (typed SQL builder) |
 | GraphQL | `@nestjs/graphql` + `@nestjs/apollo` | `@nexusts/graphql` (SDL + code-first) |
 | gRPC | `@nestjs/microservices` | `@nexusts/grpc` (reflection-based, 4 call types) |
 | WebSocket | `@nestjs/websockets` + `@nestjs/platform-socket.io` | `@nexusts/ws` (Bun + Node) |
@@ -223,7 +223,6 @@ NestJS relies on `@nestjs/*` community packages. NexusTS ships equivalent functi
 | Encryption / hashing | `@nexusts/crypto` | ❌ No first-party support (DIY `crypto` or `bcrypt`) |
 | Redis client | `@nexusts/redis` (multi-runtime) | ❌ No first-party (use `ioredis` directly) |
 | Runtime adapters | Bun / Node / Cloudflare Workers | ❌ Express / Fastify only |
-
 
 ### Side-by-Side: Common Module Examples
 
@@ -489,7 +488,6 @@ export class NotificationService {
 ```
 
 ---
-
 
 ### Request Body Access
 

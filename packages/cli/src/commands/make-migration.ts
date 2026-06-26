@@ -46,7 +46,7 @@ export const makeMigrationCommand: Command = {
 		},
 		{
 			name: "orm",
-			description: "Override ORM driver (drizzle|prisma|kysely|none)",
+			description: "Override ORM driver (drizzle|kysely|none)",
 		},
 		{
 			name: "dialect",
@@ -67,8 +67,9 @@ export const makeMigrationCommand: Command = {
 			ctx.config.dialect ??
 			"bun-sqlite";
 		const isDrizzle = orm === "drizzle";
+		const isKysely = orm === "kysely";
 		const useGenericSql =
-			orm === "none" || orm === "prisma" || orm === "kysely";
+			orm === "none";
 
 		const variants = nameVariants(name);
 		const tableName = inferTableName(name);
@@ -82,7 +83,17 @@ export const makeMigrationCommand: Command = {
 
 		let code: string;
 		let extension: string;
-		if (isDrizzle) {
+		if (isKysely) {
+			const tpl = templates.migration.kysely;
+			code = render(tpl, {
+				name: variants.pascal,
+				snake: variants.snake,
+				tableName,
+				columns: renderKyselyColumns(cols),
+				timestamp: formatTimestamp(new Date()),
+			});
+			extension = "ts";
+		} else if (isDrizzle) {
 			if (!isValidDialect(dialect)) {
 				logger.error(
 					`Unsupported drizzle dialect: ${dialect}. Allowed: postgres, mysql, sqlite, bun-sqlite, d1.`,
@@ -110,7 +121,7 @@ export const makeMigrationCommand: Command = {
 			extension = "sql";
 		} else {
 			logger.error(
-				`Unsupported ORM for migration: ${orm}. Allowed: drizzle, none, prisma, kysely.`,
+				`Unsupported ORM for migration: ${orm}. Allowed: drizzle, kysely, none.`,
 			);
 			return 1;
 		}
@@ -120,10 +131,10 @@ export const makeMigrationCommand: Command = {
 
 		writeFile(out, code);
 		logger.success(`created ${out}`);
-		if (isDrizzle) {
-			logger.finger(`run \`nx migrate\` to apply pending migrations.`);
+		if (isDrizzle || isKysely) {
+			logger.finger(`run \`nx db:migrate\` to apply pending migrations.`);
 		} else {
-			logger.finger(`run \`bun nx db:generate & bun nx db:migrate\` or your migration tool.`);
+			logger.finger(`run \`bun nx db:migrate\` or your migration tool.`);
 		}
 		return 0;
 	},
@@ -167,6 +178,49 @@ function renderSqlColumns(
 			return `  ${name} ${sqlType}${notNull},`;
 		})
 		.join("\n");
+}
+
+function renderKyselyColumns(
+	cols: Array<[string, string]>,
+): string {
+	return cols
+		.map(([name, type]) => {
+			const kyselyType = mapKyselyType(type);
+			return `    .addColumn('${name}', '${kyselyType}', (col) => col.notNull())`;
+		})
+		.join("\n");
+}
+
+function mapKyselyType(type: string): string {
+	switch (type.toLowerCase()) {
+		case "text":
+		case "string":
+		case "varchar":
+			return "text";
+		case "int":
+		case "integer":
+			return "integer";
+		case "bigint":
+			return "bigint";
+		case "bool":
+		case "boolean":
+			return "boolean";
+		case "float":
+		case "number":
+		case "real":
+		case "double":
+			return "real";
+		case "datetime":
+		case "timestamp":
+			return "text";
+		case "date":
+			return "text";
+		case "json":
+		case "jsonb":
+			return "text";
+		default:
+			return "text";
+	}
 }
 
 function renderDrizzleColumns(

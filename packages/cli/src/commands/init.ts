@@ -15,7 +15,7 @@
  *   --target <dir>    Scaffold into <dir> instead of the cwd
  *   --style <name>    Routing style (nest|adonis|functional)
  *   --view <name>     View engine (rendu|edge|eta|inertia|none)
- *   --orm <name>      ORM driver (drizzle|prisma|kysely|none)
+ *   --orm <name>      ORM driver (drizzle|kysely|none)
  *   --db <name>       Database driver (bun-sqlite|node-sqlite|libsql|postgres|mysql|none)
  *   --frontend <name> Inertia frontend (react|vue|svelte|solid)
  *   --no-ssr          Disable Inertia SSR
@@ -39,7 +39,7 @@ interface PlanEntry {
 const VALID_OPTIONS = {
 	style: ["nest", "adonis", "functional"],
 	view: ["rendu", "edge", "eta", "inertia", "none"],
-	orm: ["drizzle", "prisma", "kysely", "none"],
+	orm: ["drizzle", "kysely", "none"],
 	db: ["bun-sqlite", "node-sqlite", "libsql", "postgres", "mysql", "none"],
 	frontend: ["react", "vue", "svelte", "solid"],
 } as const;
@@ -94,7 +94,7 @@ export const initCommand: Command = {
 		{ name: "target", description: "Target directory (default: cwd)" },
 		{ name: "style", description: "Routing style (nest|adonis|functional)" },
 		{ name: "view", description: "View engine (rendu|edge|eta|inertia|none)" },
-		{ name: "orm", description: "ORM driver (drizzle|prisma|kysely|none)" },
+		{ name: "orm", description: "ORM driver (drizzle|kysely|none)" },
 		{ name: "db", description: "Database driver (bun-sqlite|node-sqlite|libsql|postgres|mysql|none)" },
 		{
 			name: "frontend",

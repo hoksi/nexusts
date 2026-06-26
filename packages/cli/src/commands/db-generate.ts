@@ -1,26 +1,29 @@
 /**
  * `nx db:generate [name]` — generate a new migration file from schema changes.
  *
- * Runs `drizzle-kit generate` which compares your schema files
- * (under app/models/*.model.ts) with the database and auto-generates
- * a migration. This is the recommended way to create migrations.
+ * **Drizzle**: Runs `drizzle-kit generate` which compares your schema files
+ * (under app/models/*.model.ts) with the database and auto-generates a migration.
+ *
+ * **Kysely**: Generates a TypeScript migration file with `up()`/`down()`
+ * functions for Kysely's built-in Migrator.
+ *
+ * **Plain SQL** (`--sql`): Generates a raw SQL migration file (any ORM).
  *
  * Examples:
  *   nx db:generate add_users_table
  *   nx db:generate add_posts_table --dialect postgres
- *   nx db:generate --sql                       # raw SQL file (no drizzle-kit)
+ *   nx db:generate --sql                       # raw SQL file
  *
  * See also:
  *   nx db:migrate            — apply pending migrations
  *   nx db:seed               — run database seeds
  *   nx make:migration        — scaffold an EMPTY migration file (manual)
- *                              Use this for one-off SQL edits; prefer
- *                              db:generate for normal schema changes.
  */
 
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
-import { logger } from "../core/index.js";
+import { logger, nameVariants, render } from "../core/index.js";
+import { templates } from "../templates/index.js";
 import { runDrizzleKit } from "./db-migrate.js";
 
 export const dbGenerateCommand: Command = {
@@ -28,8 +31,9 @@ export const dbGenerateCommand: Command = {
 	aliases: ["db:g", "db-generate", "generate-migration"],
 	summary: "Generate a new migration from schema changes",
 	description:
-		"Generates a new migration file by running drizzle-kit generate with the project's config. " +
-		"If no name is given, drizzle-kit auto-generates one. " +
+		"Generates a new migration file. For drizzle: runs drizzle-kit generate. " +
+		"For kysely: generates a .ts file with up/down functions. " +
+		"Use --sql for a plain SQL file. " +
 		"Run after editing your schema files, then apply with `nx db:migrate`.",
 	examples: [
 		"nx db:generate",
@@ -46,9 +50,14 @@ export const dbGenerateCommand: Command = {
 			name: "sql",
 			description: "Generate a raw SQL file instead of using drizzle-kit",
 		},
+		{
+			name: "orm",
+			description: "Override ORM driver (drizzle|kysely)",
+		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
 		const name = ctx.positional[0];
+		const orm = (ctx.flags.orm as string | undefined) ?? ctx.config.orm;
 		const dialect =
 			(ctx.flags.dialect as string | undefined) ?? ctx.config.dialect ?? "bun-sqlite";
 		const isSql = ctx.flags.sql === true;
@@ -62,7 +71,16 @@ export const dbGenerateCommand: Command = {
 			return runSqlTemplate(ctx.cwd, name, dialect);
 		}
 
-		// Resolve drizzle.config.ts path
+		if (orm === "kysely") {
+			if (!name) {
+				logger.error("Usage: nx db:generate <name> (name is required for Kysely)");
+				return 1;
+			}
+			logger.info(`Generating Kysely migration: ${name}`);
+			return runKyselyTemplate(ctx.cwd, name, dialect);
+		}
+
+		// Drizzle: resolve drizzle.config.ts path and run drizzle-kit
 		const configPath = resolve(ctx.cwd, "drizzle.config.ts");
 		const args = ["generate", "--config", configPath];
 		if (name) args.push("--name", name);
@@ -71,6 +89,39 @@ export const dbGenerateCommand: Command = {
 		return runDrizzleKit(ctx.cwd, args);
 	},
 };
+
+/**
+ * Generate a Kysely migration file (TypeScript with up/down functions).
+ */
+async function runKyselyTemplate(
+	cwd: string,
+	name: string,
+	_dialect: string,
+): Promise<number> {
+	const { mkdirSync, writeFileSync } = await import("node:fs");
+	const { join } = await import("node:path");
+	const migrationsDir = join(cwd, "app", "database", "migrations");
+	mkdirSync(migrationsDir, { recursive: true });
+
+	const variants = nameVariants(name);
+	const timestamp = formatTimestamp(new Date());
+	const filename = `${timestamp}_${variants.snake}.ts`;
+	const filepath = join(migrationsDir, filename);
+
+	const tpl = templates.migration.kysely;
+	const code = render(tpl, {
+		name: variants.pascal,
+		snake: variants.snake,
+		tableName: inferTableName(name),
+		columns: "",
+		timestamp,
+	});
+
+	writeFileSync(filepath, code);
+	logger.success(`created ${filepath}`);
+	logger.info("Edit the migration, then run `nx db:migrate` to apply it.");
+	return 0;
+}
 
 /**
  * Generate a raw SQL migration file (without drizzle-kit).
@@ -97,6 +148,22 @@ async function runSqlTemplate(
 	logger.success(`created ${filepath}`);
 	logger.info("Edit the SQL file, then run `nx db:migrate` to apply it.");
 	return 0;
+}
+
+function inferTableName(input: string): string {
+	const m = /^create_(\w+)_table$/.exec(input);
+	if (m) return m[1] ?? "";
+	const m2 = /^(?:add|remove|drop|alter)_(\w+)_to_(\w+)$/.exec(input);
+	if (m2) return m2[2] ?? "";
+	return `${input.toLowerCase().replace(/s$/, "")}s`;
+}
+
+function formatTimestamp(d: Date): string {
+	const pad = (n: number) => String(n).padStart(2, "0");
+	return (
+		`${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}` +
+		`_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+	);
 }
 
 export default dbGenerateCommand;

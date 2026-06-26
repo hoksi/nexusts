@@ -12,7 +12,7 @@
    개발자에게 익숙한 컨벤션.
 2. **스캐폴드 생성기.** `nx new my-app`은 설정 가능한 스타일 (nest,
    functional, adonis), view 엔진 (rendu, edge, inertia), ORM
-   (drizzle, prisma, kysely)로 완전한 프로젝트를 생성.
+   (drizzle, kysely)로 완전한 프로젝트를 생성.
 3. **코드 생성.** `nx make:*` 명령은 일관된 템플릿으로 보일러플레이트
    파일 (controllers, services, modules, models, migrations 등)
    생성.
@@ -80,7 +80,7 @@ Config는 `NxConfig` 타입으로 파싱·검증:
 interface NxConfig {
   style?: 'nest' | 'functional' | 'adonis';
   view?: 'rendu' | 'edge' | 'inertia' | 'eta';
-  orm?: 'drizzle' | 'prisma' | 'kysely' | 'none';
+  orm?: 'drizzle' | 'kysely' | 'none';
   auth?: { /* ...auth config... */ };
   session?: { /* ...session config... */ };
   redis?: { /* ...redis config... */ };

@@ -13,7 +13,7 @@ config loader, and the REPL.
    conventions for Laravel/Adonis developers.
 2. **Scaffold generator.** `nx new my-app` creates a complete project
    with configurable style (nest, functional, adonis), view engine
-   (rendu, edge, inertia), and ORM (drizzle, prisma, kysely).
+   (rendu, edge, inertia), and ORM (drizzle, kysely).
 3. **Code generation.** `nx make:*` commands generate boilerplate
    files (controllers, services, modules, models, migrations, etc.)
    with consistent templates.
@@ -81,7 +81,7 @@ The config is parsed and validated against a `NxConfig` type:
 interface NxConfig {
   style?: 'nest' | 'functional' | 'adonis';
   view?: 'rendu' | 'edge' | 'inertia' | 'eta';
-  orm?: 'drizzle' | 'prisma' | 'kysely' | 'none';
+  orm?: 'drizzle' | 'kysely' | 'none';
   auth?: { /* ...auth config... */ };
   session?: { /* ...session config... */ };
   redis?: { /* ...redis config... */ };

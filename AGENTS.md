@@ -33,7 +33,7 @@ import. The runtime is built on **TC39 standard ES decorators**
   `tsconfig.build.json`. Skipping any of these → smoke test
   silently fails for the new example.
 - **Default ORM = Drizzle.** Anything that suggests TypeORM /
-  Prisma / Mongoose in docs is wrong. Update it.
+  Mongoose in docs is wrong. Update it.
 - **Linting is biome-on-CLI-only.** `biome check src/cli/ tests/cli/`
   is what `bun run lint` runs. Don't try to biome-lint runtime
   modules — biome 2.x strict-decorator checks break them.

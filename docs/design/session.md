@@ -266,7 +266,7 @@ either.
 - **Redis backend** — the most-requested backend. Same interface;
   wraps `ioredis` with `SETEX` + `GET` + pipelined `MGET` for
   `readMany`.
-- **Database backend** — for Drizzle / Prisma users who already
+- **Database backend** — for Drizzle / Kysely users who already
   have a DB. (Better-auth's table can be reused.)
 - **Distributed rotation** — when rotating on a multi-instance
   deploy, propagate the new id to all instances via pub/sub.

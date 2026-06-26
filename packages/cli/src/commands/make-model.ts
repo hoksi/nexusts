@@ -3,7 +3,7 @@
  *
  * Supports three ORMs via `nx.config.ts`'s `orm` field:
  *   - drizzle  → Drizzle table definition (dialect-aware)
- *   - prisma   → schema.prisma block + typed repository
+ *   - kysely   → table interface + typed repository
  *   - kysely   → table interface + typed repository
  *
  * For Drizzle, the `--dialect` flag selects the right import path and
@@ -37,7 +37,7 @@ export const makeModelCommand: Command = {
 	aliases: ["mmodel", "make-model"],
 	summary: "Generate a model (table schema)",
 	description:
-		"Generates a model file under app/models/. The template is chosen from nx.config.ts's `orm` field (drizzle|prisma|kysely). For drizzle, use --dialect to pick the import path.",
+		"Generates a model file under app/models/. The template is chosen from nx.config.ts's `orm` field (drizzle|kysely). For drizzle, use --dialect to pick the import path.",
 	examples: [
 		"nx make:model User",
 		'nx make:model User --columns "name:text,email:text"',
@@ -51,7 +51,7 @@ export const makeModelCommand: Command = {
 		},
 		{
 			name: "orm",
-			description: "Override ORM driver (drizzle|prisma|kysely)",
+			description: "Override ORM driver (drizzle|kysely)",
 		},
 		{
 			name: "dialect",
@@ -69,9 +69,9 @@ export const makeModelCommand: Command = {
 		}
 
 		const orm = (ctx.flags.orm as string | undefined) ?? ctx.config.orm;
-		if (orm !== "drizzle" && orm !== "prisma" && orm !== "kysely") {
+		if (orm !== "drizzle" && orm !== "kysely") {
 			logger.error(
-				`Unsupported ORM: ${orm}. Allowed: drizzle, prisma, kysely. Use --orm or set "orm" in nx.config.ts.`,
+				`Unsupported ORM: ${orm}. Allowed: drizzle, kysely. Use --orm or set "orm" in nx.config.ts.`,
 			);
 			return 1;
 		}
@@ -87,7 +87,7 @@ export const makeModelCommand: Command = {
 			orm,
 			ctx.flags.dialect as string | undefined,
 		);
-		const prismaBlock = renderPrismaBlock(variants.pascal, columns);
+		
 
 		let code: string;
 		if (orm === "drizzle") {
@@ -109,10 +109,9 @@ export const makeModelCommand: Command = {
 				snake: variants.snake,
 				tableName,
 				columns: columnLines,
-				prismaBlock,
 			});
 		} else {
-			const tpl = templates.model[orm as "prisma" | "kysely"];
+			const tpl = templates.model[orm as "kysely"];
 			code = render(tpl, {
 				name: variants.pascal,
 				camel: variants.camel,
@@ -120,7 +119,6 @@ export const makeModelCommand: Command = {
 				snake: variants.snake,
 				tableName,
 				columns: columnLines,
-				prismaBlock,
 			});
 		}
 
@@ -152,7 +150,7 @@ function isValidDialect(
 
 function renderColumns(
 	cols: string[],
-	orm: "drizzle" | "prisma" | "kysely",
+	orm: "drizzle" | "kysely",
 	dialect: string | undefined,
 ): string {
 	// `cols` may contain comma-separated entries (e.g. `--columns "a:text,b:int"`).
@@ -179,37 +177,13 @@ function renderColumns(
 					const tsType = colType === "text" ? "string" : colType;
 					return `  ${colName}: ${tsType},`;
 				}
-				default:
-					return `  ${colName} ${colType},`;
 			}
 		})
 		.join("\n");
 }
 
-function renderPrismaBlock(modelName: string, cols: string[]): string {
-	const fieldLines = cols
-		.map((c) => {
-			const [name, type = "String"] = c.split(":");
-			return `  ${name.padEnd(16)} ${capitalize(type)}`;
-		})
-		.join("\n");
-	return ` * model ${modelName} {
- *   id          Int      @id @default(autoincrement())
-${fieldLines
-	.split("\n")
-	.map((l) => ` *${l}`)
-	.join("\n")}
- *   createdAt   DateTime @default(now())
- *   updatedAt   DateTime @updatedAt
- * }`;
-}
-
 function toCamel(s: string): string {
 	return s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
-}
-
-function capitalize(s: string): string {
-	return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export default makeModelCommand;

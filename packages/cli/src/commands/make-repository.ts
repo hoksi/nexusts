@@ -1,5 +1,11 @@
 /**
  * `nx make:repository <Name>` — generate a repository class.
+ *
+ * Adapts to the project's ORM (from nx.config.ts):
+ *   - drizzle  → DrizzleRepository (default)
+ *   - kysely   → KyselyRepository
+ *
+ * Requires a model file at app/models/<name>.model.ts.
  */
 
 import { mkdirSync } from "node:fs";
@@ -13,10 +19,16 @@ export const makeRepositoryCommand: Command = {
 	aliases: ["mr", "make-repository", "make:repo"],
 	summary: "Generate a repository class",
 	description:
-		"Generates a DrizzleRepository class under app/repositories/. Requires a model file at app/models/<name>.model.ts.",
+		"Generates a repository class under app/repositories/. Adapts to the project's ORM (drizzle -> DrizzleRepository, kysely -> KyselyRepository). Requires a model file at app/models/<name>.model.ts.",
 	examples: [
 		"nx make:repository User",
 		"nx make:repository Post",
+	],
+	flags: [
+		{
+			name: "orm",
+			description: "Override ORM driver (drizzle|kysely)",
+		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
 		const name = ctx.positional[0];
@@ -25,14 +37,17 @@ export const makeRepositoryCommand: Command = {
 			return 1;
 		}
 
+		const orm = (ctx.flags.orm as string | undefined) ?? ctx.config.orm;
 		const variants = nameVariants(name);
 		const repository = `${variants.pascal}Repository`;
 
-		const code = render(templates.repository, {
+		const tpl = orm === "kysely" ? templates.repository.kysely : templates.repository.drizzle;
+		const code = render(tpl, {
 			name: variants.pascal,
 			camel: variants.camel,
 			kebab: variants.kebab,
 			snake: variants.snake,
+			tableName: variants.pluralSnake,
 			repository,
 		});
 

@@ -128,12 +128,12 @@ describe("nx config — fresh install", () => {
 		expect(ddc).toMatch(/url: process\.env\.DATABASE_URL \?\? "app\.db"/);
 	});
 
-	it("does NOT create drizzle.config.ts when orm=prisma or none", async () => {
+	it("does NOT create drizzle.config.ts when orm=kysely or none", async () => {
 		await configCommand.run?.(
 			makeCtx(target, {
 				"no-interaction": true,
 				view: "none",
-				orm: "prisma",
+				orm: "kysely",
 				db: "postgres",
 				frontend: "react",
 			}),
@@ -286,7 +286,7 @@ describe("nx config — update", () => {
 			makeCtx(target, {
 				"no-interaction": true,
 				view: "none",
-				orm: "prisma", // <-- changed away from drizzle
+				orm: "kysely", // <-- changed away from drizzle
 				db: "postgres",
 				frontend: "react",
 			}),

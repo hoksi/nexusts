@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`@nexusts/kysely`**: New first-party module — Kysely typed SQL query
+  builder integration. `KyselyService`, `KyselyRepository` (Lucid-style),
+  `KyselyModule.forRoot()` / `forRootAsync()`, built-in migration support
+  via Kysely Migrator. Optional `kysely` peer dependency.
+  See [`docs/user-guide/kysely.md`](./docs/user-guide/kysely.md).
+  ([#example: 36-kysely-crud](./examples/36-kysely-crud/))
+
 ---
 
 ## [0.9.4] — 2026-06-26
@@ -23,9 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   which was missing from the published package, causing
   `Cannot find module '../constants.js'` errors.
 
-
 - (none)
-
 
 ---
 

@@ -3,8 +3,15 @@
 > 한국어 버전: [`database.ko.md`](./database.ko.md)
 
 This guide covers database configuration, migrations, seeding, and the
-day-to-day workflow for NexusTS projects using the **default ORM
-(Drizzle)**.
+day-to-day workflow for NexusTS projects.
+
+NexusTS ships two first-party database modules:
+
+- **`@nexusts/drizzle`** — Default ORM with 5 dialects, ORM-style table definitions
+- **`@nexusts/kysely`** — Type-safe SQL query builder with compile-time type checking
+
+Choose **Drizzle** for ORM-style development with table definitions.
+Choose **[Kysely](./kysely.md)** for SQL-first development with maximum type safety.
 
 ---
 

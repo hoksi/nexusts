@@ -1,27 +1,17 @@
 /**
  * `nx db:migrate` — apply pending database migrations.
  *
- * Two modes:
+ * Two modes based on ORM config:
  *
- *   1. **Default**: scan the project's `nx.config.ts` for
- *      `paths.migrations` and run every pending file through the
- *      drizzle-kit-equivalent migrator path.
+ *   1. **Drizzle** (default): spawns `bunx drizzle-kit migrate` with
+ *      the project's drizzle.config.ts.
  *
- *      Implementation: spawns `bunx drizzle-kit migrate` if the
- *      drizzle-kit binary is on PATH; otherwise runs an in-process
- *      migration script that uses `@nexusts/drizzle`'s
- *      `db.migrate(folder)` directly.
- *
- *   2. **`--status`**: list applied migrations + pending count.
- *
- *   3. **`--generate "<name>"`**: wrapper around `drizzle-kit
- *      generate` — useful when you want to commit a migration file
- *      but prefer the `nx` alias over the bare command.
+ *   2. **Kysely**: runs an in-process migration script that uses
+ *      Kysely's built-in `Migrator` + `FileMigrationProvider`.
  *
  * Examples:
  *   nx db:migrate
  *   nx db:migrate --status
- *   nx db:migrate --generate "add_user_email"
  *   nx db:migrate --folder ./drizzle --dialect postgres
  *
  * See also: `nx db:seed` for inserting fixture data.
@@ -38,11 +28,10 @@ export const dbMigrateCommand: Command = {
 	aliases: ["db:m", "migrate"],
 	summary: "Apply pending database migrations",
 	description:
-		"Runs the Drizzle migrator against the configured migrations folder. Use --status to inspect, --generate to scaffold a new migration via drizzle-kit. See also `nx db:seed` for fixture data.",
+		"Runs the configured migrator (drizzle-kit for Drizzle, Kysely Migrator for Kysely) against the migrations folder. Use --status to inspect. See also `nx db:seed` for fixture data.",
 	examples: [
 		"nx db:migrate",
 		"nx db:migrate --status",
-		"nx db:migrate --generate 'add_email_to_users'",
 		"nx db:migrate --folder ./drizzle",
 	],
 	flags: [
@@ -51,24 +40,25 @@ export const dbMigrateCommand: Command = {
 			description: "List applied migrations and exit (no apply).",
 		},
 		{
-			name: "generate",
-			description: "Run `drizzle-kit generate` with the given migration name.",
-		},
-		{
 			name: "folder",
 			description: "Override migrations folder (default: from nx.config.ts).",
 		},
 		{
 			name: "dialect",
 			description:
-				"Drizzle dialect (postgres|mysql|sqlite|bun-sqlite|d1). Default: bun-sqlite.",
+				"Database dialect (postgres|mysql|sqlite|bun-sqlite). Default: bun-sqlite.",
 		},
 		{
 			name: "config",
 			description: "Path to drizzle.config.ts. Default: ./drizzle.config.ts.",
 		},
+		{
+			name: "orm",
+			description: "Override ORM driver (drizzle|kysely)",
+		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
+		const orm = (ctx.flags.orm as string | undefined) ?? ctx.config.orm;
 		const folder =
 			(ctx.flags.folder as string | undefined) ??
 			resolve(ctx.cwd, ctx.config.paths.migrations);
@@ -80,24 +70,13 @@ export const dbMigrateCommand: Command = {
 			(ctx.flags.config as string | undefined) ??
 			resolve(ctx.cwd, "drizzle.config.ts");
 		const wantStatus = Boolean(ctx.flags.status);
-		const generateName = ctx.flags.generate as string | undefined;
 
-		if (generateName) {
-			return runDrizzleKit(ctx.cwd, [
-				"generate",
-				...(existsSync(configPath) ? [`--config=${configPath}`] : []),
-				"--name",
-				generateName,
-			]);
+		if (orm === "kysely") {
+			return runKyselyMigrate(ctx.cwd, folder, dialect, wantStatus);
 		}
 
 		if (wantStatus) {
-			return await runStatus(
-			ctx.cwd,
-			folder,
-			dialect,
-			ctx.config.database.url,
-		);
+			return await runStatus(ctx.cwd, folder, dialect, ctx.config.database.url);
 		}
 
 		// Default: apply pending migrations via drizzle-kit.
@@ -107,6 +86,164 @@ export const dbMigrateCommand: Command = {
 		]);
 	},
 };
+
+/**
+ * Run Kysely migrations using an in-process script.
+ */
+async function runKyselyMigrate(
+	cwd: string,
+	folder: string,
+	dialect: string,
+	statusOnly: boolean,
+): Promise<number> {
+	if (!existsSync(folder)) {
+		logger.warn(`migrations folder not found: ${folder}`);
+		return 0;
+	}
+
+	const script = buildKyselyMigrateScript(folder, dialect, statusOnly);
+	const tmpFile = resolve(cwd, ".nx-kysely-migrate.mjs");
+	const { writeFile, unlink } = await import("node:fs/promises");
+	await writeFile(tmpFile, script, "utf-8");
+
+	try {
+		const code = await new Promise<number>((resP) => {
+			const child = spawn("bun", [tmpFile], {
+				cwd,
+				stdio: "inherit",
+				shell: process.platform === "win32",
+			});
+			child.on("exit", (c) => resP(c ?? 0));
+			child.on("error", () => resP(1));
+		});
+		return code;
+	} finally {
+		await unlink(tmpFile).catch(() => {});
+	}
+}
+
+/**
+ * Build a JavaScript script that uses Kysely's Migrator to run or
+ * list pending migrations.
+ */
+function buildKyselyMigrateScript(
+	folder: string,
+	dialect: string,
+	statusOnly: boolean,
+): string {
+	const dialectSetup = buildDialectSetup(dialect);
+	const tableName = "kysely_migration";
+
+	return `
+import { readdirSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const migrationsFolder = ${JSON.stringify(folder)};
+
+// Build the Kysely instance with the configured dialect.
+${dialectSetup}
+
+import {
+  Kysely,
+  Migrator,
+  MigrationProvider,
+  Migration,
+} from "kysely";
+
+class FsMigrationProvider implements MigrationProvider {
+  async getMigrations(): Promise<Record<string, Migration>> {
+    const files = readdirSync(migrationsFolder)
+      .filter((f) => f.endsWith(".ts") || f.endsWith(".js"))
+      .sort();
+
+    const migrations: Record<string, Migration> = {};
+    for (const file of files) {
+      const name = file.replace(/\\.(ts|js)$/, "");
+      const mod = await import(join(migrationsFolder, file));
+      migrations[name] = {
+        up: mod.up,
+        down: mod.down,
+      };
+    }
+    return migrations;
+  }
+}
+
+const db = new Kysely({ dialect });
+
+const migrator = new Migrator({
+  db,
+  provider: new FsMigrationProvider(),
+  migrationTableName: ${JSON.stringify(tableName)},
+});
+
+${statusOnly ? `
+const { results } = await migrator.getMigrations();
+console.log("Migration status:");
+for (const r of results ?? []) {
+  console.log(\`  \${r.name}: \${r.status}\`);
+}
+` : `
+const { results, error } = await migrator.migrateToLatest();
+if (error) {
+  console.error("Migration failed:", error);
+  process.exit(1);
+}
+const applied = (results ?? []).filter((r) => r.status === "Success" || r.status === "MigratedAbove");
+console.log(\`Applied \${applied.length} migration(s)\`);
+for (const r of applied) {
+  console.log(\`  ✓ \${r.migrationName}\`);
+}
+`}
+
+await db.destroy();
+`;
+}
+
+/**
+ * Build the dialect setup code for the in-process migration script.
+ */
+function buildDialectSetup(dialect: string): string {
+	switch (dialect) {
+		case "postgres":
+			return `
+import { Pool } from "pg";
+import { PostgresDialect } from "kysely";
+const dialect = new PostgresDialect({
+  pool: new Pool({ connectionString: process.env.DATABASE_URL ?? "" }),
+});
+`;
+		case "mysql":
+			return `
+import { createPool } from "mysql2";
+import { MysqlDialect } from "kysely";
+const dialect = new MysqlDialect({
+  pool: createPool({ uri: process.env.DATABASE_URL ?? "" }),
+});
+`;
+		case "bun-sqlite":
+		default:
+			return `
+import { Database } from "bun:sqlite";
+import { SqliteDialect } from "kysely";
+
+// Patch .reader property for bun:sqlite compatibility with Kysely.
+const _db = new Database(process.env.DATABASE_URL ?? "app.db");
+const proto = Object.getPrototypeOf(_db);
+const _prepare = proto.prepare.bind(_db);
+_db.prepare = function(sql) {
+  const stmt = _prepare(sql);
+  Object.defineProperty(stmt, "reader", { value: /^\\s*(select|pragma|with|explain)\\b/i.test(sql) });
+  return stmt;
+};
+const dialect = new SqliteDialect({ database: _db });
+`;
+	}
+}
+
+export { dbMigrateCommand as command };
 
 export function runDrizzleKit(cwd: string, args: string[]): Promise<number> {
 	return new Promise((resolveP) => {

@@ -191,6 +191,10 @@ export default defineConfig({
 				find: /^@nexusts\/ws$/,
 				replacement: `${root}/packages/ws/src/index.ts`,
 			},
+			{
+				find: /^@nexusts\/kysely$/,
+				replacement: `${root}/packages/kysely/src/index.ts`,
+			},
 		],
 	},
 });

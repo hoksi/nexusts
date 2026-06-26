@@ -17,7 +17,7 @@ import { buildPackageJson, computeDeps, ensureDirectories, flagBool, generatePro
 const VALID_OPTIONS = {
 	style: ["nest", "adonis", "functional"],
 	view: ["rendu", "edge", "eta", "inertia", "none"],
-	orm: ["drizzle", "prisma", "kysely", "none"],
+	orm: ["drizzle", "kysely", "none"],
 	db: ["bun-sqlite", "node-sqlite", "libsql", "postgres", "mysql", "none"],
 	frontend: ["react", "vue", "svelte", "solid"],
 } as const;
@@ -64,7 +64,7 @@ export const newCommand: Command = {
 	flags: [
 		{ name: "style", description: "Routing style (nest|adonis|functional)" },
 		{ name: "view", description: "View engine (rendu|edge|eta|inertia|none)" },
-		{ name: "orm", description: "ORM driver (drizzle|prisma|kysely|none)" },
+		{ name: "orm", description: "ORM driver (drizzle|kysely|none)" },
 		{ name: "db", description: "Database driver" },
 		{ name: "frontend", description: "Inertia frontend (react|vue|svelte|solid)" },
 		{ name: "no-ssr", description: "Disable SSR" },

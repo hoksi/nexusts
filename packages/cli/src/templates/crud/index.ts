@@ -20,7 +20,7 @@
  *   viewComponent — PascalCase Inertia component (e.g. "Posts/Index")
  *   routing     — routing style (nest|adonis|functional)
  *   view        — view engine (rendu|edge|inertia|none)
- *   orm         — ORM driver (drizzle|prisma|kysely|none)
+ *   orm         — ORM driver (drizzle|kysely|none)
  *   hasOrm      — boolean string ("true"/"false") — used in {{#hasOrm}} blocks
  *   hasViews    — boolean string
  *   frontend    — Inertia frontend (react|vue|svelte|solid) — only used when view === 'inertia'

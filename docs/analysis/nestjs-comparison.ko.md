@@ -171,7 +171,7 @@ NestJS가 `@nestjs/*` 커뮤니티 패키지에 의존하는 반면, NexusTS는 
 | 필요 기능 | NestJS | NexusTS |
 |-----------|--------|---------|
 | HTTP 프레임워크 | Express / Fastify (플랫폼 어댑터) | **Hono** (내장, Bun/Node/Workers) |
-| ORM | TypeORM / Prisma / MikroORM / Mongoose / Sequelize | `@nexusts/drizzle` (5개 방언) |
+| ORM | TypeORM / Prisma / MikroORM / Mongoose / Sequelize | `@nexusts/drizzle` (5개 방언) + `@nexusts/kysely` (typed SQL builder) |
 | GraphQL | `@nestjs/graphql` + `@nestjs/apollo` | `@nexusts/graphql` (SDL + code-first) |
 | gRPC | `@nestjs/microservices` | `@nexusts/grpc` (리플렉션 기반, 4가지 call 타입) |
 | WebSocket | `@nestjs/websockets` + `@nestjs/platform-socket.io` | `@nexusts/ws` (Bun + Node) |
@@ -270,9 +270,6 @@ private service = new UserService();
 ```
 
 ---
-
-
-
 
 ### 주요 모듈 비교 예제
 
@@ -497,7 +494,6 @@ export class NotificationService {
 ```
 
 ---
-
 
 ## 빠른 마이그레이션 체크리스트
 

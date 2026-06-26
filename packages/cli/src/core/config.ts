@@ -14,7 +14,7 @@ import { resolve } from "node:path";
 
 export type RoutingStyle = "nest" | "adonis" | "functional" | "mixed";
 export type ViewEngine = "rendu" | "edge" | "inertia" | "none";
-export type OrmDriver = "drizzle" | "prisma" | "kysely" | "none";
+export type OrmDriver = "drizzle" | "kysely" | "none";
 export type InertiaFrontend = "react" | "vue" | "svelte" | "solid";
 export type DatabaseDriver =
 	| "bun-sqlite"
@@ -231,7 +231,7 @@ export async function loadConfig(
 		"mixed",
 	]);
 	assertEnum("view", merged.view, ["rendu", "edge", "inertia", "none"]);
-	assertEnum("orm", merged.orm, ["drizzle", "prisma", "kysely", "none"]);
+	assertEnum("orm", merged.orm, ["drizzle", "kysely", "none"]);
 	assertEnum("database.driver", merged.database.driver, [
 		"bun-sqlite",
 		"node-sqlite",

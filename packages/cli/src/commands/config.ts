@@ -29,7 +29,7 @@
  *   --target <dir>     Target directory (default: cwd)
  *   --style <name>     Routing style (nest|adonis|functional)
  *   --view <name>      View engine (rendu|edge|inertia|none)
- *   --orm <name>       ORM driver (drizzle|prisma|kysely|none)
+ *   --orm <name>       ORM driver (drizzle|kysely|none)
  *   --db <name>        Database driver
  *   --db-url <url>     Database URL (used when DATABASE_URL is unset)
  *   --frontend <name>  Inertia frontend (react|vue|svelte|solid)
@@ -153,7 +153,7 @@ export const configCommand: Command = {
 			name: "view-paths",
 			description: "Comma-separated directories searched for view files (e.g. resources/views)",
 		},
-		{ name: "orm", description: "ORM driver (drizzle|prisma|kysely|none)" },
+		{ name: "orm", description: "ORM driver (drizzle|kysely|none)" },
 		{
 			name: "db",
 			description:
@@ -229,7 +229,7 @@ export const configCommand: Command = {
 					default: values.view,
 				})) ?? values.view;
 			values.orm =
-				(await select("ORM driver", ["drizzle", "prisma", "kysely", "none"], {
+				(await select("ORM driver", ["drizzle", "kysely", "none"], {
 					interactive,
 					default: values.orm,
 				})) ?? values.orm;

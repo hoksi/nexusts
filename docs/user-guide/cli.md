@@ -37,7 +37,7 @@ in `package.json`, so `bun nx <command>` is the shortest form.
 | `nx make:controller <Name>` | Single controller class |
 | `nx make:service <Name>` | Service class |
 | `nx make:module <Name>` | `@Module()` wiring |
-| `nx make:model <Name>` | Table schema (Drizzle / Prisma / Kysely) |
+| `nx make:model <Name>` | Table schema (Drizzle / Kysely) |
 | `nx make:migration <Name>` | Migration file |
 | `nx make:middleware <Name>` | Middleware class |
 | `nx make:validator <Name>` | Zod DTO |
@@ -182,7 +182,7 @@ The generated files **adapt to your `nx.config.ts`**:
   - `adonis` → plain class methods
   - `functional` → object of Hono-native handlers
 - **View engine** → `inertia` adds `inertia.render(...)` calls
-- **ORM** → Drizzle / Prisma / Kysely template selection
+- **ORM** → Drizzle / Kysely template selection
 
 ### Flags
 
@@ -192,7 +192,7 @@ The generated files **adapt to your `nx.config.ts`**:
 | `--no-repo` | Skip the repository / model (use plain in-memory service) |
 | `--no-test` | Skip the test file |
 | `--style nest\|adonis\|functional` | Override routing style |
-| `--orm drizzle\|prisma\|kysely` | Override ORM |
+| `--orm drizzle\|kysely` | Override ORM |
 
 ### Example
 
@@ -389,7 +389,7 @@ Every config field can be overridden via env vars. Useful in CI.
 Example:
 
 ```bash
-NX_ORM=prisma nx make:crud User
+NX_ORM=kysely nx make:crud User
 ```
 
 ---

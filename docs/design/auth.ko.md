@@ -58,7 +58,7 @@ better-auth는 Hono 통합 문서, TypeScript 네이티브 API, 그리고 우리
 ┌──────────────────────────────────────────────────────────────┐
 │                       런타임                                  │
 │   Hono context (c.var.user / c.var.session)                  │
-│   cookies / headers / database (drizzle, prisma, ...)        │
+│   cookies / headers / database (drizzle, kysely, ...)        │
 └──────────────────────────────────────────────────────────────┘
 ```
 

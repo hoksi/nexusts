@@ -18,7 +18,7 @@
  * The output adapts to `nx.config.ts`:
  *   - routing → controller template
  *   - view    → emits Inertia render() when 'inertia', otherwise plain JSON
- *   - orm     → Drizzle/Prisma/Kysely template selection
+ *   - orm     → Drizzle/Kysely template selection
  *
  * Use `--no-views` to skip view-aware parts even when `view === 'inertia'`.
  */
@@ -149,7 +149,7 @@ export const makeCrudCommand: Command = {
 
 		// 3) Repository + Model (only if ORM is configured)
 		if (!noRepo) {
-			if (orm === "drizzle" || orm === "prisma" || orm === "kysely") {
+			if (orm === "drizzle" || orm === "kysely") {
 				let code: string;
 				if (orm === "drizzle") {
 					// Use the dialect-aware template.
@@ -161,7 +161,6 @@ export const makeCrudCommand: Command = {
 						snake: variants.snake,
 						tableName,
 						columns: renderDrizzleColumns(dialect),
-						prismaBlock: "",
 					});
 				} else {
 					const tpl = templates.model[orm];
@@ -172,7 +171,6 @@ export const makeCrudCommand: Command = {
 						snake: variants.snake,
 						tableName,
 						columns: renderDefaultColumns(orm),
-						prismaBlock: "",
 					});
 				}
 				const out = resolve(
@@ -189,7 +187,8 @@ export const makeCrudCommand: Command = {
 			}
 
 			// Repository
-			const repoCode = render(templates.repository, {
+			const ormRepo = orm === "kysely" ? templates.repository.kysely : templates.repository.drizzle;
+			const repoCode = render(ormRepo, {
 				name: variants.pascal,
 				camel: variants.camel,
 				kebab: variants.kebab,

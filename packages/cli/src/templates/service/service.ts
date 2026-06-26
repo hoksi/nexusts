@@ -2,6 +2,8 @@
  * Service template (standard decorator mode).
  *
  * Uses field injection (@Inject on fields) instead of constructor params.
+ * ORM-agnostic: uses common repository methods (findAll, findById, create, updateById, deleteById)
+ * that exist on both DrizzleRepository and KyselyRepository.
  *
  * Context:
  *   name          — PascalCase class name
@@ -12,9 +14,7 @@
 
 export default `
 import { Injectable, Inject } from '@nexusts/core';
-{{#hasRepo}}import { eq } from '@nexusts/drizzle';
-import { {{ repository }} } from '../repositories/{{ kebab }}.repository.js';
-import { {{ snake }} } from '../models/{{ kebab }}.model.js';{{/hasRepo}}
+{{#hasRepo}}import { {{ repository }} } from '../repositories/{{ kebab }}.repository.js';{{/hasRepo}}
 
 @Injectable()
 export class {{ name }}Service {
@@ -26,7 +26,7 @@ export class {{ name }}Service {
   }
 
   async findOne(id: number) {
-    {{#hasRepo}}return this.{{ repositoryCamel }}.findOne(eq({{ snake }}.id, id));{{/hasRepo}}
+    {{#hasRepo}}return this.{{ repositoryCamel }}.findById(id);{{/hasRepo}}
     {{^hasRepo}}return { id }; // TODO: implement{{/hasRepo}}
   }
 
@@ -36,12 +36,12 @@ export class {{ name }}Service {
   }
 
   async update(id: number, data: any) {
-    {{#hasRepo}}return this.{{ repositoryCamel }}.update(eq({{ snake }}.id, id), data);{{/hasRepo}}
+    {{#hasRepo}}return this.{{ repositoryCamel }}.updateById(id, data);{{/hasRepo}}
     {{^hasRepo}}return { id, ...data }; // TODO: implement{{/hasRepo}}
   }
 
   async delete(id: number) {
-    {{#hasRepo}}return this.{{ repositoryCamel }}.delete(eq({{ snake }}.id, id));{{/hasRepo}}
+    {{#hasRepo}}return this.{{ repositoryCamel }}.deleteById(id);{{/hasRepo}}
     {{^hasRepo}}return { removed: id }; // TODO: implement{{/hasRepo}}
   }
 }

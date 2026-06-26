@@ -27,7 +27,7 @@ export default {
    */
   viewPaths: '{{ viewPaths }}',
 
-  /** ORM driver — \`drizzle\`, \`prisma\`, \`kysely\`, or \`none\`. */
+  /** ORM driver — \`drizzle\`, \`kysely\`, or \`none\`. */
   orm: '{{ orm }}',
 
   // ---------------------------------------------------------------------------

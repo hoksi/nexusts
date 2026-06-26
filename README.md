@@ -19,7 +19,7 @@
 
 ## What's in v0.9
 
-The framework ships **32 independent modules** — every one is
+The framework ships **33 independent modules** — every one is
 its own bundle entry point, so you install only what you use. Tier 1
 and Tier 2 gaps from the NestJS / AdonisJS gap analyses are fully
 closed.
@@ -58,14 +58,16 @@ closed.
 | `@nexusts/feature-flag` | Canary / A–B testing. `isEnabled(flag, ctx)`, rollout %, allowlist/denylist, pluggable backends (Memory / custom). `@FeatureFlag()` guard decorator |
 | `@nexusts/resilience` | Retry + Circuit Breaker + Bulkhead in a single DI singleton. Eager `applyResilience()` auto-wrap at controller mount. `ResilienceAdminModule` with HTTP admin endpoints. Cross-pod stores: Redis / Drizzle / Memory. Circuit metrics, `forceOpen`/`forceClose`. **Zero new dependencies.** |
 | `@nexusts/view` | View engine with 3 adapters: Rendu (default, every runtime), Edge (Adonis-style `.edge`), Eta (EJS-style `.eta`). Auto-detects adapter by file extension. `setViewPaths()` for file-based templates, `Application.tryLoadNxConfig()` auto-loads from `nx.config.ts` |
+| `@nexusts/kysely` | **Typed SQL query builder.** Kysely integration with type-safe queries. `KyselyService`, `KyselyRepository` (Lucid-style), `KyselyModule.forRoot()`, built-in migration support via Kysely Migrator. Optional peer-dep (`bun add kysely`). Supports all Kysely dialects (SQLite, PostgreSQL, MySQL, etc.) |
 
 See [`docs/user-guide/drizzle.md`](./docs/user-guide/drizzle.md) for the
-Drizzle integration guide, [`docs/user-guide/graphql.md`](./docs/user-guide/graphql.md)
+Drizzle integration guide, [`docs/user-guide/kysely.md`](./docs/user-guide/kysely.md)
+for Kysely, [`docs/user-guide/graphql.md`](./docs/user-guide/graphql.md)
 for GraphQL, [`docs/user-guide/resilience.md`](./docs/user-guide/resilience.md)
 for retry/circuit/bulkhead, and [CHANGELOG.md](./CHANGELOG.md)
 for the detailed v0.8 release notes.
 
-> 34 working examples under `examples/` — one per major module —
+> 36 working examples under `examples/` — one per major module —
 > double as living documentation and as the smoke-test suite. See
 > [`docs/user-guide/testing-examples.md`](./docs/user-guide/testing-examples.md).
 

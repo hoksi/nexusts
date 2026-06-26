@@ -65,7 +65,7 @@ maintain.
 ┌──────────────────────────────────────────────────────────────┐
 │                       Runtime                                  │
 │   Hono context (c.var.user / c.var.session)                  │
-│   cookies / headers / database (drizzle, prisma, ...)        │
+│   cookies / headers / database (drizzle, kysely, ...)        │
 └──────────────────────────────────────────────────────────────┘
 ```
 

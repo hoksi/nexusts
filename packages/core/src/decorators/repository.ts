@@ -3,7 +3,7 @@
  *
  * Marks a class as a Spring-style repository. Repositories are normal
  * `@Injectable()` classes; the decorator is a marker so the framework
- * can register them with a database adapter (Drizzle/Prisma) and emit
+ * can register them with a database adapter (Drizzle/Kysely) and emit
  * a friendly error if you forget to wire one.
  *
  * @example

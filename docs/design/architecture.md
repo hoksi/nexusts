@@ -65,7 +65,7 @@ need; the core stays small.
 ```
 
 Every user-facing surface is implemented **above** the platform adapters
-so the framework can swap them out (e.g., replace Drizzle with Prisma)
+so the framework can swap them out (e.g., between Drizzle and Kysely)
 without changing application code.
 
 ---
