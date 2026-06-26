@@ -1,22 +1,6 @@
 /**
  * `SessionModule` — drop-in module for adding sessions to a NexusTS app.
- *
- * Usage:
- *   @Module({
- *     imports: [SessionModule.forRoot({
- *       backend: 'cookie',
- *       cookie: { secret: process.env.SESSION_SECRET! },
- *     })],
- *   })
- *   class AppModule {}
- *
- * Then in bootstrap:
- *   const app = new Application(AppModule);
- *   const svc = app.container.resolve(SessionService.TOKEN);
- *   app.server.app.use('*', sessionMiddleware(svc));
- *   await app.listen(port);
  */
-
 import { Module, Inject } from "@nexusts/core";
 import { SessionService } from "./session.service.js";
 import type { SessionConfig } from "./types.js";
@@ -32,7 +16,10 @@ export class SessionModule {
 	static forRoot(config: SessionConfig = {}) {
 		@Module({
 			providers: [
-				SessionService,
+				{
+					provide: SessionService,
+					useFactory: () => new SessionService(config),
+				},
 				{ provide: SessionService.TOKEN, useExisting: SessionService },
 				{ provide: "SESSION_CONFIG", useValue: config },
 			],
