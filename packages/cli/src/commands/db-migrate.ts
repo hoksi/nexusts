@@ -219,7 +219,6 @@ const dialect = new MysqlDialect({
   pool: createPool({ uri: process.env.DATABASE_URL ?? "" }),
 });
 `;
-		case "bun-sqlite":
 		default:
 			return `
 import { Database } from "bun:sqlite";

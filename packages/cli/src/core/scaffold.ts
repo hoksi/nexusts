@@ -67,7 +67,7 @@ export function computeDeps(
 	}
 	if (orm === "kysely") {
 		deps["@nexusts/kysely"] = "*";
-		deps["kysely"] = "^0.27.0";
+		deps.kysely = "^0.27.0";
 	}
 	if (view !== "none") {
 		deps["@nexusts/static"] = "*";

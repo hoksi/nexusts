@@ -177,6 +177,8 @@ function renderColumns(
 					const tsType = colType === "text" ? "string" : colType;
 					return `  ${colName}: ${tsType},`;
 				}
+				default:
+					return `  ${colName}: ${colType},`;
 			}
 		})
 		.join("\n");
