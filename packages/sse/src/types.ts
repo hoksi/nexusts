@@ -29,7 +29,7 @@
  */
 
 import { METADATA_KEY } from "@nexusts/core";
-import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-reflect";
+import { safeGetMeta, safeDefineMeta } from "@nexusts/core/di/safe-reflect";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -72,6 +72,8 @@ export interface SseStreamController {
 	get closed(): boolean;
 	/** Register a callback to run on client disconnect (or `close()`). */
 	onClose(cb: () => void): void;
+	/** Alias for onClose(). */
+	onAbort(cb: () => void): void;
 	/** Sleep for `ms` milliseconds (preserves the connection). */
 	sleep(ms: number): Promise<unknown>;
 }

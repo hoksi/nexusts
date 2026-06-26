@@ -75,6 +75,11 @@ export class SseStream implements SseStreamController {
 		await this.#api.close();
 	}
 
+	/** Register a cleanup callback (alias: onAbort). */
+	onAbort(cb: () => void): void {
+		this.onClose(cb);
+	}
+
 	/** Register a cleanup callback. */
 	onClose(cb: () => void): void {
 		if (this.#closed) {
