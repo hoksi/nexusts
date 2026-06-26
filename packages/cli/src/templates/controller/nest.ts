@@ -16,7 +16,9 @@
 export default `
 import { Controller, Delete, Get, Inject, Post, Put, inputValue } from '@nexusts/core';
 import type { Context } from 'hono';
+{{# hasService }}
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
+{{/ hasService }}
 
 @Controller('/{{ kebab }}s')
 export class {{ name }}Controller {

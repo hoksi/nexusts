@@ -10,6 +10,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { pluralize } from "./template.js";
 
 export interface WriteOptions {
 	/** Skip writing if the file exists. Default `false` (overwrite OK). */
@@ -106,11 +107,4 @@ export function nameVariants(input: string) {
 	};
 }
 
-/** English pluralization (matches `core/template.ts`). */
-function pluralize(s: string): string {
-	if (!s) return s;
-	if (/(s|x|z|ch|sh)$/i.test(s)) return `${s}es`;
-	if (/[^aeiou]y$/i.test(s)) return `${s.slice(0, -1)}ies`;
-	if (/y$/i.test(s)) return `${s}s`;
-	return `${s}s`;
-}
+// pluralize is imported from core/template.ts — see that file for the implementation.

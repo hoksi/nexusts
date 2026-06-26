@@ -69,13 +69,8 @@ export const makeControllerCommand: Command = {
 			pascal: variants.pascal,
 			service: serviceName,
 			serviceCamel,
-		}).replace(
-			// Strip the unused service import line if --no-service.
-			/import .*\n/g,
-			skipService
-				? (m: string) => (m.includes("services/") ? "" : m)
-				: (m: string) => m,
-		);
+			hasService: !skipService,
+		});
 
 		const out = resolve(
 			ctx.cwd,

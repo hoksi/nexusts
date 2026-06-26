@@ -206,9 +206,8 @@ export async function loadConfig(
 					// If the file imports from NexusTS and NexusTS isn't installed,
 					// try to extract the config by evaluating the export with a
 					// simple regex (last resort). For now, just log and fall back.
-					console.warn(
-						`[nx] Could not dynamically import ${candidate}: ${importErr instanceof Error ? importErr.message : String(importErr)}. Falling back to defaults.`,
-					);
+					// Use a direct console.warn here to avoid circular import with logger (config is loaded before logger is ready).
+					process.stderr.write(`[nx] Could not dynamically import ${candidate}: ${importErr instanceof Error ? importErr.message : String(importErr)}. Falling back to defaults.\n`);
 					config = {};
 				}
 			}

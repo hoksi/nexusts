@@ -22,7 +22,7 @@
 
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
-import { logger, nameVariants, render } from "../core/index.js";
+import { formatTimestamp, inferTableName, logger, nameVariants, render } from "../core/index.js";
 import { templates } from "../templates/index.js";
 import { runDrizzleKit } from "./db-migrate.js";
 
@@ -136,7 +136,7 @@ async function runSqlTemplate(
 	const migrationsDir = join(cwd, "app", "database", "migrations");
 	mkdirSync(migrationsDir, { recursive: true });
 
-	const timestamp = Date.now();
+	const timestamp = formatTimestamp(new Date());
 	const filename = `${timestamp}_${name.replace(/[^a-z0-9_]+/g, "_")}.sql`;
 	const filepath = join(migrationsDir, filename);
 
@@ -150,20 +150,5 @@ async function runSqlTemplate(
 	return 0;
 }
 
-function inferTableName(input: string): string {
-	const m = /^create_(\w+)_table$/.exec(input);
-	if (m) return m[1] ?? "";
-	const m2 = /^(?:add|remove|drop|alter)_(\w+)_to_(\w+)$/.exec(input);
-	if (m2) return m2[2] ?? "";
-	return `${input.toLowerCase().replace(/s$/, "")}s`;
-}
-
-function formatTimestamp(d: Date): string {
-	const pad = (n: number) => String(n).padStart(2, "0");
-	return (
-		`${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}` +
-		`_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
-	);
-}
 
 export default dbGenerateCommand;

@@ -50,6 +50,14 @@ export function parseArgs(argv: string[]): ParsedArgs {
 			const [, name, inline] = longMatch;
 			const flagName = name as string;
 
+			// `--no-foo` → immediately set foo=false, never consume next arg.
+			if (flagName.startsWith("no-")) {
+				const key = flagName.slice(3);
+				setFlag(flags, key, false);
+				i++;
+				continue;
+			}
+
 			if (inline !== undefined) {
 				setFlag(flags, flagName, inline);
 				i++;

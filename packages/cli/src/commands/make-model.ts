@@ -28,6 +28,7 @@ import {
 } from "../core/index.js";
 import { templates } from "../templates/index.js";
 import {
+	isValidDialect,
 	mapDrizzleType,
 	renderDrizzleDialect,
 } from "../templates/model/drizzle-dialect.js";
@@ -141,12 +142,6 @@ export const makeModelCommand: Command = {
 		return 0;
 	},
 };
-
-function isValidDialect(
-	d: string,
-): d is "postgres" | "mysql" | "sqlite" | "bun-sqlite" | "d1" {
-	return ["postgres", "mysql", "sqlite", "bun-sqlite", "d1"].includes(d);
-}
 
 function renderColumns(
 	cols: string[],

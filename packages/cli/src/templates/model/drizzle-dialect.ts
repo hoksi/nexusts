@@ -159,3 +159,134 @@ export function mapDrizzleType(dialect: string, type: string): string {
 export function shouldBeNotNull(type: string): boolean {
 	return type !== "text";
 }
+
+// ---------------------------------------------------------------------------
+// SQL / Kysely type mappers (consolidated from make-migration.ts)
+// ---------------------------------------------------------------------------
+
+/** Map a generic type name to a SQL column type (dialect-aware). */
+export function mapSqlType(t: string, dialect: string): string {
+	const type = t.toLowerCase();
+	switch (type) {
+		case "text":
+		case "string":
+		case "varchar":
+			return dialect === "mysql" ? "VARCHAR(255)" : "TEXT";
+		case "int":
+		case "integer":
+			return dialect === "postgres"
+				? "INTEGER"
+				: dialect === "mysql"
+					? "INT"
+					: "INTEGER";
+		case "bigint":
+		case "bigintunsigned":
+			return dialect === "postgres" ? "BIGINT" : "BIGINT UNSIGNED";
+		case "serial":
+			return dialect === "postgres" ? "SERIAL" : "INTEGER AUTO_INCREMENT";
+		case "bool":
+		case "boolean":
+			return "BOOLEAN";
+		case "float":
+		case "number":
+		case "real":
+		case "double":
+			return dialect === "mysql" ? "DOUBLE" : "REAL";
+		case "datetime":
+		case "timestamp":
+			return dialect === "postgres"
+				? "TIMESTAMP"
+				: dialect === "mysql"
+					? "DATETIME"
+					: "INTEGER";
+		case "date":
+			return dialect === "mysql" ? "DATE" : "TEXT";
+		case "json":
+			return dialect === "postgres"
+				? "JSONB"
+				: dialect === "mysql"
+					? "JSON"
+					: "TEXT";
+		case "jsonb":
+			return dialect === "postgres" ? "JSONB" : "TEXT";
+		default:
+			return "TEXT";
+	}
+}
+
+/** Map a generic type name to a Kysely column type. */
+export function mapKyselyType(type: string): string {
+	switch (type.toLowerCase()) {
+		case "text":
+		case "string":
+		case "varchar":
+			return "text";
+		case "int":
+		case "integer":
+			return "integer";
+		case "bigint":
+			return "bigint";
+		case "bool":
+		case "boolean":
+			return "boolean";
+		case "float":
+		case "number":
+		case "real":
+		case "double":
+			return "real";
+		case "datetime":
+		case "timestamp":
+		case "date":
+		case "json":
+		case "jsonb":
+			return "text";
+		default:
+			return "text";
+	}
+}
+
+/** Render SQL column definitions (dialect-aware). */
+export function renderSqlColumns(
+	cols: Array<[string, string]>,
+	dialect: string,
+): string {
+	return cols
+		.map(([name, type]) => {
+			const sqlType = mapSqlType(type, dialect);
+			const notNull = /NOT NULL/i.test(sqlType) ? "" : " NOT NULL";
+			return `  ${name} ${sqlType}${notNull},`;
+		})
+		.join("\n");
+}
+
+/** Render Kysely column definitions. */
+export function renderKyselyColumns(
+	cols: Array<[string, string]>,
+): string {
+	return cols
+		.map(([name, type]) => {
+			const kyselyType = mapKyselyType(type);
+			return `    .addColumn('${name}', '${kyselyType}', (col) => col.notNull())`;
+		})
+		.join("\n");
+}
+
+/** Render Drizzle column definitions (dialect-aware). */
+export function renderDrizzleColumns(
+	cols: Array<[string, string]>,
+	dialect: string,
+): string {
+	return cols
+		.map(([name, type]) => {
+			const helper = mapDrizzleType(dialect, type);
+			return `  ${name}: ${helper}('${name}'),`;
+		})
+		.join("\n");
+}
+
+/** Check if a dialect string is valid for Drizzle. */
+export function isValidDialect(
+	d: string,
+): d is "postgres" | "mysql" | "sqlite" | "bun-sqlite" | "d1" {
+	return ["postgres", "mysql", "sqlite", "bun-sqlite", "d1"].includes(d);
+}

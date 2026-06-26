@@ -10,6 +10,7 @@
  */
 
 import { createInterface } from "node:readline";
+import { logger } from "./logger.js";
 
 export interface PromptOptions {
 	/** Default value when the user just presses enter. */
@@ -75,4 +76,57 @@ export async function select(
 	options: PromptOptions = {},
 ): Promise<string> {
 	return prompt(message, { ...options, choices });
+}
+
+// ---------------------------------------------------------------------------
+// Shared project scaffolding options (used by both `new` and `init`)
+// ---------------------------------------------------------------------------
+
+/** Valid values for each interactive project-scaffold prompt. */
+export const VALID_PROJECT_OPTIONS = {
+	style: ["nest", "adonis", "functional"] as const,
+	view: ["rendu", "edge", "eta", "inertia", "none"] as const,
+	orm: ["drizzle", "kysely", "none"] as const,
+	db: ["bun-sqlite", "node-sqlite", "libsql", "postgres", "mysql", "none"] as const,
+	frontend: ["react", "vue", "svelte", "solid"] as const,
+} as const;
+
+/**
+ * Resolve a project option from flags or interactive prompt.
+ * Validates flag values against the allowed list and re-prompts on invalid input.
+ * Shared between `nx new` and `nx init`.
+ */
+export async function resolveProjectOption(
+	flags: Record<string, unknown>,
+	key: string,
+	valid: readonly string[],
+	defaultVal: string,
+	interactive: boolean,
+): Promise<string> {
+	const flagVal = flags[key] as string | undefined;
+	if (flagVal) {
+		if (valid.includes(flagVal)) return flagVal;
+		if (!interactive) {
+			logger.error(`Invalid --${key} "${flagVal}". Valid values: ${valid.join(", ")}`);
+			process.exit(1);
+		}
+		logger.warn(`"${flagVal}" is not valid for --${key}. Please choose from the list.`);
+	}
+
+	const label = key === "style"
+		? "Routing style" as const
+		: key === "view"
+			? "View engine" as const
+			: key === "orm"
+				? "ORM driver" as const
+				: key === "db"
+					? "Database driver" as const
+					: "Inertia frontend" as const;
+
+	// Loop until the user provides a valid value (interactive only).
+	for (;;) {
+		const answer = await select(label, [...valid], { default: defaultVal });
+		if (valid.includes(answer)) return answer;
+		logger.warn(`"${answer}" is not valid. Please choose from: ${valid.join(", ")}`);
+	}
 }
