@@ -1,12 +1,16 @@
+/**
+ * `@FeatureFlag('flag-name')` — gate a route behind a feature flag.
+ *
+ * Dual-mode: supports TC39 standard ES decorators + legacy.
+ */
 import type { FlagContext } from "../types.js";
-import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-reflect";
+import { safeGetMeta, safeDefineMeta } from "@nexusts/core/di/safe-reflect";
 
 const FLAG_META = Symbol.for("nexus:FeatureFlag");
+const FN_KEY = Symbol.for("nexus:ff:fn:meta");
 
 export interface FeatureFlagOptions {
-	/** Extract a `FlagContext` from the Hono `Context` object (first arg of the handler). */
 	contextFn?: (c: any) => FlagContext;
-	/** Custom response when the flag is disabled. Defaults to 404 JSON. */
 	onDisabled?: (c: any) => Response | Promise<Response>;
 }
 
@@ -18,34 +22,49 @@ export interface FlagSpec {
 	original: (...args: any[]) => any;
 }
 
-/**
- * Mark a route handler so `FeatureFlagService.applyDecorators()` will gate it.
- *
- *   @Get('/')
- *   @FeatureFlag('new-dashboard')
- *   async index(c: Context) { ... }
- *
- * When the flag is disabled the handler returns a 404 JSON response.
- * Pass `onDisabled` to customise the response, or `contextFn` to extract
- * a `FlagContext` (userId etc.) from the Hono `Context`.
- */
-export function FeatureFlag(
-	flagName: string,
-	options: FeatureFlagOptions = {},
-): MethodDecorator {
-	return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+export function FeatureFlag(flagName: string, options: FeatureFlagOptions = {}): any {
+	return function (this: any, targetOrFn: any, contextOrKey?: any): void {
+		if (contextOrKey?.kind === "method") {
+			const fn = targetOrFn;
+			const { name, metadata } = contextOrKey;
+			const spec: FlagSpec = { propertyKey: name, flagName, contextFn: options.contextFn, onDisabled: options.onDisabled, original: fn };
+			const existing: FlagSpec[] = (metadata[FLAG_META] as FlagSpec[]) ?? [];
+			existing.push(spec);
+			metadata[FLAG_META] = existing;
+			// Also stash on the function for legacy reader access.
+			if (!(fn as any)[FN_KEY]) (fn as any)[FN_KEY] = [];
+			(fn as any)[FN_KEY].push(spec);
+			return;
+		}
+		const target = targetOrFn;
+		const propertyKey = contextOrKey as string | symbol;
+		const descriptor = arguments[2];
 		const specs: FlagSpec[] = safeGetMeta(FLAG_META, target.constructor) ?? [];
 		specs.push({
 			propertyKey,
 			flagName,
 			contextFn: options.contextFn,
 			onDisabled: options.onDisabled,
-			original: descriptor.value,
+			original: descriptor?.value,
 		});
 		safeDefineMeta(FLAG_META, specs, target.constructor);
 	};
 }
 
 export function getFlagSpecs(target: any): FlagSpec[] {
-	return safeGetMeta(FLAG_META, target) ?? [];
+	// Legacy path
+	const fromLegacy = safeGetMeta(FLAG_META, target) as FlagSpec[] | undefined;
+	if (fromLegacy) return fromLegacy;
+	// Standard path: collect from prototype functions
+	const result: FlagSpec[] = [];
+	if (target?.prototype) {
+		for (const key of Object.getOwnPropertyNames(target.prototype)) {
+			const fn = target.prototype[key];
+			if (typeof fn === "function") {
+				const stashed = (fn as any)[FN_KEY];
+				if (Array.isArray(stashed)) result.push(...stashed);
+			}
+		}
+	}
+	return result;
 }

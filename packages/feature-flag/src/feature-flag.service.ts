@@ -20,10 +20,14 @@ export class FeatureFlagService {
 	/** DI token. */
 	static readonly TOKEN = Symbol.for("nexus:FeatureFlagService");
 
-	#backend: FeatureFlagBackend;
+	/** Feature flag config — injected by DI container. */
+	@Inject("FEATURE_FLAG_CONFIG") declare private _config: FeatureFlagConfig;
 
-	constructor(@Inject("FEATURE_FLAG_CONFIG") config: FeatureFlagConfig = {}) {
-		this.#backend = new MemoryFlagBackend(config.flags ?? {});
+	#backend!: FeatureFlagBackend;
+
+	constructor(config?: FeatureFlagConfig) {
+		const cfg = config ?? this._config ?? {};
+		this.#backend = new MemoryFlagBackend(cfg.flags ?? {});
 	}
 
 	/** Returns `true` if the flag is enabled for the given context. */
