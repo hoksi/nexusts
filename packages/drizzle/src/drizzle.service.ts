@@ -34,13 +34,12 @@ export class DrizzleService {
 	private _logger: ((q: string, p: unknown[]) => void) | null = null;
 	private _migrationsTable = "__nexus_migrations";
 
-	constructor() {
+	constructor(config?: DrizzleConfig) {
+		const cfg = config ?? this._config;
+		if (cfg) this._config = cfg;
 		// Auto-open synchronously for bun-sqlite.
-		// DI sets @Inject fields before the constructor runs,
-		// so this._config should be available.
-		const config = this._config;
-		if (config) {
-			if (config.dialect === "bun-sqlite" || (config.connection as any)?.filename) {
+		if (cfg) {
+			if (cfg.dialect === "bun-sqlite" || (cfg.connection as any)?.filename) {
 				this.openSync();
 			}
 		}
