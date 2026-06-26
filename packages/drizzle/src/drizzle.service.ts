@@ -23,25 +23,26 @@ import { RawQuery } from "./raw-query.js";
 export class DrizzleService {
 	/** DI token. */
 	static readonly TOKEN = Symbol.for("nexus:DrizzleService");
+	/** Drizzle config — injected by DI container. */
+	@Inject("DRIZZLE_CONFIG") declare private _config: DrizzleConfig;
 
 	driver: DrizzleDriverHandle | null = null;
 	private _client: any = null;
 	private _rawExecutor: RawExecutor | null = null;
-	private _config: DrizzleConfig;
 	private _opened = false;
 	private _migratorFn: ((folder: string) => Promise<void>) | null = null;
 	private _logger: ((q: string, p: unknown[]) => void) | null = null;
 	private _migrationsTable = "__nexus_migrations";
 
-	constructor(@Inject("DRIZZLE_CONFIG") config: DrizzleConfig) {
-		this._config = config;
-		// Auto-open synchronously so the client getter works
-		// immediately. For bun-sqlite the Database constructor
-		// is synchronous; for other drivers the first request
-		// will fire the async open() and cache the result.
-		if (config.dialect === "bun-sqlite" || (config.connection as any)?.filename) {
-			// Synchronous path for bun-sqlite.
-			this.openSync();
+	constructor() {
+		// Auto-open synchronously for bun-sqlite.
+		// DI sets @Inject fields before the constructor runs,
+		// so this._config should be available.
+		const config = this._config;
+		if (config) {
+			if (config.dialect === "bun-sqlite" || (config.connection as any)?.filename) {
+				this.openSync();
+			}
 		}
 	}
 

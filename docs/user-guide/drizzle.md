@@ -591,7 +591,8 @@ async create(ctx: Context) {
 // Legacy mode (experimentalDecorators: true):
 // @Post('/users')
 // @Validate({ body: insertUserSchema })
-// async create(@Body() body: InsertUser) {
+// async create(ctx: Context) {
+//   const body = await ctx.req.json() as InsertUser;
 //   return this.users.create(body);
 // }
 ```

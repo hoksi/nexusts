@@ -22,7 +22,6 @@
 import { Module } from "@nexusts/core";
 import { DrizzleService } from "./drizzle.service.js";
 import type { DrizzleConfig } from "./types.js";
-import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-reflect";
 
 @Module({
 	providers: [
