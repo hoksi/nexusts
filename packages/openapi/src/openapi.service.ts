@@ -13,7 +13,6 @@ import { Inject, Injectable } from "@nexusts/core";
 import type {
 	ApiOperationOptions,
 	ApiParamOptions,
-	ApiPropertyOptions,
 	ApiResponseOptions,
 	JSONSchema,
 	OPENAPI_META as _OM,
@@ -27,19 +26,30 @@ import type {
 } from "./types.js";
 import { OPENAPI_META } from "./types.js";
 import { zodToJsonSchema } from "./zod-to-json-schema.js";
-import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-reflect";
+import { safeGetMeta } from "@nexusts/core/di/safe-reflect";
+import {
+	readMethodMeta,
+	
+} from "./decorators/standard-meta.js";
 
 @Injectable()
 export class OpenAPIService {
 	/** DI token. */
 	static readonly TOKEN = Symbol.for("nexus:OpenAPIService");
 
-	#config: OpenAPIConfig;
+	#config!: OpenAPIConfig;
 	#components: { schemas: Map<string, JSONSchema> } = { schemas: new Map() };
 	#routes: { method: string; path: string; target: any; propertyKey: string | symbol; validation?: any }[] = [];
 
-	constructor(@Inject("OPENAPI_CONFIG") config: OpenAPIConfig) {
-		this.#config = config;
+	/** OpenAPI config — injected by DI container. */
+	@Inject("OPENAPI_CONFIG") declare private _injectConfig: OpenAPIConfig;
+
+	constructor() {
+		// DI sets @Inject fields before first use.
+		// When called directly (without DI), provide a fallback.
+		if (!this.#config) {
+			this.#config = this._injectConfig ?? { info: { title: "API", version: "0.0.0" } };
+		}
 	}
 
 	/**
@@ -106,7 +116,7 @@ export class OpenAPIService {
 
 		// 1. Tags from class + operation
 		const classTags: string[] = safeGetMeta(OPENAPI_META.TAGS, ctor) ?? [];
-		const opMeta: ApiOperationOptions | undefined = safeGetMeta(
+		const opMeta: ApiOperationOptions | undefined = readMethodMeta<ApiOperationOptions>(
 			OPENAPI_META.OPERATION,
 			ctor,
 			propKey,
@@ -120,7 +130,7 @@ export class OpenAPIService {
 		const pathParams = this.extractPathParams(route.path);
 		for (const name of pathParams) {
 			const override = (
-				(safeGetMeta(OPENAPI_META.PARAMS, ctor, propKey) ?? []) as ApiParamOptions[]
+				(readMethodMeta(OPENAPI_META.PARAMS, ctor, propKey) ?? []) as ApiParamOptions[]
 			).find((p) => p.name === name);
 			params.push({
 				name,
@@ -133,8 +143,6 @@ export class OpenAPIService {
 		// Auto-derive query params from `@Validate({ query })`.
 		if (route.validation?.query) {
 			this.appendZodParams(
-				ctor,
-				propKey,
 				"query",
 				route.validation.query,
 				params,
@@ -144,8 +152,6 @@ export class OpenAPIService {
 		// Auto-derive headers from `@Validate({ headers })`.
 		if (route.validation?.headers) {
 			this.appendZodParams(
-				ctor,
-				propKey,
 				"header",
 				route.validation.headers,
 				params,
@@ -154,7 +160,7 @@ export class OpenAPIService {
 		}
 		// Explicit `@ApiQuery` decorators override / supplement.
 		const explicitQueries: ApiParamOptions[] =
-			safeGetMeta(OPENAPI_META.QUERIES, ctor, propKey) ?? [];
+			readMethodMeta(OPENAPI_META.QUERIES, ctor, propKey) ?? [];
 		for (const q of explicitQueries) {
 			// Replace any auto-derived entry for the same name.
 			const idx = params.findIndex(
@@ -172,7 +178,7 @@ export class OpenAPIService {
 		}
 		// Explicit `@ApiParam` decorators override path params.
 		const explicitParams: ApiParamOptions[] =
-			safeGetMeta(OPENAPI_META.PARAMS, ctor, propKey) ?? [];
+			readMethodMeta(OPENAPI_META.PARAMS, ctor, propKey) ?? [];
 		for (const p of explicitParams) {
 			const idx = params.findIndex(
 				(x) => x.in === "path" && x.name === p.name,
@@ -190,7 +196,7 @@ export class OpenAPIService {
 
 		// 3. Request body
 		let requestBody: OpenAPIRequestBody | undefined;
-		const bodyMeta = safeGetMeta(OPENAPI_META.BODY, ctor, propKey);
+		const bodyMeta = readMethodMeta(OPENAPI_META.BODY, ctor, propKey);
 		if (bodyMeta?.schema || route.validation?.body) {
 			const schema = bodyMeta?.schema ?? route.validation?.body;
 			const mediaType: OpenAPIMediaType = { schema: this.toSchema(schema) };
@@ -205,7 +211,7 @@ export class OpenAPIService {
 		// 4. Responses
 		const responses: Record<string, OpenAPIResponse> = {};
 		const responseMetas: Array<[string, ApiResponseOptions]> =
-			safeGetMeta(OPENAPI_META.RESPONSES, ctor, propKey) ?? [];
+			readMethodMeta(OPENAPI_META.RESPONSES, ctor, propKey) ?? [];
 		for (const [status, opt] of responseMetas) {
 			const r: OpenAPIResponse = { description: opt.description };
 			if (opt.schema) {
@@ -259,8 +265,6 @@ export class OpenAPIService {
 	}
 
 	private appendZodParams(
-		ctor: any,
-		propKey: string | symbol,
 		where: "query" | "header",
 		schema: unknown,
 		params: OpenAPIParameter[],

@@ -24,7 +24,6 @@
 import { Module } from "@nexusts/core";
 import { OpenAPIService } from "./openapi.service.js";
 import type { OpenAPIConfig } from "./types.js";
-import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-reflect";
 
 @Module({
 	providers: [
