@@ -29,8 +29,22 @@ const TYPENAME_KEY = Symbol.for("nexus:GraphQL:TypeName");
 // without needing a separate scan pass.
 const _resolverRegistry = new Set<Function>();
 
-export function Resolver(typeName?: string): ClassDecorator {
-	return (target: Function) => {
+export function Resolver(typeName?: string): any {
+	return (...args: any[]) => {
+		// Standard decorator mode (TC39)
+		if (args.length >= 2 && args[1]?.kind === "class") {
+			const [target, context] = args as [new (...a: any[]) => any, ClassDecoratorContext];
+			const inferred = typeName ?? target.name.replace(/Resolver$/, "");
+			safeDefineMeta(RESOLVER_KEY, true, target);
+			safeDefineMeta(TYPENAME_KEY, inferred, target);
+			if (!safeHasMeta(FIELDS_KEY, target)) {
+				safeDefineMeta(FIELDS_KEY, [], target);
+			}
+			_resolverRegistry.add(target);
+			return;
+		}
+		// Legacy decorator mode (experimentalDecorators)
+		const target = args[0] as Function;
 		const ctor = target as unknown as new (...args: any[]) => any;
 		const inferred = typeName ?? ctor.name.replace(/Resolver$/, "");
 		safeDefineMeta(RESOLVER_KEY, true, ctor);

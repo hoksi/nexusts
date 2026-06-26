@@ -34,11 +34,26 @@ type OperationKind = "query" | "mutation" | "subscription";
  */
 function makeOperationDecorator(kind: OperationKind) {
 	return function (name?: string, opts?: { returns?: string }) {
-		return (
-			target: object,
-			propertyKey: string | symbol,
-			_descriptor: TypedPropertyDescriptor<any>,
-		): void => {
+		return (...args: any[]): void => {
+			// Standard decorator mode (TC39)
+			if (args.length >= 2 && args[1]?.kind === "method") {
+				const [target, context] = args as [object, DecoratorContext];
+				const methodName = context.name as string;
+				const argsMeta = getMethodArgs(target, methodName);
+				pushResolverField(target, {
+					propertyKey: methodName,
+					kind,
+					name: name ?? methodName,
+					returnTypeName: opts?.returns ?? "JSON",
+					args: argsMeta
+						.sort((a, b) => a.index - b.index)
+						.map((a) => ({ name: a.name, type: a.type })),
+				});
+				return;
+			}
+			// Legacy decorator mode (experimentalDecorators)
+			const target = args[0] as object;
+			const propertyKey = args[1] as string | symbol;
 			const argsMeta = getMethodArgs(target, propertyKey);
 			pushResolverField(target, {
 				propertyKey: String(propertyKey),
