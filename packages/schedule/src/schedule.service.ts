@@ -21,14 +21,17 @@ import {
 export class ScheduleService implements OnApplicationInit {
 	/** DI token — use with `@Inject(ScheduleService.TOKEN)`. */
 	static readonly TOKEN = Symbol.for('nexus:ScheduleService');
+	/** Schedule config — injected by DI container. */
+	@Inject('SCHEDULE_CONFIG') declare private _config: ScheduleConfig;
 
 	readonly registry: ScheduleRegistry;
 	#listeners = new Set<ScheduleEventListener>();
 	#started = false;
 	#memoryBackend: MemorySchedulesBackend | null = null;
 
-	constructor(@Inject('SCHEDULE_CONFIG') private _config: ScheduleConfig = {}) {
-		this.registry = this.#createBackend(this._config);
+	constructor() {
+		const cfg = this._config ?? {};
+		this.registry = this.#createBackend(cfg);
 		// Register this instance immediately so the Application's scanner
 		// callback can use it for subsequent providers resolved after this one.
 		__setScheduleService(this);
