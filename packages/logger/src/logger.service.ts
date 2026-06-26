@@ -79,7 +79,7 @@ export class Logger {
 	set level(v: LogLevel) { this.init(); this._level = v; }
 
 	get transports(): LogTransport[] { this.init(); return this._transports; }
-	set transports(v: LogTransport[]) { this.init(); this._transports = v; }
+	set transports(v: LogTransport[]) { this._transports = v; this.init(); }
 
 	// ===========================================================================
 	// Level methods
