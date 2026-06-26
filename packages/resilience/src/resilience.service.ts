@@ -44,10 +44,19 @@ export class ResilienceService {
 	private store?: ResilienceStore;
 	private syncIntervalMs: number;
 
-	constructor(store?: ResilienceStore) {
-		const config = this._config ?? {};
-		this.syncIntervalMs = config.syncIntervalMs ?? 5000;
-		this.store = store ?? undefined;
+	constructor(configOrStore?: ResilienceConfig | ResilienceStore, store?: ResilienceStore) {
+		// Support two call patterns:
+		//   new ResilienceService(config, store) — from module's useFactory
+		//   new ResilienceService() — direct (DI sets @Inject fields)
+		const cfg = (configOrStore && typeof configOrStore === "object" && "retry" in configOrStore) 
+			? (configOrStore as ResilienceConfig) 
+			: (this._config ?? {});
+		const resolvedStore = store ?? 
+			((configOrStore && typeof configOrStore === "object" && !("retry" in configOrStore))
+				? (configOrStore as ResilienceStore) 
+				: undefined);
+		this.syncIntervalMs = cfg.syncIntervalMs ?? 5000;
+		this.store = resolvedStore ?? undefined;
 		this.defaults = {
 			retry: {
 				attempts: 3,
@@ -55,7 +64,7 @@ export class ResilienceService {
 				maxDelay: 30_000,
 				backoff: "exponential-jitter",
 				multiplier: 2,
-				...config.retry,
+				...cfg.retry,
 			} as Required<RetryConfig>,
 			circuit: {
 				threshold: 0.5,
@@ -63,13 +72,13 @@ export class ResilienceService {
 				timeout: 30_000,
 				halfOpenAfter: 1,
 				window: 60_000,
-				...config.circuit,
+				...cfg.circuit,
 			} as Required<CircuitBreakerConfig>,
 			bulkhead: {
 				maxConcurrent: 10,
 				maxQueued: 100,
 				rejectOnFull: false,
-				...config.bulkhead,
+				...cfg.bulkhead,
 			} as Required<BulkheadConfig>,
 		};
 	}
