@@ -144,17 +144,3 @@ export function sessionMiddleware(
 }
 
 export { SessionContext as SessionContextImpl };
-
-/**
- * Retrieve the AdonisJS-style session context from a Hono context.
- *
- * Usage:
- *   @Get('/cart')
- *   cart(ctx: Context) {
- *     const cart = session(ctx).get('cart', []);
- *     return cart;
- *   }
- */
-export function session(c: any): SessionContext {
-	return c.get("session") as SessionContext;
-}
