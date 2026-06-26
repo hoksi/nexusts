@@ -37,14 +37,22 @@ export class QueueService {
 	/** DI token — use with `@Inject(QueueService.TOKEN)`. */
 	static readonly TOKEN = Symbol.for('nexus:QueueService');
 
-	/** The underlying backend. */
-	readonly backend: QueueBackend;
+	/** Queue config — injected by DI container. */
+	@Inject('QUEUE_CONFIG') declare private readonly config: QueueConfig;
+
+	#_backend: QueueBackend | null = null;
+	get backend(): QueueBackend {
+		if (!this.#_backend) {
+			this.#_backend = this.#createBackend(this.config ?? { backend: 'memory' });
+		}
+		return this.#_backend;
+	}
 	#workers = new Map<string, WorkerHandle>();
 	#listeners = new Set<QueueEventListener>();
 	#started = false;
 
-	constructor(@Inject('QUEUE_CONFIG') private readonly config: QueueConfig) {
-		this.backend = this.#createBackend(config);
+	constructor() {
+		// DI sets @Inject fields before first use.
 	}
 
 	// ===========================================================================
@@ -60,7 +68,8 @@ export class QueueService {
 		data: T,
 		options: AddOptions = {},
 	): Promise<AddedJob> {
-		const merged = { ...this.config.defaults, ...options };
+		const cfg = this.config ?? { backend: 'memory' as const };
+		const merged = { ...cfg.defaults, ...options };
 		return this.backend.add(name, data, merged);
 	}
 

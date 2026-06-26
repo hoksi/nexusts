@@ -209,7 +209,7 @@ export default {
 ```ts
 @Injectable()
 class EmailWorker {
-  constructor(@Inject(QueueService.TOKEN) private queue: QueueService) {}
+  @Inject(QueueService.TOKEN) declare queue: QueueService;
 
   @OnQueueReady()
   async register() {

@@ -20,7 +20,7 @@ class EmailWorker {
 
   @OnQueueReady()
   async start() {
-    await this.queue.consume("email", async (job) => {
+    await this.queue.process("email", async (job) => {
       console.log(`[worker] sending email to ${job.data.to}`);
       // simulate async send
       await new Promise((r) => setTimeout(r, 100));
@@ -39,7 +39,7 @@ class EmailController {
   async send(ctx: Context) {
     const body = await ctx.req.json();
     const job = await this.queue.add("email", body);
-    return { jobId: job.id, status: "queued" };
+    return { jobId: job.jobId, status: "queued" };
   }
 
   @Get("/")
@@ -50,7 +50,7 @@ class EmailController {
 
 // ─── Module ─────────────────────────────────────────────────────────
 @Module({
-  imports: [QueueModule.forRoot({ type: "memory" })],
+  imports: [QueueModule.forRoot({ backend: "memory" })],
   controllers: [EmailController],
   providers: [EmailWorker],
 })
