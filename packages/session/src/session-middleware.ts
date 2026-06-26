@@ -12,19 +12,19 @@
  *     middleware: [sessionMiddleware(sessions)],
  *   });
  *
- *   // 2. In controllers, use `c.session.get/set` directly:
+ *   // 2. In controllers, use `ctx.session.get/set` directly (typed!):
  *
  *   @Get('/cart')
  *   cart(ctx: Context) {
- *     const cart = (ctx as any).session.get('cart', []);
+ *     const cart = ctx.session.get('cart', []);
  *     return cart;
  *   }
  *
  *   @Post('/cart/add')
  *   async add(ctx: Context) {
- *     const cart = (ctx as any).session.get('cart', []);
+ *     const cart = ctx.session.get('cart', []);
  *     cart.push(await ctx.req.json());
- *     (ctx as any).session.set('cart', cart);
+ *     ctx.session.set('cart', cart);
  *     return { ok: true };
  *   }
  */
@@ -32,6 +32,15 @@
 import type { MiddlewareHandler } from "hono";
 import type { SessionService } from "./session.service.js";
 import type { SessionRecord } from "./types.js";
+
+// Augment Hono's Context with c.session getter
+// This removes the need for `(ctx as any).session` casts.
+declare module "hono" {
+	interface Context {
+		/** AdonisJS-style session. Available after sessionMiddleware runs. */
+		readonly session: SessionContext;
+	}
+}
 
 export interface SessionMiddlewareOptions {
 	cookieName?: string;
