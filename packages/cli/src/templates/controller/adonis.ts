@@ -7,7 +7,9 @@
  */
 
 export default `
+{{# hasService }}
 import { {{ service }} } from '../services/{{ kebab }}.service.js';
+{{/ hasService }}
 
 export class {{ name }}Controller {
   async index() {

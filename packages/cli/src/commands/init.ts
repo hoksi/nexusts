@@ -26,7 +26,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
-import { buildPackageJson, computeDeps, ensureDirectories, flagBool, generateProjectFiles, logger, parseJsonLoose, select } from "../core/index.js";
+import { buildPackageJson, computeDeps, ensureDirectories, flagBool, generateProjectFiles, logger, parseJsonLoose, resolveProjectOption, VALID_PROJECT_OPTIONS } from "../core/index.js";
 
 type WriteMode = "write" | "skip" | "merge-pkg" | "merge-tsconfig";
 
@@ -35,48 +35,7 @@ interface PlanEntry {
 	mode: WriteMode;
 }
 
-/** Valid options for each interactive prompt. */
-const VALID_OPTIONS = {
-	style: ["nest", "adonis", "functional"],
-	view: ["rendu", "edge", "eta", "inertia", "none"],
-	orm: ["drizzle", "kysely", "none"],
-	db: ["bun-sqlite", "node-sqlite", "libsql", "postgres", "mysql", "none"],
-	frontend: ["react", "vue", "svelte", "solid"],
-} as const;
 
-/**
- * Resolve an option from flags or interactive prompt.
- * Validates flag values against the allowed list and re-prompts on invalid input.
- */
-async function resolveOpt(
-	flags: Record<string, unknown>,
-	key: string,
-	valid: readonly string[],
-	defaultVal: string,
-	interactive: boolean,
-): Promise<string> {
-	const flagVal = flags[key] as string | undefined;
-	if (flagVal) {
-		if (valid.includes(flagVal)) return flagVal;
-		if (!interactive) {
-			logger.error(`Invalid --${key} "${flagVal}". Valid values: ${valid.join(", ")}`);
-			process.exit(1);
-		}
-		logger.warn(`"${flagVal}" is not valid for --${key}. Please choose from the list.`);
-	}
-	const label = key === "style" ? "Routing style" as const
-		: key === "view" ? "View engine" as const
-		: key === "orm" ? "ORM driver" as const
-		: key === "db" ? "Database driver" as const
-		: "Inertia frontend" as const;
-	// Loop until the user provides a valid value (interactive only).
-	// Non-interactive returns the default.
-	for (;;) {
-		const answer = await select(label, [...valid], { default: defaultVal });
-		if (valid.includes(answer)) return answer;
-		logger.warn(`"${answer}" is not valid. Please choose from: ${valid.join(", ")}`);
-	}
-}
 
 export const initCommand: Command = {
 	name: "init",
@@ -112,11 +71,11 @@ export const initCommand: Command = {
 			ctx.cwd,
 			(ctx.flags.target as string | undefined) ?? ".",
 		);
-		const routing = await resolveOpt(ctx.flags, "style", VALID_OPTIONS.style, "nest", interactive);
-		const view = await resolveOpt(ctx.flags, "view", VALID_OPTIONS.view, "rendu", interactive);
-		const orm = await resolveOpt(ctx.flags, "orm", VALID_OPTIONS.orm, "drizzle", interactive);
-		const db = await resolveOpt(ctx.flags, "db", VALID_OPTIONS.db, "bun-sqlite", interactive);
-		const frontend = await resolveOpt(ctx.flags, "frontend", VALID_OPTIONS.frontend, "react", interactive);
+		const routing = await resolveProjectOption(ctx.flags, "style", VALID_PROJECT_OPTIONS.style, "nest", interactive);
+		const view = await resolveProjectOption(ctx.flags, "view", VALID_PROJECT_OPTIONS.view, "rendu", interactive);
+		const orm = await resolveProjectOption(ctx.flags, "orm", VALID_PROJECT_OPTIONS.orm, "drizzle", interactive);
+		const db = await resolveProjectOption(ctx.flags, "db", VALID_PROJECT_OPTIONS.db, "bun-sqlite", interactive);
+		const frontend = await resolveProjectOption(ctx.flags, "frontend", VALID_PROJECT_OPTIONS.frontend, "react", interactive);
 		const ssr = !flagBool(ctx.flags, "no-ssr", false);
 		const name = target.split("/").pop() ?? "nexus-app";
 		const dbUrl = db === "bun-sqlite" || db === "node-sqlite" ? "app.db" : "";

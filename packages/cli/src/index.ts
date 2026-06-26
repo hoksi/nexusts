@@ -23,6 +23,7 @@
 import { commands, findCommand } from "./commands/index.js";
 import { loadConfig } from "./core/config.js";
 import { colors, flagBool, logger, parseArgs } from "./core/index.js";
+import { VERSION } from "./core/version.js";
 
 async function main(): Promise<number> {
 	const parsed = parseArgs(process.argv.slice(2));
@@ -31,7 +32,7 @@ async function main(): Promise<number> {
 
 	// Top-level flags.
 	if (parsed.flags.version === true) {
-		console.log(PKG_VERSION);
+		console.log(VERSION);
 		return 0;
 	}
 
@@ -136,8 +137,6 @@ function renderCommandHelp(cmd: import("./core/index.js").Command): void {
 	}
 	console.log();
 }
-
-const PKG_VERSION = "0.1.0";
 
 main()
 	.then((code) => process.exit(code))

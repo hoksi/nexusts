@@ -21,11 +21,17 @@
 
 import { resolve } from "node:path";
 import type { Command, CommandContext } from "../core/index.js";
-import { logger, nameVariants, render, writeFile } from "../core/index.js";
+import { formatTimestamp, inferTableName, logger, nameVariants, render, writeFile } from "../core/index.js";
 import { templates } from "../templates/index.js";
 import {
+	isValidDialect,
 	mapDrizzleType,
+	mapKyselyType,
+	mapSqlType,
+	renderDrizzleColumns,
 	renderDrizzleDialect,
+	renderKyselyColumns,
+	renderSqlColumns,
 } from "../templates/model/drizzle-dialect.js";
 
 export const makeMigrationCommand: Command = {
@@ -140,21 +146,7 @@ export const makeMigrationCommand: Command = {
 	},
 };
 
-function isValidDialect(
-	d: string,
-): d is "postgres" | "mysql" | "sqlite" | "bun-sqlite" | "d1" {
-	return ["postgres", "mysql", "sqlite", "bun-sqlite", "d1"].includes(d);
-}
 
-function inferTableName(input: string): string {
-	// `create_users_table` → `users`; `add_email_to_users` → `users`;
-	// `Posts` → `posts`; fallback to the lowercased input.
-	const m = /^create_(\w+)_table$/.exec(input);
-	if (m) return m[1] ?? "";
-	const m2 = /^(?:add|remove|drop|alter)_(\w+)_to_(\w+)$/.exec(input);
-	if (m2) return m2[2] ?? "";
-	return `${input.toLowerCase().replace(/s$/, "")}s`;
-}
 
 function parseColumns(input: string | string[]): Array<[string, string]> {
 	const list = Array.isArray(input) ? input : input.split(",");
@@ -167,129 +159,6 @@ function parseColumns(input: string | string[]): Array<[string, string]> {
 		});
 }
 
-function renderSqlColumns(
-	cols: Array<[string, string]>,
-	dialect: string,
-): string {
-	return cols
-		.map(([name, type]) => {
-			const sqlType = mapSqlType(type, dialect);
-			const notNull = /NOT NULL/i.test(sqlType) ? "" : " NOT NULL";
-			return `  ${name} ${sqlType}${notNull},`;
-		})
-		.join("\n");
-}
 
-function renderKyselyColumns(
-	cols: Array<[string, string]>,
-): string {
-	return cols
-		.map(([name, type]) => {
-			const kyselyType = mapKyselyType(type);
-			return `    .addColumn('${name}', '${kyselyType}', (col) => col.notNull())`;
-		})
-		.join("\n");
-}
-
-function mapKyselyType(type: string): string {
-	switch (type.toLowerCase()) {
-		case "text":
-		case "string":
-		case "varchar":
-			return "text";
-		case "int":
-		case "integer":
-			return "integer";
-		case "bigint":
-			return "bigint";
-		case "bool":
-		case "boolean":
-			return "boolean";
-		case "float":
-		case "number":
-		case "real":
-		case "double":
-			return "real";
-		case "datetime":
-		case "timestamp":
-			return "text";
-		case "date":
-			return "text";
-		case "json":
-		case "jsonb":
-			return "text";
-		default:
-			return "text";
-	}
-}
-
-function renderDrizzleColumns(
-	cols: Array<[string, string]>,
-	dialect: string,
-): string {
-	return cols
-		.map(([name, type]) => {
-			const helper = mapDrizzleType(dialect, type);
-			return `  ${name}: ${helper}('${name}'),`;
-		})
-		.join("\n");
-}
-
-function mapSqlType(t: string, dialect: string): string {
-	const type = t.toLowerCase();
-	switch (type) {
-		case "text":
-		case "string":
-		case "varchar":
-			return dialect === "mysql" ? "VARCHAR(255)" : "TEXT";
-		case "int":
-		case "integer":
-			return dialect === "postgres"
-				? "INTEGER"
-				: dialect === "mysql"
-					? "INT"
-					: "INTEGER";
-		case "bigint":
-		case "bigintunsigned":
-			return dialect === "postgres" ? "BIGINT" : "BIGINT UNSIGNED";
-		case "serial":
-			return dialect === "postgres" ? "SERIAL" : "INTEGER AUTO_INCREMENT";
-		case "bool":
-		case "boolean":
-			return dialect === "mysql" ? "BOOLEAN" : "BOOLEAN";
-		case "float":
-		case "number":
-		case "real":
-		case "double":
-			return dialect === "mysql" ? "DOUBLE" : "REAL";
-		case "datetime":
-		case "timestamp":
-			return dialect === "postgres"
-				? "TIMESTAMP"
-				: dialect === "mysql"
-					? "DATETIME"
-					: "INTEGER";
-		case "date":
-			return dialect === "mysql" ? "DATE" : "TEXT";
-		case "json":
-			return dialect === "postgres"
-				? "JSONB"
-				: dialect === "mysql"
-					? "JSON"
-					: "TEXT";
-		case "jsonb":
-			return dialect === "postgres" ? "JSONB" : "TEXT";
-		default:
-			return "TEXT";
-	}
-}
-
-function formatTimestamp(d: Date): string {
-	const pad = (n: number) => String(n).padStart(2, "0");
-	return (
-		`${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}` +
-		`_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
-	);
-}
 
 export default makeMigrationCommand;

@@ -11,6 +11,7 @@ export * from "./prompts.js";
 export * from "./template.js";
 export { VERSION } from "./version.js";
 export { ensureDirectories, computeDeps, buildPackageJson, generateProjectFiles } from "./scaffold.js";
+export { formatTimestamp, inferTableName } from "./naming.js";
 
 /**
  * The CLI command contract. Every command module exports a default

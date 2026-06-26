@@ -23,42 +23,60 @@ import projectNxConfig from "./project/nx.config.js";
 import projectDrizzleConfig from "./project/drizzle.config.js";
 import repositoryDrizzle from "./repository/repository.js";
 import repositoryKysely from "./repository/kysely-repository.js";
+import authInstance from "./auth/auth-instance.js";
+import authEnvExample from "./auth/env-example.js";
+import listener from "./listener/listener.js";
+import queueWorker from "./queue/worker.js";
+import queueJob from "./queue/job.js";
+import scheduleTask from "./schedule/task.js";
 import service from "./service/service.js";
+import sessionHelper from "./session/session.js";
 import validator from "./validator/validator.js";
 
 export const templates = {
-	controller: {
-		nest: controllerNest,
-		adonis: controllerAdonis,
-		functional: controllerFunctional,
-	},
-	service,
-	repository: {
-		drizzle: repositoryDrizzle,
-		kysely: repositoryKysely,
-	},
-	module,
-	validator,
-	middleware,
-	model: {
-		drizzle: modelDrizzle,
-		kysely: modelKysely,
-	},
-	migration: {
-		drizzle: migrationDrizzle,
-		kysely: migrationKysely,
-		sql: migrationSql,
-	},
-	crud: {
-		controller: crudController,
-		module: crudModule,
-		dto: crudDto,
-		test: crudTest,
-	},
-	project: {
-		"nx.config.ts": projectNxConfig,
-		"drizzle.config.ts": projectDrizzleConfig,
-	},
+controller: {
+nest: controllerNest,
+adonis: controllerAdonis,
+functional: controllerFunctional,
+},
+auth: {
+instance: authInstance,
+"env.example": authEnvExample,
+},
+listener,
+queue: {
+worker: queueWorker,
+job: queueJob,
+},
+schedule: scheduleTask,
+service,
+session: sessionHelper,
+repository: {
+drizzle: repositoryDrizzle,
+kysely: repositoryKysely,
+},
+module,
+validator,
+middleware,
+model: {
+drizzle: modelDrizzle,
+kysely: modelKysely,
+},
+migration: {
+drizzle: migrationDrizzle,
+kysely: migrationKysely,
+sql: migrationSql,
+},
+crud: {
+controller: crudController,
+module: crudModule,
+dto: crudDto,
+test: crudTest,
+},
+project: {
+"nx.config.ts": projectNxConfig,
+"drizzle.config.ts": projectDrizzleConfig,
+},
 };
 
 export type TemplateKey = keyof typeof templates;
