@@ -10,35 +10,26 @@
  *   6. KyselyRepository CRUD
  *   7. Error handling (not opened, missing peer dep, etc.)
  */
-import { beforeAll, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   KyselyService,
   KyselyModule,
   KyselyRepository,
 } from "../../packages/kysely/src/index.js";
-import type { DatabaseSchema } from "../../packages/kysely/src/types.js";
+import type { Generated } from "kysely";
+import { BunSqliteDialect } from "../../packages/kysely/src/index.js";
 
 // ---------------------------------------------------------------------------
 // Test helpers
 // ---------------------------------------------------------------------------
 
-let hasBetterSqlite3 = false;
-try {
-  await import("better-sqlite3");
-  hasBetterSqlite3 = true;
-} catch {
-  /* not installed */
-}
-
 /**
- * Create an SqliteDialect for :memory: database.
- * Uses better-sqlite3 as the dialect driver.
+ * Create an SqliteDialect for :memory: database using bun:sqlite.
  */
 async function createMemoryDialect() {
   const { SqliteDialect } = await import("kysely");
-  const Database = (await import("better-sqlite3")).default;
   return new SqliteDialect({
-    database: new Database(":memory:"),
+    database: await BunSqliteDialect.inMemory(),
   });
 }
 
@@ -48,7 +39,7 @@ async function createMemoryDialect() {
 
 interface DB {
   users: {
-    id: number;
+    id: Generated<number>;
     email: string;
     name: string;
     age: number;
@@ -338,7 +329,7 @@ describe("KyselyRepository (CRUD)", () => {
     const created = await repo.create({ email: "find@test.com", name: "Find", age: 50 });
     expect(created).toBeTruthy();
 
-    const found = await repo.findById(created!.id);
+    const found = await repo.findById(Number(created!.id));
     expect(found).toBeTruthy();
     expect(found?.email).toBe("find@test.com");
   });
@@ -361,7 +352,7 @@ describe("KyselyRepository (CRUD)", () => {
 
   it("updateById() modifies and returns the row", async () => {
     const created = await repo.create({ email: "updid@test.com", name: "OldName", age: 30 });
-    const updated = await repo.updateById(created!.id, { name: "NewName" });
+    const updated = await repo.updateById(Number(created!.id), { name: "NewName" });
 
     expect(updated?.name).toBe("NewName");
   });
@@ -377,7 +368,7 @@ describe("KyselyRepository (CRUD)", () => {
 
   it("deleteById() removes and returns true", async () => {
     const created = await repo.create({ email: "delid@test.com", name: "DelId", age: 70 });
-    const result = await repo.deleteById(created!.id);
+    const result = await repo.deleteById(Number(created!.id));
     expect(result).toBe(true);
   });
 

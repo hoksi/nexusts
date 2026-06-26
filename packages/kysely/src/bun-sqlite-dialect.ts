@@ -56,8 +56,8 @@ export class BunSqliteDialect {
    *
    * @returns A wrapped `Database(":memory:")` instance
    */
-  static inMemory(): any {
-    const { Database } = requireBunSqlite();
+  static async inMemory(): Promise<any> {
+    const { Database } = await requireBunSqlite();
     return BunSqliteDialect.wrap(new Database(":memory:"));
   }
 
@@ -67,17 +67,17 @@ export class BunSqliteDialect {
    * @param filename - Path to the SQLite database file
    * @returns A wrapped `Database(filename)` instance
    */
-  static file(filename: string): any {
-    const { Database } = requireBunSqlite();
+  static async file(filename: string): Promise<any> {
+    const { Database } = await requireBunSqlite();
     return BunSqliteDialect.wrap(new Database(filename));
   }
 }
 
 let _mod: any = null;
-function requireBunSqlite(): { Database: any } {
+async function requireBunSqlite(): Promise<{ Database: any }> {
   if (_mod) return _mod;
   try {
-    _mod = require("bun:sqlite");
+    _mod = await import("bun:sqlite");
     return _mod;
   } catch {
     throw new Error(
