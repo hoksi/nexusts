@@ -96,17 +96,44 @@ export interface CacheConfig {
 export const CACHEABLE_META = "nexus:cache:cacheable";
 export const CACHE_INVALIDATE_META = "nexus:cache:invalidate";
 
-/** @Cacheable decorator. Caches the result of a method. */
+/**
+ * @Cacheable decorator. Caches the result of a method.
+ *
+ * Dual-mode: supports both TC39 standard ES decorators (Bun 1.3+ default)
+ * and legacy experimentalDecorators.
+ */
 export function Cacheable(
 	prefix: string,
 	keyFn: (...args: any[]) => string,
 	ttlSeconds = 60,
-): MethodDecorator {
-	return (
-		target: any,
-		propertyKey: string | symbol,
-		descriptor: PropertyDescriptor,
-	) => {
+): any {
+	return function (this: any, targetOrFn: any, contextOrKey: any): void {
+		// Standard (TC39) decorator mode
+		if (contextOrKey?.kind === "method") {
+			const fn = targetOrFn;
+			const { name, metadata } = contextOrKey;
+
+			const existing: CacheableSpec[] = metadata[CACHEABLE_META] ?? [];
+			existing.push({
+				prefix,
+				keyFn,
+				ttl: ttlSeconds,
+				propertyKey: name,
+				original: fn,
+			});
+			metadata[CACHEABLE_META] = existing;
+
+			// Also store on constructor so legacy readers (applyDecorators, etc.) can find it.
+			// In standard mode fn.constructor is the class constructor.
+			safeDefineMeta(CACHEABLE_META, existing, fn.constructor, name);
+			return;
+		}
+
+		// Legacy (experimentalDecorators) mode
+		const target = targetOrFn;
+		const propertyKey = contextOrKey;
+		const descriptor = arguments[2];
+
 		const existing: CacheableSpec[] =
 			safeGetMeta(CACHEABLE_META, target.constructor) ?? [];
 		existing.push({
@@ -114,25 +141,46 @@ export function Cacheable(
 			keyFn,
 			ttl: ttlSeconds,
 			propertyKey,
-			original: descriptor.value,
+			original: descriptor?.value,
 		});
 		safeDefineMeta(CACHEABLE_META, existing, target.constructor);
 	};
 }
 
-/** @CacheInvalidate decorator. Removes matching keys after a method runs. */
+/**
+ * @CacheInvalidate decorator. Removes matching keys after a method runs.
+ *
+ * Dual-mode: supports both TC39 standard ES decorators (Bun 1.3+ default)
+ * and legacy experimentalDecorators.
+ */
 export function CacheInvalidate(
 	prefix: string,
 	keyFn: (...args: any[]) => string,
-): MethodDecorator {
-	return (
-		target: any,
-		propertyKey: string | symbol,
-		descriptor: PropertyDescriptor,
-	) => {
+): any {
+	return function (this: any, targetOrFn: any, contextOrKey: any): void {
+		// Standard (TC39) decorator mode
+		if (contextOrKey?.kind === "method") {
+			const fn = targetOrFn;
+			const { name, metadata } = contextOrKey;
+
+			const existing: CacheInvalidateSpec[] =
+				metadata[CACHE_INVALIDATE_META] ?? [];
+			existing.push({ prefix, keyFn, propertyKey: name, original: fn });
+			metadata[CACHE_INVALIDATE_META] = existing;
+
+			// Also store on constructor for legacy readers.
+			safeDefineMeta(CACHE_INVALIDATE_META, existing, fn.constructor, name);
+			return;
+		}
+
+		// Legacy (experimentalDecorators) mode
+		const target = targetOrFn;
+		const propertyKey = contextOrKey;
+		const descriptor = arguments[2];
+
 		const existing: CacheInvalidateSpec[] =
 			safeGetMeta(CACHE_INVALIDATE_META, target.constructor) ?? [];
-		existing.push({ prefix, keyFn, propertyKey, original: descriptor.value });
+		existing.push({ prefix, keyFn, propertyKey, original: descriptor?.value });
 		safeDefineMeta(CACHE_INVALIDATE_META, existing, target.constructor);
 	};
 }
