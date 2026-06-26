@@ -9,7 +9,7 @@
 
 ```
 @Get('/events')
-events(@Req() c: any) {
+events(ctx: Context) {
   return sse(c, (stream) => {
     const t = setInterval(() => {
       stream.send({ event: 'tick', data: Date.now() });
@@ -41,7 +41,7 @@ WebSockets 서버도, long-poll 트릭도, 특별한 프로토콜도 필요 없�
 import { sse, getLastEventId } from '@nexusts/sse';
 
 @Get('/events')
-events(@Req() c: any) {
+events(ctx: Context) {
   return sse(c, (stream) => {
     stream.send({ data: 'hello' });
     // ... 모든 async 로직
@@ -122,7 +122,7 @@ replay한다.
 
 ```ts
 @Get('/events')
-events(@Req() c: any) {
+events(ctx: Context) {
   const lastId = getLastEventId(c);
   return sse(c, async (stream) => {
     // 1. 놓친 이벤트 replay

@@ -9,7 +9,7 @@ responses, build progress, live logs, notifications, dashboards.
 
 ```
 @Get('/events')
-events(@Req() c: any) {
+events(ctx: Context) {
   return sse(c, (stream) => {
     const t = setInterval(() => {
       stream.send({ event: 'tick', data: Date.now() });
@@ -42,7 +42,7 @@ with auto-reconnect.
 import { sse, getLastEventId } from '@nexusts/sse';
 
 @Get('/events')
-events(@Req() c: any) {
+events(ctx: Context) {
   return sse(c, (stream) => {
     stream.send({ data: 'hello' });
     // ... any async logic
@@ -124,7 +124,7 @@ The browser's `EventSource` reconnects automatically and sends a
 
 ```ts
 @Get('/events')
-events(@Req() c: any) {
+events(ctx: Context) {
   const lastId = getLastEventId(c);
   return sse(c, async (stream) => {
     // 1. Replay missed events.
