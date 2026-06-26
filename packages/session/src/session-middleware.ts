@@ -1,13 +1,31 @@
 /**
- * Session middleware — AdonisJS-style session API on `ctx.var.session`.
+ * Session middleware — AdonisJS-style session API on `c.session`.
  *
- *   app.server.app.use('*', sessionMiddleware(sessions));
+ * Usage:
  *
- * Then in controllers (standard decorator mode):
+ *   // 1. Create middleware and pass via Application() options
+ *   //    (REQUIRED — must register BEFORE routes).
+ *
+ *   import { SessionContext } from '@nexusts/session';
+ *
+ *   const app = new Application(AppModule, {
+ *     middleware: [sessionMiddleware(sessions)],
+ *   });
+ *
+ *   // 2. In controllers, use `c.session.get/set` directly:
+ *
  *   @Get('/cart')
  *   cart(ctx: Context) {
- *     const s = ctx.var.session;
- *     return s.get('cart', []);
+ *     const cart = (ctx as any).session.get('cart', []);
+ *     return cart;
+ *   }
+ *
+ *   @Post('/cart/add')
+ *   async add(ctx: Context) {
+ *     const cart = (ctx as any).session.get('cart', []);
+ *     cart.push(await ctx.req.json());
+ *     (ctx as any).session.set('cart', cart);
+ *     return { ok: true };
  *   }
  */
 
@@ -103,6 +121,12 @@ export function sessionMiddleware(
 		const sessionCtx = new SessionContext(sessions, record);
 		c.set("nexus", { user: record });
 		c.set("session", sessionCtx);
+		// Add c.session getter for AdonisJS-style access
+		Object.defineProperty(c, "session", {
+			get() { return this.get("session"); },
+			configurable: true,
+			enumerable: true,
+		});
 
 		await next();
 
