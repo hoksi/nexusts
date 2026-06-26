@@ -464,7 +464,7 @@ These classic NestJS-style parameter decorators continue to work in legacy mode 
 | `@Res()`     | Hono response                                 | `ctx.res` |
 | `@Next()`    | next() callback (for middleware-style)       | N/A |
 | `@User()`    | Authenticated user (set by auth middleware)   | `ctx.var.user` |
-| `@Session()`  | Cookie session (set by sessionMiddleware)    | `ctx.var.session` |
+| `@Session()`  | Cookie session (legacy, `experimentalDecorators`) | `ctx.session` (standard mode) |
 
 With standard decorators, the controller method receives `ctx: Context` (Hono context) directly and accesses request data through it:
 

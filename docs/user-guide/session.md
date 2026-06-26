@@ -35,19 +35,29 @@ export class AppModule {}
 ```
 
 ```ts
+// app/main.ts — MUST register middleware via Application() options
+import { Application } from '@nexusts/core';
+import { SessionModule, SessionService, sessionMiddleware } from '@nexusts/session';
+
+const app = new Application(AppModule, {
+  middleware: [sessionMiddleware(sessions)],
+});
+```
+
+```ts
 // app/controllers/cart.controller.ts
-import { Controller, Post, Body } from '@nexusts/core';
-import { SessionService, Session } from '@nexusts/session';
+import { Controller, Post } from '@nexusts/core';
+import { SessionModule } from '@nexusts/session';
+import type { Context } from 'hono';
 
 @Controller('/cart')
 export class CartController {
   @Post('/')
   async add(ctx: Context) {
-    const session = ctx.var?.nexus?.session;
-    const body = await ctx.req.json() as { item: string };
-    const cart = (session?.data.cart ?? []) as string[];
+    const cart = ctx.session.get('cart', []) as string[];
     cart.push(body.item);
-    return this.sessions.update(session.id, { dataPatch: { cart } });
+    ctx.session.set('cart', cart);
+    return { ok: true };
   }
 }
 ```
@@ -205,51 +215,81 @@ const record = SessionService.decodeCookie(cookieValue, secret);
 
 ---
 
-## 5. `@Session` decorator
+## 5. `ctx.session` API (AdonisJS-style, recommended)
+
+The session middleware provides an AdonisJS-style `ctx.session` API
+with `get`/`set`/`forget`/`flash` methods. No decorator needed.
+
+```ts
+@Get('/profile')
+profile(ctx: Context) {
+  return ctx.session.all();
+}
+
+@Get('/admin')
+admin(ctx: Context) {
+  if (!ctx.session.get('role')) return ctx.json({ error: 'Forbidden' }, 403);
+  return ctx.session.get('data');
+}
+
+@Post('/cart/add')
+async add(ctx: Context) {
+  const cart = ctx.session.get('cart', []) as string[];
+  cart.push(await ctx.req.json());
+  ctx.session.set('cart', cart);
+  return { ok: true };
+}
+```
+
+### SessionContext API
+
+| Method | Description |
+|--------|-------------|
+| `get(key, default?)` | Read a value from session data |
+| `set(key, value)` | Write a value |
+| `forget(key)` | Remove a key |
+| `flash(key, value)` | Set a one-time value (auto-removed after read) |
+| `all()` | Get all session data as object |
+| `id` | Current session ID (string) |
+| `userId` | Current user ID (string or null) |
+
+### Middleware registration
+
+The session middleware MUST be registered via `Application()` options
+because Hono processes middleware in registration order:
+
+```ts
+// ✅ Correct — registered BEFORE routes
+const app = new Application(AppModule, {
+  middleware: [sessionMiddleware(sessions)],
+});
+
+// ❌ Won't work — `app.server.app.use()` runs AFTER routes
+app.server.app.use("*", sessionMiddleware(sessions));
+```
+
+### Legacy: `@Session()` decorator (parameter decorator)
+
+The `@Session()` parameter decorator continues to work in legacy mode
+(`experimentalDecorators: true`). In standard decorator mode, use
+`ctx.session` instead.
 
 ```ts
 @Get('/profile')
 profile(@Session() session: SessionRecord) {
   return session.data;
 }
-
-@Get('/admin')
-admin(@Session({ required: true, role: 'admin' }) s) {
-  return s;
-}
 ```
 
-Options:
-
-| Key | Default | Effect |
-| --- | ------- | ------ |
-| `required` | `false` | Throw 401 if no session is present |
-| `assert` | none | Throw 403 if `assert(session)` returns false |
-| `touch` | `false` | Refresh `lastSeenAt` on each access |
-
-The decorator reads from `c.var.nexus.user`. The session package ships
-a built-in middleware that decodes the cookie and populates this field:
-
-```ts
-// main.ts
-import { SessionService, sessionMiddleware } from "@nexusts/session";
-
-const sessions = app.container.resolve(SessionService.TOKEN) as SessionService;
-app.server.app.use("*", sessionMiddleware(sessions));
-```
-
-You can also customize the cookie name:
-
-```ts
-app.server.app.use("*", sessionMiddleware(sessions, { cookieName: "my_sid" }));
-```
+Options: `required`, `assert`, `touch` — see `SessionOptions` type.
 
 ---
 
 ## 6. Cookie issuance
 
 When the backend is `cookie`, the `SessionService` exposes helpers
-to build a `Set-Cookie` header:
+to build a `Set-Cookie` header. The middleware sets this automatically
+via `sessionCtx.save(c)`, but you can also do it manually:
 
 ```ts
 class AuthController {
@@ -266,8 +306,8 @@ class AuthController {
   }
 
   @Post('/logout')
-  async logout(@Session() session) {
-    await this.sessions.destroy(session.id, 'logout');
+  async logout(ctx: Context) {
+    await this.sessions.destroy(ctx.session.id, 'logout');
     const clearCookie = this.sessions.buildClearCookie();
     return new Response(null, {
       status: 204,

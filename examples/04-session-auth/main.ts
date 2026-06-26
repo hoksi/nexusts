@@ -1,23 +1,28 @@
+/**
+ * 04-session-auth — cookie-based session demonstration.
+ *
+ *   POST /login     { "user": "alice" }     → stores in session
+ *   GET  /profile                           → reads session.user
+ *   GET  /logout                            → clears session
+ *
+ * Run: bun main.ts
+ * Test:
+ *   curl -c /tmp/c.txt -b /tmp/c.txt -X POST -d "user=alice" http://localhost:3000/login
+ *   curl -c /tmp/c.txt -b /tmp/c.txt http://localhost:3000/profile
+ *   curl -c /tmp/c.txt -b /tmp/c.txt http://localhost:3000/logout
+ */
+
+// The example runs in legacy decorator mode (see tsconfig.json written by the smoke test).
+// In this mode, the @Session() parameter decorator works.
+//
+// For standard decorator mode (Bun default), use ctx.session instead:
+//   ctx.session.get("user") / ctx.session.set("key", val)
+
 import {
   Application, Controller, Get, Post, Module, Inject, Injectable,
 } from "@nexusts/core";
-import {
-  SessionService, SessionModule, sessionMiddleware, Session,
-} from "@nexusts/session";
+import { SessionService, SessionModule, Session } from "@nexusts/session";
 import type { Context } from "hono";
-
-/**
- * 04-session-auth — cookie-based session login.
- *
- *   POST /login     { "user": "alice" }     → sets sid cookie
- *   GET  /profile                           → reads session.user
- *   GET  /logout                            → clears sid cookie
- *
- *   Try:
- *     curl -i -X POST http://localhost:3000/login -d 'user=alice' -c /tmp/c.txt
- *     curl http://localhost:3000/profile -b /tmp/c.txt
- *     curl -i http://localhost:3000/logout -b /tmp/c.txt
- */
 
 @Injectable()
 @Controller("/")
@@ -30,21 +35,23 @@ class AuthController {
     if (!body.user || body.user.length === 0) {
       return ctx.text("Invalid", 400);
     }
-    const sid = this.sessions.create({ data: { user: body.user } });
-    ctx.header("Set-Cookie", `sid=${sid}; HttpOnly; Path=/; Max-Age=86400`);
-    return ctx.json({ ok: true, user: body.user });
+    // Create session record
+    const sid = await this.sessions.create({ data: { user: body.user } });
+    ctx.header("Set-Cookie", `sid=${sid.id}; HttpOnly; Path=/; Max-Age=86400`);
+    return { ok: true, user: body.user };
   }
 
   @Get("/profile")
   profile(ctx: Context) {
-    const session = (ctx as any).var?.nexus?.session;
-    return { user: session?.data?.user ?? null };
+    // Access via c.var.nexus.user (populated by sessionMiddleware)
+    const nexus = (ctx as any).var?.nexus;
+    return { user: nexus?.session?.data?.user ?? null };
   }
 
   @Get("/logout")
   logout(ctx: Context) {
     ctx.header("Set-Cookie", "sid=; HttpOnly; Path=/; Max-Age=0");
-    return ctx.json({ ok: true });
+    return { ok: true };
   }
 }
 
@@ -60,11 +67,21 @@ class AuthController {
 class AppModule {}
 
 const app = new Application(AppModule);
-
-// Built-in session middleware — no custom code needed.
-// It reads the `sid` cookie and populates `c.var.nexus.session`.
 const sessions = app.container.resolve(SessionService.TOKEN) as SessionService;
-app.server.app.use("*", sessionMiddleware(sessions));
+app.server.app.use("*", async (c, next) => {
+  const cookie = c.req.header("cookie") ?? "";
+  const match = cookie.match(/sid=([^;]+)/);
+  if (match) {
+    try {
+      const record = sessions.decodeCookie(decodeURIComponent(match[1]));
+      if (record) {
+        c.set("nexus", { user: record });
+        c.set("session", record);
+      }
+    } catch { /* ignore */ }
+  }
+  await next();
+});
 
 const port = Number(process.env.PORT ?? 3000);
 await app.listen(port);

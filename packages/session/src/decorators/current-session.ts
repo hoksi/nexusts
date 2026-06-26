@@ -1,12 +1,18 @@
 /**
- * `@Session()` — controller parameter decorator that injects the
- * current session record (or null when unauthenticated).
+ * `@Session()` — controller parameter decorator (legacy) that injects
+ * the current session record (or null when unauthenticated).
  *
- * Mirrors `@CurrentUser()` from `@nexusts/auth` (shorter name follows
- * the same convention as `@Req()` / `@Body()` / `@Ctx()` — the most
- * common request decorator).
+ * NOTE: In standard decorator mode (v0.9+, Bun default), parameter
+ * decorators are not supported. Use `ctx.session` instead:
  *
- * Usage:
+ *   @Get('/profile')
+ *   profile(ctx: Context) {
+ *     return ctx.session.all();
+ *   }
+ *
+ * This decorator only works with `experimentalDecorators: true`.
+ *
+ * Usage (legacy mode):
  *   @Get('/profile')
  *   me(@Session() session: SessionRecord) {
  *     return session;

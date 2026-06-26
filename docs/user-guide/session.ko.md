@@ -193,44 +193,56 @@ const record = SessionService.decodeCookie(cookieValue, secret);
 
 ---
 
-## 5. `@Session` 데코레이터
+## 5. `ctx.session` API (AdonisJS 스타일, 권장)
+
+세션 미들웨어는 AdonisJS 스타일의 `ctx.session` API를 제공합니다.
+`get`/`set`/`forget`/`flash` 메서드로 세션 데이터를 읽고 쓸 수 있습니다.
 
 ```ts
 @Get('/profile')
-profile(@Session() session: SessionRecord) {
-  return session.data;
+profile(ctx: Context) {
+  return ctx.session.all();
 }
 
-@Get('/admin')
-admin(@Session({ required: true, role: 'admin' }) s) {
-  return s;
+@Post('/cart/add')
+async add(ctx: Context) {
+  const cart = ctx.session.get('cart', []) as string[];
+  cart.push(await ctx.req.json());
+  ctx.session.set('cart', cart);
+  return { ok: true };
 }
 ```
 
-옵션:
+### SessionContext API
 
-| 키 | 기본값 | 효과 |
-| --- | ------- | ------ |
-| `required` | `false` | 세션이 없으면 401 throw |
-| `assert` | 없음 | `assert(session)`이 false면 403 throw |
-| `touch` | `false` | 액세스마다 `lastSeenAt` 갱신 |
+| 메서드 | 설명 |
+|--------|------|
+| `get(key, default?)` | 세션 데이터 읽기 |
+| `set(key, value)` | 값 쓰기 |
+| `forget(key)` | 키 삭제 |
+| `flash(key, value)` | 일회성 값 (읽힌 후 자동 삭제) |
+| `all()` | 전체 데이터를 객체로 반환 |
+| `id` | 세션 ID |
+| `userId` | 사용자 ID |
 
-데코레이터는 `c.var.nexus.user`를 읽습니다. 세션 패키지에
-내장된 미들웨어가 쿠키를 디코딩하여 이 필드를 채웁니다:
+### 미들웨어 등록
+
+세션 미들웨어는 반드시 `Application()` 옵션으로 등록해야 합니다:
 
 ```ts
 // main.ts
-import { SessionService, sessionMiddleware } from "@nexusts/session";
+import { Application } from '@nexusts/core';
+import { SessionModule, SessionService, sessionMiddleware } from '@nexusts/session';
 
-const sessions = app.container.resolve(SessionService.TOKEN) as SessionService;
-app.server.app.use("*", sessionMiddleware(sessions));
+const app = new Application(AppModule, {
+  middleware: [sessionMiddleware(sessions)],
+});
 ```
 
-쿠키 이름을 변경하려면:
+### 레거시: `@Session()` 데코레이터
 
-```ts
-app.server.app.use("*", sessionMiddleware(sessions, { cookieName: "my_sid" }));
-```
+`@Session()` 파라미터 데코레이터는 레거시 모드(`experimentalDecorators: true`)에서
+계속 동작합니다. 표준 데코레이터 모드에서는 `ctx.session`을 사용하세요.
 
 ---
 

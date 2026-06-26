@@ -37,7 +37,7 @@ sits *alongside* `@nexusts/auth`. Users who don't need it pay no cost
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                      User code                                │
-│   @Session() session                                  │
+│   ctx.session.get('cart') / .set('key', val)                   │
 │   sessions.update(id, { dataPatch: { cart } })               │
 └──────────────────────────────────────────────────────────────┘
                               │
