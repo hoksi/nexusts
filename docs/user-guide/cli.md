@@ -18,8 +18,12 @@ The CLI is part of the `@nexusts/core` package — no extra dependency:
 bun add @nexusts/cli zod hono
 ```
 
-After install, `bunx nx ...` works automatically via the `bin` entry
-in `@nexusts/package.json`.
+After install, `bun nx ...` (or `bun run nx`, `bunx nx`, `npx nx`) works via
+the `bin` entry. Scaffolded projects also include a `"nx": "nx"` script
+in `package.json`, so `bun nx <command>` is the shortest form.
+
+> **Usage**: All examples use `nx <command>` for brevity.
+> In your project, run `bun nx <command>`, `bun run nx <command>`, or `bunx nx <command>`.
 
 ---
 

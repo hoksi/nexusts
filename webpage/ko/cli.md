@@ -10,15 +10,20 @@ description: NexusTS CLI (nx) 명령어 참조
 ## 기본 사용법
 
 ```bash
-nx <command> [args...]
+bun nx <command> [args...]
 
-# 도움말
-nx help
-nx <command> --help
+# 도움말 보기
+bun nx help
+bun nx <command> --help
 
-# 버전
-nx --version
+# 버전 확인
+bun nx --version
 ```
+
+> 아래 예제는 간결성을 위해 `nx <명령어>`로 표기합니다.
+> 실제로는 `bun nx <명령어>`, `bun run nx <명령어>`, 또는 `bunx nx <명령어>`로 실행하세요.
+> 스캐폴드된 프로젝트는 `package.json`에 `"nx": "nx"` 스크립트가 포함되어
+> 있어 `bun nx <명령어>`가 가장 짧은 형태입니다.
 
 ## 프로젝트 명령어
 

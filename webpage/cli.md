@@ -10,15 +10,20 @@ The `nx` CLI is NexusTS' command runner, inspired by AdonisJS Ace and Laravel Ar
 ## Global Usage
 
 ```bash
-nx <command> [args...]
+bun nx <command> [args...]
 
 # Show help
-nx help
-nx <command> --help
+bun nx help
+bun nx <command> --help
 
 # Show version
-nx --version
+bun nx --version
 ```
+
+> All examples below use `nx <command>` for brevity. Run `bun nx <command>`,
+> `bun run nx <command>`, or `bunx nx <command>` in your project.
+> Scaffolded projects include `"nx": "nx"` in `package.json` scripts,
+> so `bun nx <command>` is the shortest form.
 
 ## Project Commands
 
