@@ -13,6 +13,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.6] — 2026-06-26
+
+### 추가
+
+- **SSE `onAbort()` 별칭**: `SseStream`에 `onAbort()` 메서드 추가
+  (`onClose()`로 위임). `SseStreamController` 인터페이스에도 `onAbort()` 추가.
+  SSE types에서 미사용 `safeHasMeta` import 제거.
+
+- **SSE 데코레이터 예제**: `examples/11-sse`에 `@SseEventMeta` 데코레이터
+  데모, `getLastEventId()` 엔드포인트, 인터랙티브 HTML 대시보드 추가.
+
+### 수정
+
+- **reflect-metadata 인라인 폴리필**: `@nexusts/core/di/safe-reflect`에서
+  동적 import를 인라인 폴리필로 대체. 외부 `reflect-metadata` 패키지 불필요.
+  `getMetadata`, `defineMetadata`, `hasMetadata`, `deleteMetadata`,
+  `metadata()`, `getOwnMetadata` 메서드 제공. root devDependencies에서
+  `reflect-metadata` 제거.
+
+- **WebSocket 데코레이터 듀얼모드**: `@WebSocketGateway`,
+  `@OnWebSocketOpen`/`@OnWebSocketMessage`/`@OnWebSocketClose`가
+  TC39 표준 데코레이터 모드 + 레거시 폴백 지원.
+
+- **WebSocket 클라이언트 ID 문제**: Hono `WSContext` 인스턴스마다
+  `__clientId`가 소실되는 문제 수정. ID를 `wsCtx.raw.__clientId`
+  (raw Bun WebSocket)에 저장하여 모든 WSContext에서 공유.
+  메시지가 발신자에게만 전송되는 버그 해결.
+
+- **bunAdapter env 전달**: `bunAdapter()`가 Bun 서버 객체를
+  `{ server }`로 Hono의 `app.fetch()`에 전달하도록 수정.
+  Hono `upgradeWebSocket` 미들웨어를 통한 WebSocket 업그레이드 가능.
+
+- **Application.listen()**: `{ port, websocket }` 객체를 받아
+  `Bun.serve()`에 websocket config 전달 지원.
+
+- **examples/10-websocket**: `createBunWebSocket()` 직접 사용 +
+  수동 `Bun.serve()` 연결로 재작성. `client.html` 제거 (인라인 HTML).
+  `import 'reflect-metadata'` 제거.
+
+- **examples/11-sse**: 표준 데코레이터 패턴 (`ctx: Context`)으로 업데이트.
+  `@SseEventMeta` 데코레이터 데모 추가.
+
+---
+
 ## [0.9.5] — 2026-06-26
 
 ### 추가

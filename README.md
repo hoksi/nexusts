@@ -22,8 +22,9 @@
   <a href="https://github.com/nexus-ts/nexusts/blob/main/CHANGELOG.md">📝 Changelog</a>
 </p>
 
-> **v0.9.5 — Kysely + standard decorators.** TC39 standard ES
-> decorators, no reflect-metadata. Field injection, `ctx.req.*` methods.
+> **v0.9.6 — Reflect polyfill + SSE/WS fixes.** TC39 standard ES
+> decorators, no reflect-metadata, inline polyfill. Field injection,
+> `ctx.req.*` methods.
 > 33 independent modules. See [CHANGELOG.md](./CHANGELOG.md) for details.
 
 ---
@@ -1169,7 +1170,11 @@ v1.0, only major bumps will.
 - **v0.8.3** (2026-06-25) — Static analysis CI (Biome lint + tsc typecheck). **32 modules**: `@nexusts/feature-flag` (canary / A–B testing, rollout %, allowlist/denylist), `@nexusts/cache` Redis backend, `@nexusts/drizzle` seeding `Factory<T>`.
 - **v0.8.4** (2026-06-25) — Inertia v3 scaffold (React/Vue SSR with `nx init`/`nx new`), CLI input validation & `--no-interaction` fix, `InertiaConfig.scripts` for client script injection, scaffold deduplication to `scaffold.ts`. `@inertiajs/react`/`@inertiajs/vue3` `^3.0.0`.
 - **v0.9.0** (2026-06-25) — **Standard decorator migration.** Migrate from legacy `experimentalDecorators` to TC39 standard ES decorators. Remove `reflect-metadata` dependency (~16KB savings). Field injection (`@Inject(Token) declare field: Type`) instead of constructor injection. `ctx.req.*` methods instead of `@Param`/`@Body`/`@Query` parameter decorators. Dual-mode backward compatibility with legacy decorator code. See [migration guide](./docs/design/standard-decorators-migration.md).
-- **v0.9.5** (2026-06-26) — **Kysely first-party module.** `@nexusts/kysely` with `KyselyService`, `KyselyRepository` (Lucid-style), `KyselyModule.forRoot()`, built-in Migrator. CLI integration: `nx db:generate`/`db:migrate --orm kysely`, `make:crud`/`make:model`/`make:migration` Kysely templates. `BunSqliteDialect` for bun:sqlite. **33 modules.** Prisma removed from CLI options.
+- **v0.9.5** (2026-06-25) — **Kysely first-party module.** `@nexusts/kysely`
+- **v0.9.6** (2026-06-26) — **Reflect polyfill + SSE/WS fixes.** Inline
+  Reflect Metadata polyfill (no npm package needed). WebSocket decorators
+  dual-mode (`@WebSocketGateway`, `@OnWebSocket*`). SSE `onAbort()` alias.
+  WS client ID persistence fix. `bunAdapter` WebSocket env fix. with `KyselyService`, `KyselyRepository` (Lucid-style), `KyselyModule.forRoot()`, built-in Migrator. CLI integration: `nx db:generate`/`db:migrate --orm kysely`, `make:crud`/`make:model`/`make:migration` Kysely templates. `BunSqliteDialect` for bun:sqlite. **33 modules.** Prisma removed from CLI options.
 
 ### Planned
 

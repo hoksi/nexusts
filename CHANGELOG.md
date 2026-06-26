@@ -13,6 +13,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.6] — 2026-06-26
+
+### Added
+
+- **SSE `onAbort()` alias**: `SseStream` now exposes `onAbort()` as an
+  alias for `onClose()`, so existing code using `stream.onAbort()` works
+  without crashing. Added `onAbort()` to `SseStreamController` interface.
+  Removed unused `safeHasMeta` import from SSE types.
+
+- **SSE decorator example**: `examples/11-sse` updated with
+  `@SseEventMeta` decorator demo, `getLastEventId()` endpoint,
+  and interactive HTML dashboard.
+
+### Fixed
+
+- **reflect-metadata inline polyfill**: Replaced lazy dynamic import with
+  a proper inline polyfill in `@nexusts/core/di/safe-reflect`. No external
+  `reflect-metadata` package needed. Methods: `getMetadata`, `defineMetadata`,
+  `hasMetadata`, `deleteMetadata`, `metadata()`, `getOwnMetadata`.
+  Removed `reflect-metadata` from root devDependencies.
+
+- **WebSocket decorators (dual-mode)**: `@WebSocketGateway`,
+  `@OnWebSocketOpen`/`@OnWebSocketMessage`/`@OnWebSocketClose` updated to
+  support TC39 standard decorator mode + legacy fallback.
+
+- **WebSocket client ID persistence**: Fixed `__clientId` being lost across
+  Hono `WSContext` instances. ID is now stored on `wsCtx.raw.__clientId`
+  (the raw Bun WebSocket), which is shared across all WSContext instances.
+  Fixes issue where WebSocket messages were only received by the sender.
+
+- **bunAdapter env passing**: Fixed `bunAdapter()` to pass the Bun server
+  object as `{ server }` to Hono's `app.fetch()`, enabling WebSocket upgrade
+  via Hono's `upgradeWebSocket` middleware.
+
+- **Application.listen()**: Now accepts `{ port, websocket }` object to
+  support passing websocket config for `Bun.serve()`.
+
+- **Removed unused imports**: `safe-getMeta`, `safeDefineMeta`, `safeHasMeta`,
+  `safeParamTypes` cleaned from `server.ts`.
+
+- **examples/10-websocket**: Rewritten to use `createBunWebSocket()` directly
+  with manual `Bun.serve()` wiring. Removed separate `client.html` (inline
+  HTML). Removed `import 'reflect-metadata'`.
+
+- **examples/11-sse**: Updated to standard decorator pattern (`ctx: Context`
+  instead of legacy `@Req()`). Added `@SseEventMeta` decorator demo.
+
+---
+
 ## [0.9.5] — 2026-06-26
 
 ### Added
