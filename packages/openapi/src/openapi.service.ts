@@ -196,7 +196,7 @@ export class OpenAPIService {
 
 		// 3. Request body
 		let requestBody: OpenAPIRequestBody | undefined;
-		const bodyMeta = readMethodMeta(OPENAPI_META.BODY, ctor, propKey);
+		const bodyMeta = readMethodMeta<{schema?: unknown; example?: unknown; description?: string; required?: boolean}>(OPENAPI_META.BODY, ctor, propKey);
 		if (bodyMeta?.schema || route.validation?.body) {
 			const schema = bodyMeta?.schema ?? route.validation?.body;
 			const mediaType: OpenAPIMediaType = { schema: this.toSchema(schema) };
