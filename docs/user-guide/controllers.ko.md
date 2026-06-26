@@ -86,7 +86,7 @@ const CreateUserSchema = z.object({
 
 @Controller('/users')
 export class UserController {
-  constructor(@Inject(UserService) private readonly users: UserService) {}
+  @Inject(UserService) declare private readonly users: UserService;
 
   @Get('/')
   @Validate({
@@ -120,20 +120,10 @@ export class UserController {
 }
 ```
 
-> **⚠ Bun 주의 — `@Inject` + constructor parameter property**: Bun 1.3.x에서
-> `constructor(@Inject(Svc) private svc: Svc)` 문법은 DI 토큰이 누락될 수
-> 있습니다. 아래처럼 명시적 할당을 사용하세요:
+> **ℹ 표준 데코레이터 모드 (v0.9+)**
 >
-> ```ts
-> // ✅ 권장
-> svc: Svc;
-> constructor(@Inject(Svc) svc: Svc) { this.svc = svc; }
->
-> // ⚠ Bun에서 불안정
-> @Inject(Svc) declare svc: Svc;
-> ```
->
-> 자세한 내용: [`common-pitfalls.ko.md §7`](./common-pitfalls.ko.md).
+> 생성자 인젝션 대신 필드 인젝션(`@Inject(Svc) declare svc: Svc`)을
+> 사용하세요. 표준 ES 데코레이터 모드에서 안정적으로 동작합니다.
 
 ### 1.2 Adonis 스타일
 
@@ -402,7 +392,7 @@ const CreateUserSchema = z.object({
 
 @Controller('/users')
 export class UserController {
-  constructor(@Inject(UserService) private readonly users: UserService) {}
+  @Inject(UserService) declare private readonly users: UserService;
 
   @Get('/')
   list() {

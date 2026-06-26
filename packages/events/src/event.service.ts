@@ -28,10 +28,11 @@ export class EventService {
 	/** DI token — use with `@Inject(EventService.TOKEN)`. */
 	static readonly TOKEN = Symbol.for('nexus:EventService');
 
+	@Inject('EVENTS_CONFIG') declare private readonly config: EventsConfig;
 	readonly emitter: EventEmitter;
 
-	constructor(@Inject('EVENTS_CONFIG') private readonly config: EventsConfig = {}) {
-		this.emitter = new NexusEventEmitter(config);
+	constructor() {
+		this.emitter = new NexusEventEmitter(this.config);
 	}
 
 	// ===========================================================================

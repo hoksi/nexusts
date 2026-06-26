@@ -1063,7 +1063,7 @@ import { WebSocketModule, WebSocketService, WebSocketGateway, OnWebSocketOpen, O
 @Injectable()
 @WebSocketGateway("/ws")
 class ChatGateway {
-  constructor(@Inject(WEBSOCKET_SERVICE_TOKEN) private ws: WebSocketService) {}
+  @Inject(WEBSOCKET_SERVICE_TOKEN) declare private ws: WebSocketService;
 
   @OnWebSocketOpen()
   onOpen(client: WebSocketClient) { this.ws.joinRoom(client, "lobby"); }
@@ -1145,14 +1145,15 @@ import { Inject, Injectable, REQUEST, getRequest, getRequestScope } from "@nexus
 class RequestContext {
   id = crypto.randomUUID();
   userId: string | null = null;
-  constructor(@Inject(REQUEST) public req: any) { /* ... */ }
+  @Inject(REQUEST) declare req: any;
+  constructor() { /* ... */ }
 }
 
 @Injectable()
 class AuditService {
   // Same RequestContext instance shared across every consumer
   // in this request, including deep in the call tree.
-  constructor(@Inject(RequestContext) private ctx: RequestContext) {}
+  @Inject(RequestContext) declare ctx: RequestContext;
 
   log(event: string) { console.log(`[${this.ctx.id}] ${event}`); }
 }

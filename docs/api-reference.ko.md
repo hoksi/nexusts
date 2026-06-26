@@ -510,12 +510,13 @@ import { Inject, Injectable, REQUEST, getRequest } from "@nexusts/core";
 @Injectable({ scope: "request" })
 class RequestContext {
   id = crypto.randomUUID();
-  constructor(@Inject(REQUEST) public req: any) { /* ... */ }
+  @Inject(REQUEST) declare req: any;
+  constructor() { /* ... */ }
 }
 
 @Injectable()
 class AuditService {
-  constructor(@Inject(RequestContext) private ctx: RequestContext) {}
+  @Inject(RequestContext) declare ctx: RequestContext;
   log(event: string) { console.log(`[${this.ctx.id}] ${event}`); }
 }
 ```

@@ -15,7 +15,7 @@ import { Inertia, lazy } from '@/view/inertia';
 
 @Controller('/lazy')
 class LazyController {
-  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}
+  @Inject(Inertia.TOKEN) declare private inertia: Inertia;
 
   /** Two props share the same `tag` — both should receive the same value. */
   @Get('/shared')
@@ -97,7 +97,7 @@ class CountingController {
   // Stash the counter on the class so tests can read it back.
   static calls = 0;
 
-  constructor(@Inject(Inertia.TOKEN) public inertia: Inertia) {}
+  @Inject(Inertia.TOKEN) declare public inertia: Inertia;
 
   @Get('/')
   count() {

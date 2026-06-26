@@ -8,7 +8,7 @@
  *   - Allows tests to swap the implementation via DI.
  *
  * Usage:
- *   constructor(@Inject(AuthService.TOKEN) private auth: AuthService) {}
+ *   @Inject(AuthService.TOKEN) declare private auth: AuthService;
  *
  *   await this.auth.signUp.email({ email, password, name });
  *   const session = await this.auth.getSession({ headers: c.req.raw.headers });

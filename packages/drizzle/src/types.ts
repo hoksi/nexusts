@@ -12,7 +12,7 @@ import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-
  *   })
  *
  *   class UserService {
- *     constructor(@Inject(DrizzleService.TOKEN) private db: DrizzleService) {}
+ *     @Inject(DrizzleService.TOKEN) declare private db: DrizzleService;
  *     list() { return this.db.select().from(users).all(); }
  *   }
  *

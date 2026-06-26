@@ -3,7 +3,7 @@
  * registry. Exposed via DI so multiple parts of an app can share
  * the same circuit for an external dependency.
  *
- *   constructor(@Inject(ResilienceService.TOKEN) private r: ResilienceService) {}
+ *   @Inject(ResilienceService.TOKEN) declare private r: ResilienceService;
  *
  *   const cb = this.r.getOrCreateCircuit("stripe", { threshold: 0.5 });
  *   const result = await cb.execute(() => stripeApi.charge(...));

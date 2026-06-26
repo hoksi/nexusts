@@ -25,7 +25,7 @@ class CounterService {
 
 @Controller('/count')
 class CountController {
-  constructor(@Inject(CounterService) private svc: CounterService) {}
+  @Inject(CounterService) declare private svc: CounterService;
 
   @Get('/')
   index() {

@@ -325,9 +325,9 @@ Break a cycle by introducing a factory:
 ```ts
 // Before: A imports B, B imports A → cycle.
 @Injectable()
-class A { constructor(@Inject(B) b: B) {} }
+class A { @Inject(B) declare b: B; }
 @Injectable()
-class B { constructor(@Inject(A) a: A) {} }
+class B { @Inject(A) declare a: A; }
 
 // After: B receives A via a forward-reference factory.
 @Injectable()

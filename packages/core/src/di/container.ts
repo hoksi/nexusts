@@ -224,8 +224,8 @@ export class DIContainer {
 				name === "undefined" || name === ""
 					? " Possible cause: @Inject on a constructor parameter property " +
 					  "(e.g. `constructor(@Inject(Svc) private svc: Svc)`) can cause " +
-					  "Bun to lose the token — use explicit assignment instead: " +
-					  "`svc: Svc; constructor(@Inject(Svc) svc: Svc) { this.svc = svc; }`."
+					  "Bun to lose the token — use field injection instead: " +
+					  "`@Inject(Svc) declare svc: Svc;`."
 					: "";
 			throw new Error(
 				`No provider for "${name}". ` +
@@ -309,7 +309,7 @@ export class DIContainer {
 							`reflect-metadata was not emitted by your toolchain (Bun's ` +
 							`native transpiler doesn't emit decorator metadata). Use the ` +
 							`@Inject(Token) parameter decorator to specify the dependency ` +
-							`explicitly, e.g. \`constructor(@Inject(UserService) private users: UserService)\`.`,
+							`explicitly, e.g. \`@Inject(UserService) declare users: UserService\`.`,
 					);
 				}
 				params[index] = this.resolve(type);

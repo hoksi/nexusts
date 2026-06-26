@@ -368,7 +368,7 @@ describe("Controller + DI integration", () => {
 
 		@Controller("/")
 		class TestCtrl {
-			constructor(@Inject(Greeter) private greeter: Greeter) {}
+			@Inject(Greeter) declare private greeter: Greeter;
 			@Get("/:name")
 			greet(@Param("name") name: string) {
 				return { msg: this.greeter.greet(name) };

@@ -21,7 +21,7 @@ import { Inertia } from '@/view/inertia';
 
 @Controller('/users')
 class UsersFormController {
-  constructor(@Inject(Inertia.TOKEN) private inertia: Inertia) {}
+  @Inject(Inertia.TOKEN) declare private inertia: Inertia;
 
   @Get('/create')
   createForm() {

@@ -264,9 +264,9 @@ Error: Circular dependency detected for token "A"
 ```ts
 // 이전: A가 B를 import, B가 A를 import → 사이클.
 @Injectable()
-class A { constructor(@Inject(B) b: B) {} }
+class A { @Inject(B) declare b: B; }
 @Injectable()
-class B { constructor(@Inject(A) a: A) {} }
+class B { @Inject(A) declare a: A; }
 
 // 이후: B는 forward-reference 팩토리를 통해 A를 받음.
 @Injectable()

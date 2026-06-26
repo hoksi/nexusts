@@ -37,10 +37,7 @@ export class ResilienceAdminModule {
 
 		@Controller(prefix)
 		class ResilienceAdminController {
-			_svc: ResilienceService;
-			constructor(@Inject(ResilienceService.TOKEN) svc: ResilienceService) {
-				this._svc = svc;
-			}
+			@Inject(ResilienceService.TOKEN) declare private _svc: ResilienceService;
 
 			@Get("/circuits")
 			listCircuits() {

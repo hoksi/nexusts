@@ -14,7 +14,7 @@
  *
  * @Injectable({ scope: 'request' })
  * class RequestContext {
- *   constructor(@Inject(REQUEST) private req: any) {}
+ *   @Inject(REQUEST) declare private req: any;
  * }
  * ```
  */

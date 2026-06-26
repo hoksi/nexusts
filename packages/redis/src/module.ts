@@ -14,7 +14,7 @@
  *
  *   @Injectable()
  *   class UserService {
- *     constructor(@Inject(REDIS_CLIENT_TOKEN) private redis: RedisClient) {}
+ *     @Inject(REDIS_CLIENT_TOKEN) declare private redis: RedisClient;
  *     async countVisits(userId: string) {
  *       return this.redis.incr(`visits:${userId}`, 1, { ex: 60 * 60 });
  *     }

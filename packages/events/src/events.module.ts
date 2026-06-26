@@ -11,7 +11,7 @@
  *   // any service
  *   @Injectable()
  *   class EmailListeners {
- *     constructor(@Inject(EventService.TOKEN) private events: EventService) {}
+ *     @Inject(EventService.TOKEN) declare private events: EventService;
  *
  *     @OnEvent('user.created')
  *     async onUserCreated(p: { email: string }) {
