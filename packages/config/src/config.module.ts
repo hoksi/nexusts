@@ -33,7 +33,6 @@
 import { Module } from "@nexusts/core";
 import { ConfigService } from "./config.service.js";
 import type { ConfigOptions } from "./types.js";
-import { safeGetMeta, safeDefineMeta, safeHasMeta } from "@nexusts/core/di/safe-reflect";
 
 @Module({
 	providers: [
