@@ -128,6 +128,7 @@ export function buildPackageJson(
  */
 export function generateNxConfig(target: string, opts: ScaffoldOptions): void {
 	const code = render(templates.project["nx.config.ts"], {
+		runtime: opts.runtime,
 		routing: opts.routing,
 		view: opts.view,
 		viewPaths: opts.view === "none" ? "" : "resources/views",
@@ -144,12 +145,10 @@ export function generateNxConfig(target: string, opts: ScaffoldOptions): void {
 /**
  * Generate a drizzle.config.ts file (only when ORM is drizzle).
  */
-export function generateDrizzleConfig(target: string, db: string, dbUrl: string): void {
-	const dialect = db === "sqlite" || db === "sqlite" 
-		? "sqlite"
-		: db === "postgres"
-			? "postgresql"
-			: "mysql";
+export function generateDrizzleConfig(target: string, db: string, dbUrl: string, runtime?: string): void {
+	const dialect = db !== "sqlite"
+		? db === "postgres" ? "postgresql" : "mysql"
+		: runtime === "cloudflare" ? "d1" : "sqlite";
 	const code = render(templates.project["drizzle.config.ts"], {
 		dialect,
 		dbUrl: dbUrl || "app.db",
@@ -303,7 +302,7 @@ export function generateProjectFiles(target: string, opts: ScaffoldOptions): str
 		}
 
 	if (opts.orm === "drizzle") {
-		generateDrizzleConfig(target, opts.db, opts.dbUrl);
+		generateDrizzleConfig(target, opts.db, opts.dbUrl, opts.runtime);
 	}
 
 	write("README.md",
