@@ -81,7 +81,7 @@ nexusts/                          # Monorepo root
 │   └── clean-examples.sh         # Kills leftover example processes + port 3000
 ├── build.ts                      # Per-package Bun.build + tsc loop
 ├── package.json                  # Workspace root (npm workspaces: "packages/*")
-├── tsconfig.json                 # Root config (uses experimentalDecorators + useDefineForClassFields:false)
+├── tsconfig.json                 # Root config (standard decorators; useDefineForClassFields:false for Bun compat)
 └── vitest.config.ts              # Vitest with @nexusts/* → packages/*/src aliases
 ```
 
