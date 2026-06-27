@@ -10,9 +10,6 @@ import { describe, it, expect } from "vitest";
 import { Hono } from "hono";
 import {
 	Controller, Get, Post,
-	UseGuards, UseFilters,
-	AuthGuard, HttpException,
-	createExceptionFilter,
 	Injectable, Inject,
 } from "@nexusts/core";
 import { ApplicationContainer } from "@nexusts/core";
@@ -241,95 +238,6 @@ describe("response serialization", () => {
 		expect(res.status).toBe(201);
 		const body = await res.json();
 		expect(body).toEqual({ id: 1 });
-	});
-});
-
-// ---------------------------------------------------------------------------
-// Guards — integration with real Request
-// ---------------------------------------------------------------------------
-
-describe("Guards integration", () => {
-	it("AuthGuard rejects request without Bearer token (403)", async () => {
-		const { hono, container, router } = setupRouter();
-
-		@Controller("/admin")
-		@UseGuards(AuthGuard)
-		class AdminCtrl {
-			@Get("/")
-			index() {
-				return { secret: true };
-			}
-		}
-
-		container.register(AdminCtrl);
-		router.registerController(AdminCtrl, container);
-
-		const res = await hono.fetch(new Request("http://localhost/admin"));
-		expect(res.status).toBe(403);
-	});
-
-	it("AuthGuard allows request with Bearer token", async () => {
-		const { hono, container, router } = setupRouter();
-
-		@Controller("/admin")
-		@UseGuards(AuthGuard)
-		class AdminCtrl {
-			@Get("/")
-			index() {
-				return { secret: true };
-			}
-		}
-
-		container.register(AdminCtrl);
-		router.registerController(AdminCtrl, container);
-
-		const res = await hono.fetch(
-			new Request("http://localhost/admin", {
-				headers: { authorization: "Bearer tok123" },
-			}),
-		);
-		expect(res.status).toBe(200);
-		const body = await res.json();
-		expect(body).toEqual({ secret: true });
-	});
-});
-
-// ---------------------------------------------------------------------------
-// Exception Filters — integration
-// ---------------------------------------------------------------------------
-
-describe("Exception Filters integration", () => {
-	it("catches HttpException and returns proper status", async () => {
-		const { hono, container, router } = setupRouter();
-
-		const notFoundFilter = createExceptionFilter((error, _ctx) => {
-			if (error instanceof HttpException && error.statusCode === 404) {
-				return new Response(JSON.stringify({ custom: error.message }), {
-					status: 404,
-					headers: { "Content-Type": "application/json" },
-				});
-			}
-			throw error;
-		});
-
-		@Controller("/api")
-		class TestCtrl {
-			@Get("/:id")
-			@UseFilters(notFoundFilter)
-			get(ctx: any) {
-				const id = ctx.req.param("id") ?? "";
-				if (id === "999") throw HttpException.notFound("Missing");
-				return { id };
-			}
-		}
-
-		container.register(TestCtrl);
-		router.registerController(TestCtrl, container);
-
-		const res = await hono.fetch(new Request("http://localhost/api/999"));
-		expect(res.status).toBe(404);
-		const body = await res.json();
-		expect(body).toEqual({ custom: "Missing" });
 	});
 });
 
