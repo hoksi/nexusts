@@ -13,6 +13,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.11] — 2026-06-27
+
+### Added
+
+- **CLI `--runtime` flag**: `nx new` and `nx init` now accept
+  `--runtime bun` (default) or `--runtime cloudflare`.
+- **Runtime + db auto-mapping**: Scaffold resolves Drizzle dialect
+  from `runtime + db` combo. `runtime=cloudflare + db=sqlite` → `d1`.
+- **`NX_RUNTIME` env var**: Override runtime target via environment.
+
+### Changed
+
+- **CLI types**: `DatabaseDriver` renamed to `Database`. `d1` option
+  removed from CLI (auto-mapped via runtime).
+- **`bun-sqlite` dialect**: Replaced with `sqlite` across all packages
+  and documentation. The `drizzle-orm/bun-sqlite` npm package reference
+  is preserved internally.
+- **Sources**: Removed all `constructor(@Inject(`) patterns. All
+  services use field injection (`@Inject(Token) declare field`).
+- **`sqliteDriver`** (better-sqlite3): Removed from driver dispatch;
+  kept as re-export for API compatibility.
+
+### Fixed
+
+- **CI typecheck**: `runtime` field passed to `ScaffoldOptions` in
+  `new.ts` and `init.ts`.
+- **CLI lint**: Duplicate `case "sqlite"` in config.ts removed.
+- **Drizzle dialect type**: Removed duplicate `"sqlite"` entries in
+  `DrizzleDialect` and `ConnectionOptions` types.
+
+---
+
 ## [0.9.10] — 2026-06-27
 
 ### Changed

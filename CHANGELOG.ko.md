@@ -13,6 +13,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.11] — 2026-06-27
+
+### 추가
+
+- **CLI `--runtime` 플래그**: `nx new`/`nx init`에서 `--runtime bun` 또는
+  `--runtime cloudflare` 지원.
+- **런타임 + DB 자동 매핑**: Scaffold가 `runtime + db` 조합으로 Drizzle 방언 자동 선택.
+  `cloudflare + sqlite` → `d1`.
+- **`NX_RUNTIME` 환경변수**: 환경변수로 런타임 지정 가능.
+
+### 변경
+
+- **CLI 타입**: `DatabaseDriver` → `Database`로 이름 변경. `d1` 옵션 CLI에서 제거.
+- **`bun-sqlite` 방언**: `sqlite`로 통일. 내부적으로 `drizzle-orm/bun-sqlite` 패키지 참조 유지.
+- **생성자 인젝션 제거**: 모든 서비스가 필드 인젝션(`@Inject(Token) declare field`) 사용.
+- **`sqliteDriver`** (better-sqlite3): Driver 디스패치에서 제거 (API 호환용 re-export 유지).
+
+### 수정
+
+- **CI typecheck**: `ScaffoldOptions`에 `runtime` 필드 전달.
+- **CLI lint**: `config.ts`의 중복 `case "sqlite"` 제거.
+- **Drizzle 방언 타입**: `DrizzleDialect`/`ConnectionOptions`의 중복 `"sqlite"` 제거.
+
+---
+
 ## [0.9.10] — 2026-06-27
 
 ### 변경
