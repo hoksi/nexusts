@@ -114,15 +114,19 @@ export async function resolveProjectOption(
 		logger.warn(`"${flagVal}" is not valid for --${key}. Please choose from the list.`);
 	}
 
-	const label = key === "style"
-		? "Routing style" as const
-		: key === "view"
-			? "View engine" as const
-			: key === "orm"
-				? "ORM driver" as const
-				: key === "db"
-					? "Database driver" as const
-					: "Inertia frontend" as const;
+	const label = key === "runtime"
+		? "Runtime target" as const
+		: key === "style"
+			? "Routing style" as const
+			: key === "view"
+				? "View engine" as const
+				: key === "orm"
+					? "ORM" as const
+					: key === "db"
+						? "Database" as const
+						: key === "frontend"
+							? "Inertia frontend" as const
+							: key;
 
 	// Loop until the user provides a valid value (interactive only).
 	for (;;) {

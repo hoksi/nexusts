@@ -8,7 +8,6 @@ description: Get started with NexusTS
 ## Prerequisites
 
 - [Bun](https://bun.sh) ≥ 1.3.10
-- **Bun** ≥ 1.3.10
 
 ## Quick Start
 
