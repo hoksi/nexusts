@@ -975,7 +975,7 @@ entry point. It ships three adapters:
 |---------|-----------|-------|----------------|
 | **Rendu** (default) | `.html`, `.rendu` | PHP-style `<?= expr ?>` | Bun / Node / Cloudflare Workers |
 | **Edge** | `.edge` | Mustache-style `{{ expr }}` | Bun / Node |
-| **Eta** | `.eta` | EJS-style `<%= expr %>` | Bun / Node / Deno / Workers |
+| **Eta** | `.eta` | EJS-style `<%= expr %>` | Bun / Node /  Workers |
 
 ### Auto-detection by file extension
 

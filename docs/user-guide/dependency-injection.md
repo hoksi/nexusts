@@ -68,7 +68,7 @@ does **not** emit that metadata.
 
 NexusTS therefore standardizes on **explicit `@Inject(Token)`** on each
 parameter. This makes the framework portable across `tsc`, `ts-node`,
-Bun, and Deno.
+Bun, and Cloudflare Workers.
 
 ```ts
 // Always portable — recommended.
