@@ -954,7 +954,7 @@ class UserService {
 ```
 
 `GET /metrics` returns Prometheus 0.0.4 (or OpenMetrics 1.0.0 if
-the client requests it). Default Node.js process metrics are
+the client requests it). Default Bun process metrics are
 registered automatically.
 
 See [user-guide/metrics.md](./user-guide/metrics.md).
@@ -978,7 +978,7 @@ class AppModule {}
 Three runtime adapters:
 
 - `bun` — uses `Bun.redis` (built-in, no extra dep)
-- `node` — uses `ioredis` (optional peer dep)
+- `node` — uses `ioredis` (Bun native Redis planned)
 - `cloudflare` — uses Workers KV (no dep; for Cloudflare Workers)
 - `memory` — in-process (for tests / single-process dev)
 
@@ -1017,7 +1017,7 @@ class Ctrl {
 ```
 
 Pluralization uses `|` separator with `Intl.PluralRules`. Date /
-number / currency formatting uses Node's built-in `Intl`.
+number / currency formatting uses the built-in `Intl` API.
 
 See [user-guide/i18n.md](./user-guide/i18n.md).
 
@@ -1083,8 +1083,8 @@ const adapter = new BunWsAdapter(service);
 const { websocket } = await adapter.install(app, [ChatGateway]);
 Bun.serve({ port: 3000, fetch: app.fetch, websocket });
 
-// Node
-const adapter = new NodeWsAdapter(service);
+// Bun (primary)
+const adapter = new BunWsAdapter(service);
 const { handleUpgrade } = await adapter.bind([ChatGateway]);
 const wss = new WebSocketServer({ noServer: true });
 server.on("upgrade", (req, socket, head) => handleUpgrade(req, socket, head));
@@ -1250,10 +1250,10 @@ type ParamType   = typeof PARAM_TYPES[keyof typeof PARAM_TYPES];
 ## Runtime adapters
 
 ```ts
-function detectRuntime(): 'bun' | 'node' | 'cloudflare';
+function detectRuntime(): 'bun' | 'cloudflare';
 
 class BunRuntime       { serve(handler: (req: Request) => Promise<Response>, options?: { port?: number }): unknown; }
-class NodeRuntime      { serve(handler: (req: Request) => Promise<Response>, options?: { port?: number }): unknown; }
+class BunRuntime      { serve(handler: (req: Request) => Promise<Response>, options?: { port?: number }): unknown; }
 class CloudflareRuntime{ fetch: (req: Request, env?: any, ctx?: any) => Promise<Response>; }
 ```
 

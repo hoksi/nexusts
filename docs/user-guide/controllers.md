@@ -585,7 +585,7 @@ class FooService {
 ```
 
 This avoids the Bun 1.3.x `private readonly` decorator-dropping bug entirely
-and works across Bun, `tsc`+`node`, and `tsc`+`bun dist/`.
+and works across Bun and `tsc`+`bun dist/`.
 
 ---
 
