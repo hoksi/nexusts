@@ -7,7 +7,7 @@ description: NexusTS 시작하기
 
 ## 사전 요구사항
 
-- [Bun](https://bun.sh) ≥ 1.3.0
+- [Bun](https://bun.sh) ≥ 1.3.10
 - **Bun** ≥ 1.3.10
 
 ## 빠른 시작
