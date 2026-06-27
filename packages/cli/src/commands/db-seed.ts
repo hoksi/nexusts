@@ -117,7 +117,7 @@ export const dbSeedCommand: Command = {
 		{
 			name: "dialect",
 			description:
-				"Drizzle dialect (postgres|mysql|sqlite|bun-sqlite|d1). Default: from nx.config.ts or bun-sqlite.",
+				"Drizzle dialect (postgres|mysql|sqlite|d1). Default: from nx.config.ts or sqlite.",
 		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
@@ -130,7 +130,7 @@ export const dbSeedCommand: Command = {
 		const dialect =
 			(ctx.flags.dialect as string | undefined) ??
 			ctx.config.dialect ??
-			"bun-sqlite";
+			"sqlite";
 		const createName = ctx.flags.create as string | undefined;
 		const fileName = ctx.flags.file as string | undefined;
 		const reset = Boolean(ctx.flags.reset);

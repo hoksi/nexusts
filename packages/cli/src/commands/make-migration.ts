@@ -13,7 +13,7 @@
  * directory.
  *
  * Drizzle dialect is chosen via `--dialect` (postgres | mysql | sqlite
- * | bun-sqlite | d1) or `nx.config.ts`'s `dialect` field. Default: bun-sqlite.
+ * | sqlite | d1) or `nx.config.ts`'s `dialect` field. Default: sqlite.
  *
  * Plain SQL migrations work for any dialect that uses Drizzle's
  * migrator (postgres-js / node-postgres / mysql2 / better-sqlite3).
@@ -57,7 +57,7 @@ export const makeMigrationCommand: Command = {
 		{
 			name: "dialect",
 			description:
-				"Drizzle dialect (postgres|mysql|sqlite|bun-sqlite|d1). Default: bun-sqlite",
+				"Drizzle dialect (postgres|mysql|sqlite|d1). Default: sqlite",
 		},
 	],
 	async run(ctx: CommandContext): Promise<number> {
@@ -71,7 +71,7 @@ export const makeMigrationCommand: Command = {
 		const dialect =
 			(ctx.flags.dialect as string | undefined) ??
 			ctx.config.dialect ??
-			"bun-sqlite";
+			"sqlite";
 		const isDrizzle = orm === "drizzle";
 		const isKysely = orm === "kysely";
 		const useGenericSql =
@@ -102,7 +102,7 @@ export const makeMigrationCommand: Command = {
 		} else if (isDrizzle) {
 			if (!isValidDialect(dialect)) {
 				logger.error(
-					`Unsupported drizzle dialect: ${dialect}. Allowed: postgres, mysql, sqlite, bun-sqlite, d1.`,
+					`Unsupported drizzle dialect: ${dialect}. Allowed: postgres, mysql, sqlite, d1.`,
 				);
 				return 1;
 			}

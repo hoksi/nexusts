@@ -78,7 +78,7 @@ export const initCommand: Command = {
 		const frontend = await resolveProjectOption(ctx.flags, "frontend", VALID_PROJECT_OPTIONS.frontend, "react", interactive);
 		const ssr = !flagBool(ctx.flags, "no-ssr", false);
 		const name = target.split("/").pop() ?? "nexus-app";
-		const dbUrl = db === "bun-sqlite" || db === "sqlite" ? "app.db" : "";
+		const dbUrl = db === "sqlite" || db === "sqlite" ? "app.db" : "";
 
 		const plan: PlanEntry[] = [
 			{ path: "package.json", mode: "merge-pkg" },

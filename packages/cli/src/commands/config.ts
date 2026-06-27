@@ -16,7 +16,7 @@
  *     left alone (the user may have it intentionally).
  *
  * Typical use cases:
- *   - "I want to switch from bun-sqlite to postgres"
+ *   - "I want to switch from sqlite to postgres"
  *     → nx config --db postgres
  *   - "I want to add Drizzle to an existing project"
  *     → nx config --orm drizzle
@@ -108,7 +108,7 @@ function parseExistingConfig(path: string): NxConfigValues {
 /** Map a `db` driver name to a drizzle-kit dialect. */
 function driverToDialect(driver: string): string {
 	switch (driver) {
-		case "bun-sqlite":
+		case "sqlite":
 		case "sqlite":
 			return "sqlite";
 		case "postgres":
@@ -122,7 +122,7 @@ function driverToDialect(driver: string): string {
 
 /** Default DATABASE_URL fallback based on the driver. */
 function defaultDbUrl(driver: string): string {
-	if (driver === "bun-sqlite" || driver === "sqlite" ) {
+	if (driver === "sqlite" || driver === "sqlite" ) {
 		return "app.db";
 	}
 	return "";

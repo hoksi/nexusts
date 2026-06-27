@@ -118,7 +118,7 @@ describe("nx config — fresh install", () => {
 				"no-interaction": true,
 				view: "none",
 				orm: "drizzle",
-				db: "bun-sqlite",
+				db: "sqlite",
 				frontend: "react",
 			}),
 		);
@@ -152,7 +152,7 @@ describe("nx config — drizzle dialect mapping", () => {
 	});
 
 	const cases: Array<[string, string]> = [
-		["bun-sqlite", "sqlite"],
+		["sqlite", "sqlite"],
 		["sqlite", "sqlite"],
 		[ "sqlite"],
 		["postgres", "postgresql"],
@@ -186,7 +186,7 @@ describe("nx config — update", () => {
 				"no-interaction": true,
 				view: "inertia",
 				orm: "drizzle",
-				db: "bun-sqlite",
+				db: "sqlite",
 				frontend: "react",
 			}),
 		);
@@ -202,7 +202,7 @@ describe("nx config — update", () => {
 				"no-interaction": true,
 				view: "inertia",
 				orm: "drizzle",
-				db: "bun-sqlite",
+				db: "sqlite",
 				frontend: "react",
 			}),
 		);
@@ -216,14 +216,14 @@ describe("nx config — update", () => {
 				"no-interaction": true,
 				view: "inertia",
 				orm: "drizzle",
-				db: "bun-sqlite",
+				db: "sqlite",
 				frontend: "vue", // <-- changed
 			}),
 		);
 		const nx = await readFile(join(target, "nx.config.ts"), "utf8");
 		expect(nx).toContain("frontend: 'vue'");
 		expect(nx).toContain("view: 'inertia'"); // unchanged
-		expect(nx).toContain("driver: 'bun-sqlite'"); // unchanged
+		expect(nx).toContain("driver: 'sqlite'"); // unchanged
 	});
 
 	it("db change updates both nx.config.ts and drizzle.config.ts", async () => {
@@ -267,7 +267,7 @@ describe("nx config — update", () => {
 					"no-interaction": true,
 					view: "inertia",
 					orm: "drizzle", // <-- changed
-					db: "bun-sqlite",
+					db: "sqlite",
 					frontend: "react",
 				}),
 			);
@@ -308,7 +308,7 @@ describe("nx config — update", () => {
 				"no-interaction": true,
 				view: "inertia",
 				orm: "drizzle",
-				db: "bun-sqlite",
+				db: "sqlite",
 				frontend: "react",
 				"no-ssr": true,
 			}),
@@ -322,7 +322,7 @@ describe("nx config — update", () => {
 				"no-interaction": true,
 				view: "inertia",
 				orm: "drizzle",
-				db: "bun-sqlite",
+				db: "sqlite",
 				frontend: "react",
 				ssr: true,
 			}),

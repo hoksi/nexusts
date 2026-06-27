@@ -62,7 +62,7 @@ export function computeDeps(
 		deps["drizzle-orm"] = "^0.45.0";
 		if (db === "postgres") deps.pg = "^8.13.0";
 		if (db === "mysql") deps.mysql2 = "^3.11.0";
-		if (db === "sqlite" || db === "sqlite" || db === "bun-sqlite") deps["better-sqlite3"] = "^12.0.0";
+		if (db === "sqlite" || db === "sqlite" || db === "sqlite") deps["better-sqlite3"] = "^12.0.0";
 		devDeps["drizzle-kit"] = "^0.31.0";
 	}
 	if (orm === "kysely") {
@@ -144,7 +144,7 @@ export function generateNxConfig(target: string, opts: ScaffoldOptions): void {
  * Generate a drizzle.config.ts file (only when ORM is drizzle).
  */
 export function generateDrizzleConfig(target: string, db: string, dbUrl: string): void {
-	const dialect = db === "bun-sqlite" || db === "sqlite" 
+	const dialect = db === "sqlite" || db === "sqlite" 
 		? "sqlite"
 		: db === "postgres"
 			? "postgresql"
@@ -263,7 +263,7 @@ export function generateProjectFiles(target: string, opts: ScaffoldOptions): str
 		let ormBlock = '';
 		if (isDrizzle) {
 			ormImport = `import { DrizzleModule } from '@nexusts/drizzle';\n`;
-			const d = opts.db === 'bun-sqlite' ? 'bun-sqlite' : 'sqlite';
+			const d = opts.db === 'sqlite' ? 'sqlite' : 'sqlite';
 			ormBlock = "    DrizzleModule.forRoot({\n      dialect: '" + d + "',\n      connection: { filename: '" + (opts.dbUrl || "app.db") + "' },\n      logging: true,\n    })";
 		} else if (isKysely) {
 			ormImport = "import { KyselyModule, BunSqliteDialect } from '@nexusts/kysely';\nimport { SqliteDialect } from 'kysely';\nimport { Database } from 'bun:sqlite';\n";

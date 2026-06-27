@@ -17,7 +17,7 @@ export type ViewEngine = "rendu" | "edge" | "inertia" | "none";
 export type OrmDriver = "drizzle" | "kysely" | "none";
 export type InertiaFrontend = "react" | "vue" | "svelte" | "solid";
 export type DatabaseDriver =
-	| "bun-sqlite"
+	| "sqlite"
 	| "sqlite"
 	| "postgres"
 	| "mysql"
@@ -84,7 +84,7 @@ export interface NxConfig {
 	/** ORM driver. */
 	orm: OrmDriver;
 	/** Drizzle dialect (when `orm === 'drizzle'`). */
-	dialect?: "postgres" | "mysql" | "sqlite" | "bun-sqlite" | "d1";
+	dialect?: "postgres" | "mysql" | "sqlite" | "sqlite" | "d1";
 	/** Database driver. */
 	database: {
 		driver: DatabaseDriver;
@@ -231,7 +231,7 @@ export async function loadConfig(
 	assertEnum("view", merged.view, ["rendu", "edge", "inertia", "none"]);
 	assertEnum("orm", merged.orm, ["drizzle", "kysely", "none"]);
 	assertEnum("database.driver", merged.database.driver, [
-		"bun-sqlite",
+		"sqlite",
 		
 		"postgres",
 		"mysql",
