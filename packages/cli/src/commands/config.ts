@@ -63,7 +63,7 @@ const DEFAULT_VALUES: NxConfigValues = {
 	view: "rendu",
 	viewPaths: "resources/views",
 	orm: "drizzle",
-	dbDriver: "bun-sqlite",
+	dbDriver: "sqlite",
 	dbUrl: "app.db",
 	inertiaFrontend: "react",
 	inertiaSSR: true,
@@ -110,7 +110,6 @@ function driverToDialect(driver: string): string {
 	switch (driver) {
 		case "bun-sqlite":
 		case "sqlite":
-		case "libsql":
 			return "sqlite";
 		case "postgres":
 			return "postgresql";
@@ -123,7 +122,7 @@ function driverToDialect(driver: string): string {
 
 /** Default DATABASE_URL fallback based on the driver. */
 function defaultDbUrl(driver: string): string {
-	if (driver === "bun-sqlite" || driver === "sqlite" || driver === "libsql") {
+	if (driver === "bun-sqlite" || driver === "sqlite" ) {
 		return "app.db";
 	}
 	return "";
@@ -138,7 +137,7 @@ export const configCommand: Command = {
 	examples: [
 		"nx config",
 		"nx config --db postgres --db-url postgres://localhost/mydb",
-		"nx config --orm drizzle --db bun-sqlite",
+		"nx config --orm drizzle --db sqlite",
 		"nx config --view inertia --frontend vue --no-ssr",
 		"nx config --force",
 	],
@@ -157,7 +156,7 @@ export const configCommand: Command = {
 		{
 			name: "db",
 			description:
-				"Database driver (bun-sqlite|sqlite|libsql|postgres|mysql|none)",
+				"Database driver (sqlite|postgres|mysql|none)",
 		},
 		{
 			name: "db-url",
@@ -236,7 +235,7 @@ export const configCommand: Command = {
 			values.dbDriver =
 				(await select(
 					"Database driver",
-					["bun-sqlite", "sqlite", "libsql", "postgres", "mysql", "none"],
+					["sqlite",  "postgres", "mysql", "none"],
 					{ interactive, default: values.dbDriver },
 				)) ?? values.dbDriver;
 			values.inertiaFrontend =

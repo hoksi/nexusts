@@ -6,7 +6,7 @@
  * scratch.
  *
  *   nx new my-app
- *   nx new my-app --style nest --view inertia --orm drizzle --db bun-sqlite
+ *   nx new my-app --style nest --view inertia --orm drizzle --db sqlite
  */
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -50,7 +50,7 @@ export const newCommand: Command = {
 		const routing = await resolveProjectOption(ctx.flags, "style", VALID_PROJECT_OPTIONS.style, "nest", interactive);
 		const view = await resolveProjectOption(ctx.flags, "view", VALID_PROJECT_OPTIONS.view, "rendu", interactive);
 		const orm = await resolveProjectOption(ctx.flags, "orm", VALID_PROJECT_OPTIONS.orm, "drizzle", interactive);
-		const db = await resolveProjectOption(ctx.flags, "db", VALID_PROJECT_OPTIONS.db, "bun-sqlite", interactive);
+		const db = await resolveProjectOption(ctx.flags, "db", VALID_PROJECT_OPTIONS.db, "sqlite", interactive);
 		const frontend = await resolveProjectOption(ctx.flags, "frontend", VALID_PROJECT_OPTIONS.frontend, "react", interactive);
 		const ssr = !flagBool(ctx.flags, "no-ssr", false);
 
@@ -63,11 +63,10 @@ export const newCommand: Command = {
 		writeFileSync(
 			resolve(target, "tsconfig.json"),
 			`{
-  "compilerOptions": {
+			"compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "experimentalDecorators": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

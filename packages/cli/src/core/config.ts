@@ -19,7 +19,6 @@ export type InertiaFrontend = "react" | "vue" | "svelte" | "solid";
 export type DatabaseDriver =
 	| "bun-sqlite"
 	| "sqlite"
-	| "libsql"
 	| "postgres"
 	| "mysql"
 	| "none";
@@ -140,7 +139,7 @@ export const DEFAULT_CONFIG: NxConfig = {
 	view: "inertia",
 	orm: "drizzle",
 	database: {
-		driver: "bun-sqlite",
+		driver: "sqlite",
 		url: "app.db",
 	},
 	inertia: {
@@ -233,8 +232,7 @@ export async function loadConfig(
 	assertEnum("orm", merged.orm, ["drizzle", "kysely", "none"]);
 	assertEnum("database.driver", merged.database.driver, [
 		"bun-sqlite",
-		"sqlite",
-		"libsql",
+		
 		"postgres",
 		"mysql",
 		"none",

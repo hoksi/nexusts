@@ -144,8 +144,7 @@ export function generateNxConfig(target: string, opts: ScaffoldOptions): void {
  * Generate a drizzle.config.ts file (only when ORM is drizzle).
  */
 export function generateDrizzleConfig(target: string, db: string, dbUrl: string): void {
-	if (db !== "bun-sqlite" && db !== "sqlite" && db !== "libsql" && db !== "postgres" && db !== "mysql") return;
-	const dialect = db === "bun-sqlite" || db === "sqlite" || db === "libsql"
+	const dialect = db === "bun-sqlite" || db === "sqlite" 
 		? "sqlite"
 		: db === "postgres"
 			? "postgresql"

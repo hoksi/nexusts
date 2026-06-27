@@ -16,7 +16,7 @@
  *   --style <name>    Routing style (nest|adonis|functional)
  *   --view <name>     View engine (rendu|edge|eta|inertia|none)
  *   --orm <name>      ORM driver (drizzle|kysely|none)
- *   --db <name>       Database driver (bun-sqlite|sqlite|libsql|postgres|mysql|none)
+ *   --db <name>       Database driver (sqlite|postgres|mysql|none)
  *   --frontend <name> Inertia frontend (react|vue|svelte|solid)
  *   --no-ssr          Disable Inertia SSR
  *   --force           Overwrite existing files
@@ -46,7 +46,7 @@ export const initCommand: Command = {
 	examples: [
 		"nx init",
 		"nx init ./my-app",
-		"nx init --style nest --view inertia --orm drizzle --db bun-sqlite",
+		"nx init --style nest --view inertia --orm drizzle --db sqlite",
 		"nx init --force",
 	],
 	flags: [
@@ -54,7 +54,7 @@ export const initCommand: Command = {
 		{ name: "style", description: "Routing style (nest|adonis|functional)" },
 		{ name: "view", description: "View engine (rendu|edge|eta|inertia|none)" },
 		{ name: "orm", description: "ORM driver (drizzle|kysely|none)" },
-		{ name: "db", description: "Database driver (bun-sqlite|sqlite|libsql|postgres|mysql|none)" },
+		{ name: "db", description: "Database driver (sqlite|postgres|mysql|none)" },
 		{
 			name: "frontend",
 			description: "Inertia frontend (react|vue|svelte|solid)",
@@ -74,7 +74,7 @@ export const initCommand: Command = {
 		const routing = await resolveProjectOption(ctx.flags, "style", VALID_PROJECT_OPTIONS.style, "nest", interactive);
 		const view = await resolveProjectOption(ctx.flags, "view", VALID_PROJECT_OPTIONS.view, "rendu", interactive);
 		const orm = await resolveProjectOption(ctx.flags, "orm", VALID_PROJECT_OPTIONS.orm, "drizzle", interactive);
-		const db = await resolveProjectOption(ctx.flags, "db", VALID_PROJECT_OPTIONS.db, "bun-sqlite", interactive);
+		const db = await resolveProjectOption(ctx.flags, "db", VALID_PROJECT_OPTIONS.db, "sqlite", interactive);
 		const frontend = await resolveProjectOption(ctx.flags, "frontend", VALID_PROJECT_OPTIONS.frontend, "react", interactive);
 		const ssr = !flagBool(ctx.flags, "no-ssr", false);
 		const name = target.split("/").pop() ?? "nexus-app";
